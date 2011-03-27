@@ -13,4 +13,20 @@ We chose Scala because it is a much better language to work with than Java while
 as well as all the libraries and ecosystem.
 
 "Sloth" was chosen as compared to Glut (Gluttony). Feel free to suggest a meaning for the H!
-Another alternative was Slut: Scala Lwjgl Utility Toolkit :)
+Another alternative was Scala Lwjgl Utility Toolkit... Slut! ;)
+
+-------------------------------
+Setup
+-------------------------------
+
+1. Checkout from GitHub
+2. Until LWJGL is in the standard Maven respository we must install it locally
+	a. Enter the lib/ folder and run mvn-lib-install.sh, or mvn-lib-install.sh if you are using Windows.
+3. Run the pom with mvn install and se if it's working
+
+The Release profile creates a complete .zip file ready to be run anywhere with a run.sh and run.bat files.
+
+The default profile should be used while developing.
+
+Sloth should actually be just a library to be included in a custom proyect, for now use this and add your own
+code to it to test your OpenGL skills.
