@@ -9,6 +9,9 @@ to follow the book without those.
 In this toolkit we will attempt to provide a syntax as close as possible to the code in the book. That would
 allow people to use it as they were working on C++.
 
+** We have just started the project, it is a work in progress **
+** The plan is to implement all the helper libraries as well as the examples provided with the book **
+
 We chose Scala because it is a much better language to work with than Java while taking full advantage of the JVM
 as well as all the libraries and ecosystem.
 
