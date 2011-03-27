@@ -1,5 +1,5 @@
 ===============================
-Scala LWJGL OpenGL Toolkit H...
+Scala LWJGL OpenGL Toolkit from Hell
 ===============================
 
 This toolkit was created in order to help people work with OpenGL via LWJGL. The problem most people have is that
@@ -15,8 +15,10 @@ allow people to use it as they were working on C++.
 We chose Scala because it is a much better language to work with than Java while taking full advantage of the JVM
 as well as all the libraries and ecosystem.
 
-"Sloth" was chosen as compared to Glut (Gluttony). Feel free to suggest a meaning for the H!
-Another alternative was Scala Lwjgl Utility Toolkit... Slut! ;)
+"Sloth" was chosen as compared to Glut (Gluttony).
+Could have been "Lwjgl Utility Scala Toolkit" ... Lust!
+
+"from Hell" stand for the massive suffering caused by C/C++ code conversion :P
 
 -------------------------------
 Setup
