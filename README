@@ -19,6 +19,9 @@ Another alternative was Scala Lwjgl Utility Toolkit... Slut! ;)
 Setup
 -------------------------------
 
+This project uses Maven to build and manage dependencies because most IDEs don't understand SBT.
+SBT could be added but make sure you solve the natives and packaging.
+
 1. Checkout from GitHub
 2. Until LWJGL is in the standard Maven respository we must install it locally
 	a. Enter the lib/ folder and run mvn-lib-install.sh, or mvn-lib-install.sh if you are using Windows.
@@ -28,5 +31,16 @@ The Release profile creates a complete .zip file ready to be run anywhere with a
 
 The default profile should be used while developing.
 
-Sloth should actually be just a library to be included in a custom proyect, for now use this and add your own
-code to it to test your OpenGL skills.
+Sloth should actually be just a library to be included in a custom project, for now use this and add your own
+code to it to test your OpenGL skills. You can fork it using git to make it easier to track your own changes.
+
+We could later provide and archetype to make it easier to use.
+
+-------------------------------
+IDE Support
+-------------------------------
+
+Netbeans 6.9 - 6.9.1 is fully working. I provided nbactions.xml that will allow the project to be run and find the native files without
+configuration on your end. You should have the Netbeans Scala Plugin so the IDE actually helps you with your scala code.
+
+Feel free to provide additional files or patches to make it easier to use in other IDEs
