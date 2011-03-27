@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.belfrygames</groupId>
+	<artifactId>Sloth</artifactId>
+	<packaging>jar</packaging>
+	<version>1.0-SNAPSHOT</version>
+	<name>Sloth</name>
+	<inceptionYear>2011</inceptionYear>
+	<url>https://github.com/BelfryGames/sloth/</url>
+	
+	<properties>
+		<scala.version>2.8.1</scala.version>
+
+		<!--Used for executable file-->
+		<main.class>com.belfrygames.sloth.Main</main.class>
+
+        <!--Used for deploy file name-->
+		<finalName>${project.artifactId}-${project.version}.jar</finalName>
+
+        <!--Used for lwjgl utils-->
+		<lwjgl.version>2.7.1</lwjgl.version>
+
+		<!--Used by Maven Natives Plugins-->
+		<natives>${basedir}/target/natives/</natives>
+		<release.natives>natives/</release.natives>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>scala-tools.org</id>
+			<name>Scala-Tools Maven2 Repository</name>
+			<url>http://scala-tools.org/repo-releases</url>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>scala-tools.org</id>
+			<name>Scala-Tools Maven2 Repository</name>
+			<url>http://scala-tools.org/repo-releases</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.scala-lang</groupId>
+			<artifactId>scala-library</artifactId>
+			<version>${scala.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.5</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.specs</groupId>
+			<artifactId>specs</artifactId>
+			<version>1.2.5</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- OpenGL -->
+		<dependency>
+			<groupId>lwjgl</groupId>
+			<artifactId>lwjgl</artifactId>
+			<version>${lwjgl.version}</version>
+<!--			<scope>system</scope>
+			<systemPath>${basedir}/lib/lwjgl.jar</systemPath>-->
+		</dependency>
+
+		<dependency>
+			<groupId>lwjgl</groupId>
+			<artifactId>lwjgl-util</artifactId>
+			<version>${lwjgl.version}</version>
+		</dependency>
+
+<!--		<dependency>
+			<groupId>lwjgl</groupId>
+			<artifactId>lwjgl-util-applet</artifactId>
+			<version>${lwjgl.version}</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/lwjgl_util_applet.jar</systemPath>
+		</dependency>-->
+
+		<dependency>
+			<groupId>lwjgl</groupId>
+			<artifactId>lwjgl</artifactId>
+			<version>${lwjgl.version}</version>
+			<classifier>natives-linux</classifier>
+		</dependency>
+
+		<dependency>
+			<groupId>lwjgl</groupId>
+			<artifactId>lwjgl</artifactId>
+			<version>${lwjgl.version}</version>
+			<classifier>natives-win</classifier>
+		</dependency>
+
+		<dependency>
+			<groupId>lwjgl</groupId>
+			<artifactId>lwjgl</artifactId>
+			<version>${lwjgl.version}</version>
+			<classifier>natives-macosx</classifier>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<sourceDirectory>src/main/scala</sourceDirectory>
+		<testSourceDirectory>src/test/scala</testSourceDirectory>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.0.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.scala-tools</groupId>
+				<artifactId>maven-scala-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>compile</id>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+						<phase>compile</phase>
+					</execution>
+
+					<execution>
+						<id>test-compile</id>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+						<phase>test-compile</phase>
+					</execution>
+
+					<execution>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<displayCmd>true</displayCmd>
+					<scalaClassName>scala.tools.nsc.CompileClient</scalaClassName>
+                    <!--<scalaVersion>${scala.version}</scalaVersion>-->
+                    <!--<excludes>
+                        <exclude>**/SerializedField.java</exclude>
+                    </excludes>-->
+
+					<args>
+						<arg>-target:jvm-1.5</arg>
+						<arg>-make:transitivenocp</arg>
+						<arg>-dependencyfile</arg>
+						<arg>${project.build.directory}/.scala_dependencies</arg>
+						<arg>-deprecation</arg>
+						<arg></arg>
+					</args>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>com.googlecode.mavennatives</groupId>
+				<artifactId>maven-nativedependencies-plugin</artifactId>
+				<version>0.0.2</version>
+				<executions>
+					<execution>
+						<id>unpacknatives</id>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<mainClass>${main.class}</mainClass>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+						</manifest>
+					</archive>
+					<excludes>
+						<exclude>resources/</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			
+			<!--Does this work? remove this??-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<configuration>
+					<downloadSources>true</downloadSources>
+					<buildcommands>
+						<buildcommand>ch.epfl.lamp.sdt.core.scalabuilder</buildcommand>
+					</buildcommands>
+					<additionalProjectnatures>
+						<projectnature>ch.epfl.lamp.sdt.core.scalanature</projectnature>
+					</additionalProjectnatures>
+					<classpathContainers>
+						<classpathContainer>org.eclipse.jdt.launching.JRE_CONTAINER</classpathContainer>
+						<classpathContainer>ch.epfl.lamp.sdt.launching.SCALA_CONTAINER</classpathContainer>
+					</classpathContainers>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.scala-tools</groupId>
+				<artifactId>maven-scala-plugin</artifactId>
+				<configuration>
+					<scalaVersion>${scala.version}</scalaVersion>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
+
+	<profiles>
+		<profile>
+			<id>Release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<version>2.2-beta-2</version>
+						<executions>
+							<execution>
+								<id>bundle-project-sources</id>
+								<phase>package</phase>
+								<goals>
+									<goal>single</goal>
+								</goals>
+								<configuration>
+									<descriptors>
+										<descriptor>src/META-INF/assembly.xml</descriptor>
+									</descriptors>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>
