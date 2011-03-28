@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.belfrygames.sloth;
 
 /**
@@ -11,6 +6,6 @@ package com.belfrygames.sloth;
  */
 public class Main {
 	public static void main(String[] args) {
-        App.main(new String[]{"src/main/resources"});
+        com.belfrygames.sloth.chapter02.Triangle.main(args);
     }
 }

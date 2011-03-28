@@ -1,24 +1,24 @@
-===============================
+====================================
 Scala LWJGL OpenGL Toolkit from Hell
-===============================
+====================================
 
 This toolkit was created in order to help people work with OpenGL via LWJGL. The problem most people have is that
 documentation like the OpenGL SuperBible book makes use of some helper libraries and it becomes quite complex
 to follow the book without those.
 
 In this toolkit we will attempt to provide a syntax as close as possible to the code in the book. That would
-allow people to use it as they were working on C++.
+allow people to use it as if they were working on C++.
 
 ** We have just started the project, it is a work in progress **
 ** The plan is to implement all the helper libraries as well as the examples provided with the book **
 
-We chose Scala because it is a much better language to work with than Java while taking full advantage of the JVM
-as well as all the libraries and ecosystem.
+We chose Scala because it is a much better language to work with than Java while taking full advantage of the
+JVM, libraries and ecosystem. It is also easier to convert C++ into Scala than it is to Java.
 
 "Sloth" was chosen as compared to Glut (Gluttony).
 Could have been "Lwjgl Utility Scala Toolkit" ... Lust!
 
-"from Hell" stand for the massive suffering caused by C/C++ code conversion :P
+"from Hell" stands for the massive suffering caused by C/C++ code conversion :P
 
 -------------------------------
 Setup
