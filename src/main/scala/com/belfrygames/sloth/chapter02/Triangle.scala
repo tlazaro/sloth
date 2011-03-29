@@ -19,7 +19,6 @@ object Triangle {
 // Window has changed size, or has just been created. In either case, we need
 // to use the window dimensions to set the viewport and the projection matrix.
   def ChangeSize(w : Int, h : Int) {
-	println("ChangeSize")
 	glViewport(0, 0, w, h)
   }
 
@@ -27,8 +26,6 @@ object Triangle {
 // This function does any needed initialization on the rendering context.
 // This is the first opportunity to do any OpenGL related tasks.
   def SetupRC() {
-	println("SetupRC")
-	
 	// Blue background
 	glClearColor(0.0f, 0.0f, 1.0f, 1.0f)
 

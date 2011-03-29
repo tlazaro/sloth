@@ -308,6 +308,8 @@ object GLUT {
   def fgCreateWindow(parent : SFG_Window, title : String, positionUse : Boolean, x : Int, y : Int, sizeUse : Boolean, w : Int, h : Int, gameMode : Boolean, isMenu : Boolean) : SFG_Window = {
 	val window = new SFG_Window(0)
 
+	WindowHandler.mainWindow = Some(window)
+
     window.f.setSize(w, h)
 	window.f.setTitle(title)
 	window.f.setResizable(false)
@@ -319,8 +321,6 @@ object GLUT {
 	window.f.setVisible(true)
 
 	window.f.addComponentListener(WindowHandler)
-
-	WindowHandler.mainWindow = Some(window)
 
 	GLDisplay.setFullscreen(false)
 	GLDisplay.setVSyncEnabled(false)
@@ -365,10 +365,7 @@ object GLUT {
 	}
   }
 
-  /**
-   * I don't think we need to implement this
-   */
   def glutSwapBuffers() {
-	
+	GLDisplay.swapBuffers
   }
 }

@@ -3,14 +3,14 @@ package com.belfrygames.sloth
 import GLTools._
 import scala.collection.mutable.Map
 
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 import java.nio.FloatBuffer
+
 import org.lwjgl.opengl.GL20._
 
 import org.lwjgl.util.vector.Matrix4f
 import org.lwjgl.util.vector.Vector4f
 import org.lwjgl.util.vector.Vector3f
+import org.lwjgl.BufferUtils
 
 object GLT_STOCK_SHADER extends Enumeration {
   val GLT_SHADER_IDENTITY, GLT_SHADER_FLAT, GLT_SHADER_SHADED, GLT_SHADER_DEFAULT_LIGHT, GLT_SHADER_POINT_LIGHT_DIFF, GLT_SHADER_TEXTURE_REPLACE,
@@ -61,10 +61,10 @@ object GLShaderManager {
   private val SHORT_SIZE_BYTES = 2
 
   def getFloatBuffer(a : Array[Float]) : FloatBuffer = {
-	val I = ByteBuffer.allocateDirect(a.length * FLOAT_SIZE_BYTES).order(ByteOrder.nativeOrder()).asFloatBuffer()
-	I.put(a)
-	I.flip()
-	I
+	val buffer = BufferUtils.createFloatBuffer(a.length * FLOAT_SIZE_BYTES)
+	buffer.put(a)
+	buffer.flip()
+	buffer
   }
 
   private implicit def matrix4fToFloatBuffer(matrix : Matrix4f) : FloatBuffer = {
@@ -95,118 +95,108 @@ object GLShaderManager {
 	var vColor : Vector4f = null
 	var vLightPos : Vector3f = null
 
-	// Behold the magic of scala by using va_arg and implicits
-	// Do not try to be smarter than this, keep the code as close as the C++ version as possible
-	var argCount = 0
-	def va_arg[A] () : A  = {
-	  val ret = uniforms(argCount).asInstanceOf[A]
-	  argCount += 1
-	  ret
-	}
-
-	val GL_FALSE = false
-	val GL_TRUE = true
+	val va = new VarArgs(uniforms)
 
 	nShaderID match {
 	  case GLT_SHADER_FLAT => {			// Just the modelview projection matrix and the color
 		  iTransform = glGetUniformLocation(uiStockShaders(nShaderID), "mvpMatrix")
-		  mvpMatrix = va_arg()
-		  glUniformMatrix4(iTransform, GL_FALSE, mvpMatrix)
+		  mvpMatrix = va.arg
+		  glUniformMatrix4(iTransform, false, mvpMatrix)
 
 		  iColor = glGetUniformLocation(uiStockShaders(nShaderID), "vColor")
-		  vColor = va_arg()
+		  vColor = va.arg
 		  glUniform4(iColor, vColor)
 		}
 
 	  case GLT_SHADER_TEXTURE_RECT_REPLACE | GLT_SHADER_TEXTURE_REPLACE => { // Just the texture place
 		  iTransform = glGetUniformLocation(uiStockShaders(nShaderID), "mvpMatrix")
-		  mvpMatrix = va_arg()
-		  glUniformMatrix4(iTransform, GL_FALSE, mvpMatrix)
+		  mvpMatrix = va.arg
+		  glUniformMatrix4(iTransform, false, mvpMatrix)
 
 		  iTextureUnit = glGetUniformLocation(uiStockShaders(nShaderID), "textureUnit0")
-		  iInteger = va_arg()
+		  iInteger = va.arg
 		  glUniform1i(iTextureUnit, iInteger)
 		}
 
 	  case GLT_SHADER_TEXTURE_MODULATE => { // Multiply the texture by the geometry color
 		  iTransform = glGetUniformLocation(uiStockShaders(nShaderID), "mvpMatrix")
-		  mvpMatrix = va_arg()
-		  glUniformMatrix4(iTransform, GL_FALSE, mvpMatrix)
+		  mvpMatrix = va.arg
+		  glUniformMatrix4(iTransform, false, mvpMatrix)
 
 		  iColor = glGetUniformLocation(uiStockShaders(nShaderID), "vColor")
-		  vColor = va_arg()
+		  vColor = va.arg
 		  glUniform4(iColor, vColor)
 
 		  iTextureUnit = glGetUniformLocation(uiStockShaders(nShaderID), "textureUnit0")
-		  iInteger = va_arg()
+		  iInteger = va.arg
 		  glUniform1i(iTextureUnit, iInteger)
 		}
 
 
 	  case GLT_SHADER_DEFAULT_LIGHT => {
 		  iModelMatrix = glGetUniformLocation(uiStockShaders(nShaderID), "mvMatrix")
-		  mvMatrix = va_arg()
-		  glUniformMatrix4(iModelMatrix, GL_FALSE, mvMatrix)
+		  mvMatrix = va.arg
+		  glUniformMatrix4(iModelMatrix, false, mvMatrix)
 
 		  iProjMatrix = glGetUniformLocation(uiStockShaders(nShaderID), "pMatrix")
-		  pMatrix = va_arg()
-		  glUniformMatrix4(iProjMatrix, GL_FALSE, pMatrix)
+		  pMatrix = va.arg
+		  glUniformMatrix4(iProjMatrix, false, pMatrix)
 
 		  iColor = glGetUniformLocation(uiStockShaders(nShaderID), "vColor")
-		  vColor = va_arg()
+		  vColor = va.arg
 		  glUniform4(iColor, vColor)
 		}
 
 	  case GLT_SHADER_POINT_LIGHT_DIFF => {
 		  iModelMatrix = glGetUniformLocation(uiStockShaders(nShaderID), "mvMatrix")
-		  mvMatrix = va_arg()
-		  glUniformMatrix4(iModelMatrix, GL_FALSE, mvMatrix)
+		  mvMatrix = va.arg
+		  glUniformMatrix4(iModelMatrix, false, mvMatrix)
 
 		  iProjMatrix = glGetUniformLocation(uiStockShaders(nShaderID), "pMatrix")
-		  pMatrix = va_arg()
-		  glUniformMatrix4(iProjMatrix, GL_FALSE, pMatrix)
+		  pMatrix = va.arg
+		  glUniformMatrix4(iProjMatrix, false, pMatrix)
 
 		  iLight = glGetUniformLocation(uiStockShaders(nShaderID), "vLightPos")
-		  vLightPos = va_arg()
+		  vLightPos = va.arg
 		  glUniform3(iLight, vLightPos)
 
 		  iColor = glGetUniformLocation(uiStockShaders(nShaderID), "vColor")
-		  vColor = va_arg()
+		  vColor = va.arg
 		  glUniform4(iColor, vColor)
 		}
 
 	  case GLT_SHADER_TEXTURE_POINT_LIGHT_DIFF => {
 		  iModelMatrix = glGetUniformLocation(uiStockShaders(nShaderID), "mvMatrix")
-		  mvMatrix = va_arg()
-		  glUniformMatrix4(iModelMatrix, GL_FALSE, mvMatrix)
+		  mvMatrix = va.arg
+		  glUniformMatrix4(iModelMatrix, false, mvMatrix)
 
 		  iProjMatrix = glGetUniformLocation(uiStockShaders(nShaderID), "pMatrix")
-		  pMatrix = va_arg()
-		  glUniformMatrix4(iProjMatrix, GL_FALSE, pMatrix)
+		  pMatrix = va.arg
+		  glUniformMatrix4(iProjMatrix, false, pMatrix)
 
 		  iLight = glGetUniformLocation(uiStockShaders(nShaderID), "vLightPos")
-		  vLightPos = va_arg()
+		  vLightPos = va.arg
 		  glUniform3(iLight, vLightPos)
 
 		  iColor = glGetUniformLocation(uiStockShaders(nShaderID), "vColor")
-		  vColor = va_arg()
+		  vColor = va.arg
 		  glUniform4(iColor, vColor)
 
 		  iTextureUnit = glGetUniformLocation(uiStockShaders(nShaderID), "textureUnit0")
-		  iInteger = va_arg()
+		  iInteger = va.arg
 		  glUniform1i(iTextureUnit, iInteger)
 		}
 
 
 	  case GLT_SHADER_SHADED =>	{	// Just the modelview projection matrix. Color is an attribute
 		  iTransform = glGetUniformLocation(uiStockShaders(nShaderID), "mvpMatrix")
-		  pMatrix = va_arg()
-		  glUniformMatrix4(iTransform, GL_FALSE, pMatrix)
+		  pMatrix = va.arg
+		  glUniformMatrix4(iTransform, false, pMatrix)
 		}
 
 	  case GLT_SHADER_IDENTITY =>	{// Just the Color
 		  iColor = glGetUniformLocation(uiStockShaders(nShaderID), "vColor")
-		  vColor = va_arg()
+		  vColor = va.arg
 		  glUniform4(iColor, vColor)
 		}
 	}

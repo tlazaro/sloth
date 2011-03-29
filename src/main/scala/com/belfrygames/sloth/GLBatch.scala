@@ -5,9 +5,8 @@
 
 package com.belfrygames.sloth
 
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 import java.nio.FloatBuffer
+import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11._
 import org.lwjgl.opengl.GL15._
 import org.lwjgl.opengl.GL20._
@@ -15,7 +14,6 @@ import org.lwjgl.opengl.GL30._
 
 import org.lwjgl.util.vector.Vector4f
 import org.lwjgl.util.vector.Vector3f
-import org.lwjgl.util.vector.Matrix4f
 import org.lwjgl.util.vector.Vector2f
 
 import com.belfrygames.sloth.GLT_STOCK_SHADER._
@@ -137,7 +135,7 @@ class GLBatch extends GLBatchBase {
   
   // Public implicit to replace method overloading
   implicit def vector3SeqToFloatSeq(vectors : Seq[Vector3f]) : Seq[Float] = {
-	val array = new Array[Float](vectors.size * 2)
+	val array = new Array[Float](vectors.size * 3)
 
 	var i = 0
 	for (vector <- vectors) {
@@ -154,7 +152,7 @@ class GLBatch extends GLBatchBase {
   
   // Public implicit to replace method overloading
   implicit def vector4SeqToFloatSeq(vectors : Seq[Vector4f]) : Seq[Float] = {
-	val array = new Array[Float](vectors.size * 2)
+	val array = new Array[Float](vectors.size * 4)
 
 	var i = 0
 	for (vector <- vectors) {
@@ -174,15 +172,15 @@ class GLBatch extends GLBatchBase {
   // Public implicit to replace method overloading
   implicit def vector2ToFloatSeq(vector : Vector2f) : Seq[Float] = Array(vector.x, vector.y)
   // Public implicit to replace method overloading
-  implicit def vector3ToFloatSeq(vector : Vector3f) : Seq[Float] = Array(vector.x, vector.y)
+  implicit def vector3ToFloatSeq(vector : Vector3f) : Seq[Float] = Array(vector.x, vector.y, vector.z)
   // Public implicit to replace method overloading
   implicit def vector4ToFloatSeq(vector : Vector4f) : Seq[Float] = Array(vector.x, vector.y, vector.z, vector.w)
 
   private implicit def floatSeqfToFloatBuffer(floats : Seq[Float]) : FloatBuffer = {
-	val I = ByteBuffer.allocateDirect(floats.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer()
-	I put floats.toArray
-	I.flip()
-	I
+	val buffer = BufferUtils.createFloatBuffer(floats.length * 4)
+	buffer put floats.toArray
+	buffer.flip()
+	buffer
   }
 
   def CopyVertexData3f(vVerts : Seq[Float]) {

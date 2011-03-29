@@ -109,9 +109,15 @@ object GLTools {
     glAttachShader(hReturn, hVertexShader)
     glAttachShader(hReturn, hFragmentShader)
 
+	var szNextArg : String = null
+	val va = new VarArgs(args)
+	val iArgCount : Int = va.arg
+
 	// List of attributes
-	for (i <- 0 until args.length) {
-	  glBindAttribLocation(hReturn, i, args(i).toString)
+	for (i <- 0 until iArgCount) {
+	  val index : Int = va.arg
+	  szNextArg = va.arg
+	  glBindAttribLocation(hReturn, index, szNextArg)
 	}
 
     glLinkProgram(hReturn)
