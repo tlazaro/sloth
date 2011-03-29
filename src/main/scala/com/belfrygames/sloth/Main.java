@@ -6,6 +6,6 @@ package com.belfrygames.sloth;
  */
 public class Main {
 	public static void main(String[] args) {
-        com.belfrygames.sloth.chapter02.Triangle.main(args);
+        com.belfrygames.sloth.chapter02.Move.main(args);
     }
 }

@@ -6,6 +6,8 @@ import java.awt.event.ComponentEvent
 import java.awt.event.ComponentListener
 import javax.swing.JFrame
 
+import org.lwjgl.input.Keyboard
+import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11._
 import org.lwjgl.opengl.{Display => GLDisplay}
 
@@ -280,6 +282,7 @@ object GLUT {
 	var mainWindow : Option[SFG_Window] = None
 	var reshapeFunc : Option[(Int, Int) => Unit] = None
 	var displayFunc : Option[() => Unit] = None
+	var specialFunc : Option[(Int, Int, Int) => Unit] = None
 
 	def componentHidden(e : ComponentEvent) {
 	  println(e.getComponent().getClass().getName() + " --- Hidden");
@@ -342,8 +345,41 @@ object GLUT {
 	WindowHandler.displayFunc = Some(func)
   }
 
+  def glutSpecialFunc(func : (Int, Int, Int) => Unit) {
+	WindowHandler.specialFunc = Some(func)
+  }
+
   var keepAlive = true
   var lastRender = 0L
+
+  private def keyboardToGlut(key : Int) = {
+	import org.lwjgl.input.Keyboard._
+	import com.belfrygames.sloth.glut.STD._
+	key match {
+	  case KEY_F1 => GLUT_KEY_F1
+	  case KEY_F2 => GLUT_KEY_F2
+	  case KEY_F3 => GLUT_KEY_F3
+	  case KEY_F4 => GLUT_KEY_F4
+	  case KEY_F5 => GLUT_KEY_F5
+	  case KEY_F6 => GLUT_KEY_F6
+	  case KEY_F7 => GLUT_KEY_F7
+	  case KEY_F8 => GLUT_KEY_F8
+	  case KEY_F9 => GLUT_KEY_F9
+	  case KEY_F10 => GLUT_KEY_F10
+	  case KEY_F11 => GLUT_KEY_F11
+	  case KEY_F12 => GLUT_KEY_F12
+	  case KEY_LEFT => GLUT_KEY_LEFT
+	  case KEY_UP => GLUT_KEY_UP
+	  case KEY_RIGHT => GLUT_KEY_RIGHT
+	  case KEY_DOWN => GLUT_KEY_DOWN
+	  case KEY_PRIOR => GLUT_KEY_PAGE_UP // ????
+	  case KEY_NEXT => GLUT_KEY_PAGE_DOWN // ????
+	  case KEY_HOME => GLUT_KEY_HOME
+	  case KEY_END => GLUT_KEY_END
+	  case KEY_INSERT => GLUT_KEY_INSERT
+	  case _ => 0
+	}
+  }
   
   def glutMainLoop() {
 	// Rendering
@@ -357,8 +393,15 @@ object GLUT {
 	  val currentRender = System.nanoTime()
 	  val time = (currentRender - lastRender) / 1000000000.0
 
-	  for (window <- WindowHandler.mainWindow; func <- WindowHandler.displayFunc) {
-		func.apply()
+	  for (window <- WindowHandler.mainWindow) {
+		for (func <- WindowHandler.displayFunc) func.apply()
+
+		for (func <- WindowHandler.specialFunc) {
+		  while (Keyboard.next()) {
+			// Is this what it's supposed to send???
+			func.apply(keyboardToGlut(Keyboard.getEventKey), Mouse.getX, Mouse.getY)
+		  }
+		}
 	  }
 
 	  lastRender = currentRender
@@ -367,5 +410,9 @@ object GLUT {
 
   def glutSwapBuffers() {
 	GLDisplay.swapBuffers
+  }
+
+  def glutPostRedisplay() {
+	GLDisplay.update() // <- is this ok?
   }
 }
