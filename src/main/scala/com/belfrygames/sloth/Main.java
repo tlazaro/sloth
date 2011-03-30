@@ -6,6 +6,6 @@ package com.belfrygames.sloth;
  */
 public class Main {
 	public static void main(String[] args) {
-        com.belfrygames.sloth.chapter02.Bounce.main(args);
+        com.belfrygames.sloth.chapter03.Blending.main(args);
     }
 }

@@ -333,7 +333,7 @@ package object glut {
   class SFG_Window (val ID : Int) {
 	val f = new JFrame()
 	f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
-	lazy val c = new Canvas()
+	var c = new Canvas()
   }
 
   object WindowHandler extends ComponentListener {
@@ -342,6 +342,8 @@ package object glut {
 	var displayFunc : Option[() => Unit] = None
 	var specialFunc : Option[(Int, Int, Int) => Unit] = None
 
+	var resizePending = false
+	
 	def componentHidden(e : ComponentEvent) {
 	  println(e.getComponent().getClass().getName() + " --- Hidden");
 	  println(e)
@@ -355,9 +357,10 @@ package object glut {
 	def componentResized(e : ComponentEvent) {
 	  println(e.getComponent().getClass().getName() + " --- Resized");
 	  println(e)
-	  for (window <- mainWindow; func <- reshapeFunc) {
-		func.apply(window.f.getWidth, window.f.getHeight)
-	  }
+
+	  // This is the AWT Thread, can't allow glViewport called from here
+	  // Do it from the main loop
+	  resizePending = true
     }
 
 	def componentShown(e : ComponentEvent) {
@@ -373,7 +376,6 @@ package object glut {
 
     window.f.setSize(w, h)
 	window.f.setTitle(title)
-	window.f.setResizable(false)
 	window.f.setLayout(new BorderLayout())
 
 	window.c.setSize(w, h)
@@ -381,11 +383,10 @@ package object glut {
 
 	window.f.setVisible(true)
 
-	window.f.addComponentListener(WindowHandler)
-
 	GLDisplay.setFullscreen(false)
 	GLDisplay.setVSyncEnabled(false)
 	GLDisplay.setParent(window.c)
+	GLDisplay.setLocation(x, y)
 	GLDisplay.create()
 
 	// Setup GL
@@ -439,8 +440,32 @@ package object glut {
   }
 
   def glutMainLoop() {
+	for (window <- WindowHandler.mainWindow)
+	  window.f.addComponentListener(WindowHandler)
+
 	// Rendering
 	while (keepAlive) {
+	  if (WindowHandler.resizePending) {
+		for (window <- WindowHandler.mainWindow; func <- WindowHandler.reshapeFunc) {
+		  val w = window.f.getWidth
+		  val h = window.f.getHeight
+
+//		  Re-create window, does not seem necesarry, crash ocurrs anyway after several resizings
+//		  GLDisplay.destroy
+//
+//		  window.f.remove(window.c)
+//		  window.c = new Canvas()
+//		  window.c.setSize(w, h)
+//		  window.f.add(BorderLayout.CENTER, window.c)
+//
+//		  GLDisplay.setParent(window.c)
+//		  GLDisplay.create()
+		  
+		  func.apply(w, h)
+		}
+
+		WindowHandler.resizePending = false
+	  }
 	  GLDisplay.update()
 
 	  if (GLDisplay.isCloseRequested()) {
@@ -466,7 +491,7 @@ package object glut {
   }
 
   def glutSwapBuffers() {
-	GLDisplay.swapBuffers
+//	GLDisplay.swapBuffers // <- should not be called
   }
 
   def glutPostRedisplay() {
