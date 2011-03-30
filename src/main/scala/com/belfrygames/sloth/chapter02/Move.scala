@@ -8,8 +8,6 @@ import com.belfrygames.sloth.GLT_STOCK_SHADER._
 import com.belfrygames.sloth.GLT_SHADER_ATTRIBUTE._
 import com.belfrygames.sloth.GLBatch
 import com.belfrygames.sloth.glut._
-import com.belfrygames.sloth.glut.STD._
-import com.belfrygames.sloth.glut.GLUT._
 
 import org.lwjgl.opengl.GL11._
 import org.lwjgl.util.vector.Vector4f

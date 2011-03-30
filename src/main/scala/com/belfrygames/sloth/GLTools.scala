@@ -1,5 +1,7 @@
 package com.belfrygames.sloth
 
+import com.belfrygames.sloth.glut._
+
 import org.lwjgl.opengl.GL11._
 import org.lwjgl.opengl.GL20._
 

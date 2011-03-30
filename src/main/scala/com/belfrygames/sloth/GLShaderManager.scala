@@ -1,6 +1,7 @@
 package com.belfrygames.sloth
 
-import GLTools._
+import com.belfrygames.sloth.GLTools._
+import com.belfrygames.sloth.glut._
 import scala.collection.mutable.Map
 
 import java.nio.FloatBuffer
