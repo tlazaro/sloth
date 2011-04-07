@@ -342,7 +342,7 @@ package object glut {
 	var displayFunc : Option[() => Unit] = None
 	var specialFunc : Option[(Int, Int, Int) => Unit] = None
 
-	var resizePending = false
+	var resizePending = true
 	
 	def componentHidden(e : ComponentEvent) {
 	  println(e.getComponent().getClass().getName() + " --- Hidden");
@@ -476,12 +476,12 @@ package object glut {
 	  val time = (currentRender - lastRender) / 1000000000.0
 
 	  for (window <- WindowHandler.mainWindow) {
-		for (func <- WindowHandler.displayFunc) func.apply()
+		for (f <- WindowHandler.displayFunc) f.apply()
 
-		for (func <- WindowHandler.specialFunc) {
+		for (f <- WindowHandler.specialFunc) {
 		  while (Keyboard.next()) {
 			// Is this what it's supposed to send???
-			func.apply(keyboardToGlut(Keyboard.getEventKey), Mouse.getX, Mouse.getY)
+			f.apply(keyboardToGlut(Keyboard.getEventKey), Mouse.getX, Mouse.getY)
 		  }
 		}
 	  }

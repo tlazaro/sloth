@@ -8,7 +8,6 @@ import com.belfrygames.sloth.glut._
 import com.belfrygames.sloth.glut.Internal._
 
 import org.lwjgl.opengl.GL11._
-import org.lwjgl.util.vector.Vector4f
 
 object Primitives {
 

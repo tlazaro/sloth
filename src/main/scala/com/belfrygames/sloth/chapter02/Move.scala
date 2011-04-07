@@ -7,10 +7,10 @@ import com.belfrygames.sloth.GLTools._
 import com.belfrygames.sloth.GLT_STOCK_SHADER._
 import com.belfrygames.sloth.GLT_SHADER_ATTRIBUTE._
 import com.belfrygames.sloth.GLBatch
+import com.belfrygames.sloth.Math3D.M3DVector
 import com.belfrygames.sloth.glut._
 
 import org.lwjgl.opengl.GL11._
-import org.lwjgl.util.vector.Vector4f
 
 object Move {
   val squareBatch = new GLBatch
@@ -86,8 +86,8 @@ object Move {
 	// Clear the window with current clearing color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	val vRed = new Vector4f(1.0f, 0.0f, 0.0f, 1.0f );
-	shaderManager.UseStockShader(GLT_SHADER_IDENTITY, vRed);
+	val vRed = M3DVector(1.0f, 0.0f, 0.0f, 1.0f )
+	shaderManager.UseStockShader(GLT_SHADER_IDENTITY, vRed)
 	squareBatch.Draw();
 
 	// Flush drawing commands

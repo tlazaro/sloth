@@ -1,20 +1,14 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.belfrygames.sloth
 
+import com.belfrygames.sloth.Math3D.M3DVector2f
+import com.belfrygames.sloth.Math3D.M3DVector3f
+import com.belfrygames.sloth.Math3D.M3DVector4f
 import java.nio.FloatBuffer
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11._
 import org.lwjgl.opengl.GL15._
 import org.lwjgl.opengl.GL20._
 import org.lwjgl.opengl.GL30._
-
-import org.lwjgl.util.vector.Vector4f
-import org.lwjgl.util.vector.Vector3f
-import org.lwjgl.util.vector.Vector2f
 
 import com.belfrygames.sloth.GLT_STOCK_SHADER._
 import com.belfrygames.sloth.GLT_SHADER_ATTRIBUTE._
@@ -117,64 +111,6 @@ class GLBatch extends GLBatchBase {
 	bBatchDone = true
 	glBindVertexArray(0)
   }
-
-  // Public implicit to replace method overloading
-  implicit def vector2SeqToFloatSeq(vectors : Seq[Vector2f]) : Seq[Float] = {
-	val array = new Array[Float](vectors.size * 2)
-
-	var i = 0
-	for (vector <- vectors) {
-	  array(i) = vector.x
-	  i += 1
-	  array(i) = vector.y
-	  i += 1
-	}
-
-	array
-  }
-  
-  // Public implicit to replace method overloading
-  implicit def vector3SeqToFloatSeq(vectors : Seq[Vector3f]) : Seq[Float] = {
-	val array = new Array[Float](vectors.size * 3)
-
-	var i = 0
-	for (vector <- vectors) {
-	  array(i) = vector.x
-	  i += 1
-	  array(i) = vector.y
-	  i += 1
-	  array(i) = vector.z
-	  i += 1
-	}
-
-	array
-  }
-  
-  // Public implicit to replace method overloading
-  implicit def vector4SeqToFloatSeq(vectors : Seq[Vector4f]) : Seq[Float] = {
-	val array = new Array[Float](vectors.size * 4)
-
-	var i = 0
-	for (vector <- vectors) {
-	  array(i) = vector.x
-	  i += 1
-	  array(i) = vector.y
-	  i += 1
-	  array(i) = vector.z
-	  i += 1
-	  array(i) = vector.w
-	  i += 1
-	}
-
-	array
-  }
-
-  // Public implicit to replace method overloading
-  implicit def vector2ToFloatSeq(vector : Vector2f) : Seq[Float] = Array(vector.x, vector.y)
-  // Public implicit to replace method overloading
-  implicit def vector3ToFloatSeq(vector : Vector3f) : Seq[Float] = Array(vector.x, vector.y, vector.z)
-  // Public implicit to replace method overloading
-  implicit def vector4ToFloatSeq(vector : Vector4f) : Seq[Float] = Array(vector.x, vector.y, vector.z, vector.w)
 
   private implicit def floatSeqfToFloatBuffer(floats : Seq[Float]) : FloatBuffer = {
 	val buffer = BufferUtils.createFloatBuffer(floats.length * 4)
@@ -288,8 +224,8 @@ class GLBatch extends GLBatchBase {
 
   protected var	bBatchDone = false;				// Batch has been built
 
-  protected var pVerts : List[Vector3f] = Nil // Array of vertices
-  protected var pNormals : List[Vector3f] = Nil // Array of normals
-  protected var pColors : List[Vector4f] = Nil // Array of colors
-  protected var pTexCoords : Array[List[Vector2f]] = Array(Nil, Nil, Nil, Nil) // Array of texture coordinates
+  protected var pVerts : List[M3DVector3f] = Nil // Array of vertices
+  protected var pNormals : List[M3DVector3f] = Nil // Array of normals
+  protected var pColors : List[M3DVector4f] = Nil // Array of colors
+  protected var pTexCoords : Array[List[M3DVector2f]] = Array(Nil, Nil, Nil, Nil) // Array of texture coordinates
 }

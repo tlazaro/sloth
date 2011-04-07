@@ -168,7 +168,7 @@
 			<plugin>
 				<groupId>com.googlecode.mavennatives</groupId>
 				<artifactId>maven-nativedependencies-plugin</artifactId>
-				<version>0.0.2</version>
+				<version>0.0.5</version>
 				<executions>
 					<execution>
 						<id>unpacknatives</id>
@@ -194,6 +194,18 @@
 						<exclude>resources/</exclude>
 					</excludes>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.2</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			
 			<!--Does this work? remove this??-->

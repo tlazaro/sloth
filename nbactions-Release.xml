@@ -3,7 +3,6 @@
 	<action>
 		<actionName>run.single.main</actionName>
 		<goals>
-			<goal>-o</goal>
 			<goal>process-classes</goal>
 			<goal>org.codehaus.mojo:exec-maven-plugin:1.1.1:exec</goal>
 		</goals>
@@ -16,7 +15,6 @@
 	<action>
 		<actionName>run</actionName>
 		<goals>
-			<goal>-o</goal>
 			<goal>process-classes</goal>
 			<goal>org.codehaus.mojo:exec-maven-plugin:1.1.1:exec</goal>
 		</goals>
@@ -28,7 +26,6 @@
 	<action>
 		<actionName>debug</actionName>
 		<goals>
-			<goal>-o</goal>
 			<goal>process-classes</goal>
 			<goal>org.codehaus.mojo:exec-maven-plugin:1.1.1:exec</goal>
 		</goals>
@@ -41,7 +38,6 @@
 	<action>
 		<actionName>debug.single.main</actionName>
 		<goals>
-			<goal>-o</goal>
 			<goal>process-classes</goal>
 			<goal>org.codehaus.mojo:exec-maven-plugin:1.1.1:exec</goal>
 		</goals>

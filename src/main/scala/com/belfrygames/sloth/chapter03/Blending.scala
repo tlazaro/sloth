@@ -1,6 +1,7 @@
 // Blending.scala
 package com.belfrygames.sloth.chapter03
 
+import com.belfrygames.sloth.Math3D.M3DVector
 import com.belfrygames.sloth._
 import com.belfrygames.sloth.GLT_STOCK_SHADER._
 import com.belfrygames.sloth.GLT_SHADER_ATTRIBUTE._
@@ -9,7 +10,6 @@ import com.belfrygames.sloth.glut._
 import com.belfrygames.sloth.glut.Internal._
 
 import org.lwjgl.opengl.GL11._
-import org.lwjgl.util.vector.Vector4f
 
 // Move a Block based on arrow key movements,
 // Blend it with background blocks
@@ -133,10 +133,10 @@ object Blending {
 	// Clear the window with current clearing color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT)
 
-	val vRed = new Vector4f(1.0f, 0.0f, 0.0f, 0.5f )
-    val vGreen = new Vector4f( 0.0f, 1.0f, 0.0f, 1.0f )
-    val vBlue = new Vector4f( 0.0f, 0.0f, 1.0f, 1.0f )
-    val vBlack = new Vector4f( 0.0f, 0.0f, 0.0f, 1.0f )
+	val vRed = M3DVector(1.0f, 0.0f, 0.0f, 0.5f )
+    val vGreen = M3DVector( 0.0f, 1.0f, 0.0f, 1.0f )
+    val vBlue = M3DVector( 0.0f, 0.0f, 1.0f, 1.0f )
+    val vBlack = M3DVector( 0.0f, 0.0f, 0.0f, 1.0f )
 
 
     shaderManager.UseStockShader(GLT_SHADER_IDENTITY, vGreen)

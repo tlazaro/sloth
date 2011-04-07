@@ -1,8 +1,7 @@
 package com.belfrygames.sloth
 
-import org.lwjgl.util.vector.Vector3f
-import org.lwjgl.util.vector.Vector2f
-
+import com.belfrygames.sloth.Math3D.M3DVector2f
+import com.belfrygames.sloth.Math3D.M3DVector3f
 import java.nio.IntBuffer
 import org.lwjgl.opengl.GL15._
 
@@ -34,7 +33,7 @@ class GLTriangleBatch extends GLBatchBase {
 //    pTexCoords = new M3DVector2f[nMaxIndexes];
   }
   
-  def AddTriangle(verts : (Vector3f, Vector3f, Vector3f), vNorms : (Vector3f, Vector3f, Vector3f), vTexCoords : (Vector2f, Vector2f, Vector2f)) {
+  def AddTriangle(verts : (M3DVector3f, M3DVector3f, M3DVector3f), vNorms : (M3DVector3f, M3DVector3f, M3DVector3f), vTexCoords : (M3DVector2f, M3DVector2f, M3DVector2f)) {
 
   }
   
@@ -52,9 +51,9 @@ class GLTriangleBatch extends GLBatchBase {
   }
 
   var pIndexes : List[Int] = _ // Array of indexes
-  var pVerts : List[Vector3f] = _ // Array of vertices
-  var pNorms : List[Vector3f] = _ // Array of normals
-  var pTexCoords : List[Vector2f] = _ // Array of texture coordinates
+  var pVerts : List[M3DVector3f] = _ // Array of vertices
+  var pNorms : List[M3DVector3f] = _ // Array of normals
+  var pTexCoords : List[M3DVector2f] = _ // Array of texture coordinates
 
 
   var nMaxIndexes : Int = 0         // Maximum workspace

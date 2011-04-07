@@ -1,6 +1,9 @@
 package com.belfrygames.sloth
 
 import com.belfrygames.sloth.GLTools._
+import com.belfrygames.sloth.Math3D.M3DMatrix44f
+import com.belfrygames.sloth.Math3D.M3DVector4f
+import com.belfrygames.sloth.Math3D.M3DVector3f
 import com.belfrygames.sloth.glut._
 import scala.collection.mutable.Map
 
@@ -8,9 +11,6 @@ import java.nio.FloatBuffer
 
 import org.lwjgl.opengl.GL20._
 
-import org.lwjgl.util.vector.Matrix4f
-import org.lwjgl.util.vector.Vector4f
-import org.lwjgl.util.vector.Vector3f
 import org.lwjgl.BufferUtils
 
 object GLT_STOCK_SHADER extends Enumeration {
@@ -68,19 +68,16 @@ object GLShaderManager {
 	buffer
   }
 
-  private implicit def matrix4fToFloatBuffer(matrix : Matrix4f) : FloatBuffer = {
-	getFloatBuffer(Array(matrix.m00, matrix.m01, matrix.m02, matrix.m03,
-						 matrix.m10, matrix.m11, matrix.m12, matrix.m13,
-						 matrix.m20, matrix.m21, matrix.m22, matrix.m23,
-						 matrix.m30, matrix.m31, matrix.m32, matrix.m33))
+  private implicit def matrix4fToFloatBuffer(matrix : M3DMatrix44f) : FloatBuffer = {
+	getFloatBuffer(matrix.array)
   }
 
-  private implicit def vector3fToFloatBuffer(vector : Vector3f) : FloatBuffer = {
-	getFloatBuffer(Array(vector.x, vector.y, vector.z))
+  private implicit def vector3fToFloatBuffer(vector : M3DVector3f) : FloatBuffer = {
+	getFloatBuffer(vector.array)
   }
 
-  private implicit def vector4fToFloatBuffer(vector : Vector4f) : FloatBuffer = {
-	getFloatBuffer(Array(vector.x, vector.y, vector.z, vector.w))
+  private implicit def vector4fToFloatBuffer(vector : M3DVector4f) : FloatBuffer = {
+	getFloatBuffer(vector.array)
   }
 
   def UseStockShader(nShaderID : GLT_STOCK_SHADER.Value, uniforms : Any*) : Int = {
@@ -90,11 +87,11 @@ object GLShaderManager {
 	// Set up the uniforms
 	var iTransform, iModelMatrix, iProjMatrix, iColor, iLight, iTextureUnit = 0
 	var iInteger = 0
-	var mvpMatrix : Matrix4f = null
-	var pMatrix : Matrix4f = null
-	var mvMatrix : Matrix4f = null
-	var vColor : Vector4f = null
-	var vLightPos : Vector3f = null
+	var mvpMatrix : M3DMatrix44f = null
+	var pMatrix : M3DMatrix44f = null
+	var mvMatrix : M3DMatrix44f = null
+	var vColor : M3DVector4f = null
+	var vLightPos : M3DVector3f = null
 
 	val va = new VarArgs(uniforms)
 
