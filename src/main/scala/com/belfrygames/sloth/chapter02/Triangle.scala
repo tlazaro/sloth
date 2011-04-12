@@ -57,8 +57,7 @@ object Triangle {
   }
 
   def main(args: Array[String]): Unit = {
-	if (args.size > 0)
-	  gltSetWorkingDirectory(args(0))
+	if (args.size > 0) gltSetWorkingDirectory(args(0))
 
 	glutInit(args)
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STENCIL)

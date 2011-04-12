@@ -69,10 +69,12 @@ object Math3D {
   }
 
   object M3DVector {
+	// Call to get an Array with initalized Vectors or Matrixes of the type you want ej val vecs : Array[Vector3f] = M3DVector.array(5)
+	// Scala type inference magic via implicits provides correct Array type
 	def array[T <: M3DVector[_]] (size : Int)(implicit man: Manifest[T]) : Array[T] = {
 	  val res = new Array[T](size)
 	  for (i <- 0 until res.length) {
-		res(i) =  man.erasure.newInstance.asInstanceOf[T] // Don't know why I need the asInstanceOf...
+		res(i) =  man.erasure.newInstance.asInstanceOf[T]
 	  }
 	  res
 	}
@@ -340,6 +342,11 @@ object Math3D {
   @inline def m3dScaleVector3(v : M3DVector4f, scale : Float) { v(0) *= scale; v(1) *= scale; v(2) *= scale; }
   @inline def m3dScaleVector3(v : M3DVector4d, scale : Double) { v(0) *= scale; v(1) *= scale; v(2) *= scale; }
 
+  @inline def m3dScaleVector3(v : M3DMatrix33f, index : Int, scale : Float) { v(index+0) *= scale; v(index+1) *= scale; v(index+2) *= scale; }
+  @inline def m3dScaleVector3(v : M3DMatrix33d, index : Int, scale : Double) { v(index+0) *= scale; v(index+1) *= scale; v(index+2) *= scale; }
+  @inline def m3dScaleVector3(v : M3DMatrix44f, index : Int, scale : Float) { v(index+0) *= scale; v(index+1) *= scale; v(index+2) *= scale; }
+  @inline def m3dScaleVector3(v : M3DMatrix44d, index : Int, scale : Double) { v(index+0) *= scale; v(index+1) *= scale; v(index+2) *= scale; }
+
   @inline def m3dScaleVector4(v : M3DVector4f, scale : Float) { v(0) *= scale; v(1) *= scale; v(2) *= scale; v(3) *= scale; }
   @inline def m3dScaleVector4(v : M3DVector4d, scale : Double) { v(0) *= scale; v(1) *= scale; v(2) *= scale; v(3) *= scale; }
 
@@ -402,6 +409,11 @@ object Math3D {
   @inline def m3dGetVectorLengthSquared3(u : M3DVector4f) : Float = { (u(0) * u(0)) + (u(1) * u(1)) + (u(2) * u(2)) }
   @inline def m3dGetVectorLengthSquared3(u : M3DVector4d) : Double = { (u(0) * u(0)) + (u(1) * u(1)) + (u(2) * u(2)); }
 
+  @inline def m3dGetVectorLengthSquared3(u : M3DMatrix33f, i : Int) : Float = { (u(i+0) * u(i+0)) + (u(i+1) * u(i+1)) + (u(i+2) * u(i+2)) }
+  @inline def m3dGetVectorLengthSquared3(u : M3DMatrix33d, i : Int) : Double = { (u(i+0) * u(i+0)) + (u(i+1) * u(i+1)) + (u(i+2) * u(i+2)); }
+  @inline def m3dGetVectorLengthSquared3(u : M3DMatrix44f, i : Int) : Float = { (u(i+0) * u(i+0)) + (u(i+1) * u(i+1)) + (u(i+2) * u(i+2)) }
+  @inline def m3dGetVectorLengthSquared3(u : M3DMatrix44d, i : Int) : Double = { (u(i+0) * u(i+0)) + (u(i+1) * u(i+1)) + (u(i+2) * u(i+2)); }
+
   //////////////////////////////////////////////////////////////////////////////////////
   // Get lenght of vector
   // Only for three component vectors.
@@ -411,6 +423,12 @@ object Math3D {
   @inline def m3dGetVectorLength3(u : M3DVector4f) : Float = sqrt(m3dGetVectorLengthSquared3(u)).toFloat
   @inline def m3dGetVectorLength3(u : M3DVector4d) : Double = sqrt(m3dGetVectorLengthSquared3(u));
 
+  @inline def m3dGetVectorLength3(u : M3DMatrix33f, index : Int) : Float = sqrt(m3dGetVectorLengthSquared3(u, index)).toFloat
+  @inline def m3dGetVectorLength3(u : M3DMatrix33d, index : Int) : Double = sqrt(m3dGetVectorLengthSquared3(u, index));
+
+  @inline def m3dGetVectorLength3(u : M3DMatrix44f, index : Int) : Float = sqrt(m3dGetVectorLengthSquared3(u, index)).toFloat
+  @inline def m3dGetVectorLength3(u : M3DMatrix44d, index : Int) : Double = sqrt(m3dGetVectorLengthSquared3(u, index));
+
   //////////////////////////////////////////////////////////////////////////////////////
   // Normalize a vector
   // Scale a vector to unit length. Easy, just scale the vector by it's length
@@ -418,6 +436,11 @@ object Math3D {
   @inline def m3dNormalizeVector3(u : M3DVector3d) { m3dScaleVector3(u, 1.0 / m3dGetVectorLength3(u)); }
   @inline def m3dNormalizeVector3(u : M3DVector4f) { m3dScaleVector3(u, 1.0f / m3dGetVectorLength3(u)); }
   @inline def m3dNormalizeVector3(u : M3DVector4d) { m3dScaleVector3(u, 1.0 / m3dGetVectorLength3(u)); }
+
+  @inline def m3dNormalizeVector3(u : M3DMatrix33f, index : Int) { m3dScaleVector3(u, index, 1.0f / m3dGetVectorLength3(u, index)); }
+  @inline def m3dNormalizeVector3(u : M3DMatrix33d, index : Int) { m3dScaleVector3(u, index, 1.0 / m3dGetVectorLength3(u, index)); }
+  @inline def m3dNormalizeVector3(u : M3DMatrix44f, index : Int) { m3dScaleVector3(u, index, 1.0f / m3dGetVectorLength3(u, index)); }
+  @inline def m3dNormalizeVector3(u : M3DMatrix44d, index : Int) { m3dScaleVector3(u, index, 1.0 / m3dGetVectorLength3(u, index)); }
 
 
   //////////////////////////////////////////////////////////////////////////////////////

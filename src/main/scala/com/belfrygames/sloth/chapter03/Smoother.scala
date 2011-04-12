@@ -2,7 +2,6 @@ package com.belfrygames.sloth.chapter03
 
 import com.belfrygames.sloth.Math3D.M3DVector
 import com.belfrygames.sloth.Math3D.M3DVector3f
-import com.belfrygames.sloth.Math3D.M3DVector4f
 import com.belfrygames.sloth._
 import com.belfrygames.sloth.GLT_STOCK_SHADER._
 import com.belfrygames.sloth.GLT_SHADER_ATTRIBUTE._
@@ -112,8 +111,8 @@ object Smoother {
 	res
   }
 
-  implicit def vector4fArrayToFloatSeq (a : Array[M3DVector4f]) : Seq[Float] = {
-	val length = 4
+  implicit def vector4fArrayToFloatArray (a : Array[M3DVector3f]) : Array[Float] = {
+	val length = 3
 	val res = new Array[Float](a.length * length)
 
 	for (i <- 0 until a.length) {
@@ -238,6 +237,12 @@ object Smoother {
 //	glutAddMenuEntry("Antialiased Rendering",1);
 //	glutAddMenuEntry("Normal Rendering",2);
 //	glutAttachMenu(GLUT_RIGHT_BUTTON);
+
+	// TODO Remove Temporary avoidance of menu
+	glutSpecialFunc((key : Int, x : Int, y :Int) => key match {
+		case GLUT_KEY_F1 => ProcessMenu(1)
+		case GLUT_KEY_F2 => ProcessMenu(2)
+	  })
 
 	glutReshapeFunc(ChangeSize);
 	glutDisplayFunc(RenderScene);

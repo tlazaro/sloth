@@ -38,7 +38,7 @@ class GLFrustum private() {
   protected val farLR = new M3DVector4f
 
   // Transformed corners of Frustum
-  protected  val nearULT = new M3DVector4f
+  protected val nearULT = new M3DVector4f
   protected val nearLLT = new M3DVector4f
   protected val nearURT = new M3DVector4f
   protected val nearLRT = new M3DVector4f

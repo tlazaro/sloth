@@ -62,7 +62,7 @@ object GLShaderManager {
   private val SHORT_SIZE_BYTES = 2
 
   def getFloatBuffer(a : Array[Float]) : FloatBuffer = {
-	val buffer = BufferUtils.createFloatBuffer(a.length * FLOAT_SIZE_BYTES)
+	val buffer = BufferUtils.createFloatBuffer(a.length)
 	buffer.put(a)
 	buffer.flip()
 	buffer

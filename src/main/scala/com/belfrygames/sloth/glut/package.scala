@@ -337,12 +337,14 @@ package object glut {
   }
 
   object WindowHandler extends ComponentListener {
-	var mainWindow : Option[SFG_Window] = None
-	var reshapeFunc : Option[(Int, Int) => Unit] = None
-	var displayFunc : Option[() => Unit] = None
-	var specialFunc : Option[(Int, Int, Int) => Unit] = None
+	var mainWindow : SFG_Window = _
+	var reshapeFunc : (Int, Int) => Unit = (x : Int, y : Int) => ()
+	var displayFunc : () => Unit = () => ()
+	var specialFunc : (Int, Int, Int) => Unit = (key : Int, x : Int, y : Int) => ()
+	var keyboardFunc : (Int, Int, Int) => Unit = (key : Int, x : Int, y : Int) => ()
 
 	var resizePending = true
+	var dirty = true
 	
 	def componentHidden(e : ComponentEvent) {
 	  println(e.getComponent().getClass().getName() + " --- Hidden");
@@ -372,7 +374,7 @@ package object glut {
   def fgCreateWindow(parent : SFG_Window, title : String, positionUse : Boolean, x : Int, y : Int, sizeUse : Boolean, w : Int, h : Int, gameMode : Boolean, isMenu : Boolean) : SFG_Window = {
 	val window = new SFG_Window(0)
 
-	WindowHandler.mainWindow = Some(window)
+	WindowHandler.mainWindow = window
 
     window.f.setSize(w, h)
 	window.f.setTitle(title)
@@ -397,21 +399,24 @@ package object glut {
   }
 
   def glutReshapeFunc(func : (Int, Int) => Unit) {
-	WindowHandler.reshapeFunc = Some(func)
+	WindowHandler.reshapeFunc = func
   }
 
   def glutDisplayFunc(func : () => Unit) {
-	WindowHandler.displayFunc = Some(func)
+	WindowHandler.displayFunc = func
   }
 
   def glutSpecialFunc(func : (Int, Int, Int) => Unit) {
-	WindowHandler.specialFunc = Some(func)
+	WindowHandler.specialFunc = func
   }
 
-  var keepAlive = true
+  def glutKeyboardFunc(func : (Int, Int, Int) => Unit) {
+	WindowHandler.keyboardFunc = func
+  }
+
   var lastRender = 0L
 
-  private def keyboardToGlut(key : Int) = {
+  private def keyboardToSpecialKeyGlut(key : Int) = {
 	import org.lwjgl.input.Keyboard._
 	key match {
 	  case KEY_F1 => GLUT_KEY_F1
@@ -439,16 +444,26 @@ package object glut {
 	}
   }
 
+   private def keyboardToKeyGlut(key : Int) = {
+	import org.lwjgl.input.Keyboard._
+	key match {
+	  case _ => 0
+	}
+   }
+
   def glutMainLoop() {
-	for (window <- WindowHandler.mainWindow)
-	  window.f.addComponentListener(WindowHandler)
+	if (WindowHandler.mainWindow == null) {
+	  println("Main Window not Initalized, exiting rendering loop.")
+	  return
+	}
+
+	val window = WindowHandler.mainWindow
 
 	// Rendering
-	while (keepAlive) {
+	while (!GLDisplay.isCloseRequested()) {
 	  if (WindowHandler.resizePending) {
-		for (window <- WindowHandler.mainWindow; func <- WindowHandler.reshapeFunc) {
-		  val w = window.f.getWidth
-		  val h = window.f.getHeight
+		val w = window.f.getWidth
+		val h = window.f.getHeight
 
 //		  Re-create window, does not seem necesarry, crash ocurrs anyway after several resizings
 //		  GLDisplay.destroy
@@ -461,40 +476,49 @@ package object glut {
 //		  GLDisplay.setParent(window.c)
 //		  GLDisplay.create()
 		  
-		  func.apply(w, h)
-		}
+		WindowHandler.reshapeFunc(w, h)
 
 		WindowHandler.resizePending = false
+		WindowHandler.dirty = true
 	  }
-	  GLDisplay.update()
+	  
+	  if (WindowHandler.dirty) {
+		WindowHandler.dirty = false
 
-	  if (GLDisplay.isCloseRequested()) {
-		keepAlive = false
+		WindowHandler.displayFunc()
+		GLDisplay.update()
+
+//		val currentRender = System.nanoTime()
+//		val time = (currentRender - lastRender) / 1000000000.0
+//		lastRender = currentRender
+	  } else {
+		GLDisplay.processMessages() // update calls processMessages
 	  }
 
-	  val currentRender = System.nanoTime()
-	  val time = (currentRender - lastRender) / 1000000000.0
-
-	  for (window <- WindowHandler.mainWindow) {
-		for (f <- WindowHandler.displayFunc) f.apply()
-
-		for (f <- WindowHandler.specialFunc) {
-		  while (Keyboard.next()) {
-			// Is this what it's supposed to send???
-			f.apply(keyboardToGlut(Keyboard.getEventKey), Mouse.getX, Mouse.getY)
-		  }
+	  while (Keyboard.next()) {
+		// Is this what it's supposed to send???
+		val key = keyboardToSpecialKeyGlut(Keyboard.getEventKey)
+		if (key > 0) {
+		  WindowHandler.specialFunc(key, Mouse.getX, Mouse.getY)
+		} else {
+		  if (!Keyboard.isRepeatEvent)
+			WindowHandler.keyboardFunc(Keyboard.getEventKey, Mouse.getX, Mouse.getY)
 		}
 	  }
-
-	  lastRender = currentRender
 	}
   }
 
   def glutSwapBuffers() {
-//	GLDisplay.swapBuffers // <- should not be called
+//	GLDisplay.swapBuffers // <- should not be called, called by GLDisplay.update()
   }
 
   def glutPostRedisplay() {
-	GLDisplay.update() // <- is this ok?
+	WindowHandler.dirty = true
   }
+
+  def glutSetWindowTitle(title : String) {
+	if (WindowHandler.mainWindow.f != null)
+	  WindowHandler.mainWindow.f.setTitle(title)
+  }
+
 }
