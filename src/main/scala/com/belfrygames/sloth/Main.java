@@ -32,10 +32,11 @@ public class Main {
 		examples.add(new Example("3", "GeoTest", "", "", ExampleStatus.UNKOWN, "com.belfrygames.sloth.chapter03.GeoTest"));
 		examples.add(new Example("3", "Primitives", "", "", ExampleStatus.UNKOWN, "com.belfrygames.sloth.chapter03.Primitives"));
 		examples.add(new Example("3", "Scissor", "", "", ExampleStatus.UNKOWN, "com.belfrygames.sloth.chapter03.Scissor"));
-		examples.add(new Example("3", "Smoother", "Shows antialiasing", "F1, F2 to change modes", ExampleStatus.ALMOST_PERFECT, "com.belfrygames.sloth.chapter03.Smoother"));
+		examples.add(new Example("3", "Smoother", "Shows antialiasing", "F1, F2 to change modes. Should use GLUT to display menu.", ExampleStatus.ALMOST_PERFECT, "com.belfrygames.sloth.chapter03.Smoother"));
 
 		examples.add(new Example("4", "Move", "Moving square with ProjectModel matrix", "Move with arrow keys.", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter04.Move"));
-		examples.add(new Example("4", "Objects", "Show basic shapes", "Arrow Keys to rotate, press D (should be SpaceBar) to change object. Key input is a bit messed up.", ExampleStatus.ALMOST_PERFECT, "com.belfrygames.sloth.chapter04.Objects"));
+		examples.add(new Example("4", "Objects", "Show basic shapes", "Arrow Keys to rotate, press SpaceBar to change object.", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter04.Objects"));
+		examples.add(new Example("4", "SphereWorld", "", "", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter04.SphereWorld"));
 	}
 
 	public void run() {
@@ -51,7 +52,7 @@ public class Main {
 		// create the data model and the JTable
 		final JTable table = new JTable(data, headings);
 
-		JFrame frame = new JFrame("Sloth Examples v0.1");
+		final JFrame frame = new JFrame("Sloth Examples v0.1");
 		frame.setLayout(new BorderLayout());
 		frame.getContentPane().add(new JScrollPane(table), BorderLayout.NORTH);
 		JButton button = new JButton("RUN!");
@@ -63,6 +64,7 @@ public class Main {
 			public void actionPerformed(ActionEvent ae) {
 				int row = table.getSelectedRow();
 				if (row >= 0) {
+					frame.setVisible(false);
 					new Thread(examples.get(row)).start();
 				}
 			}

@@ -15,6 +15,25 @@ import com.belfrygames.sloth.GLT_STOCK_SHADER._
 import com.belfrygames.sloth.GLT_SHADER_ATTRIBUTE._
 
 class GLBatch extends GLBatchBase {
+  protected var primitiveType = 0		// What am I drawing....
+
+  protected var uiVertexArray : Int = _
+  protected var uiNormalArray : Int = _
+  protected var uiColorArray : Int = _
+  protected var uiTextureCoordArray : Array[Int] = _
+  protected var vertexArrayObject = 0
+
+  protected var nVertsBuilding = 0			// Building up vertexes counter (immediate mode emulator)
+  protected var nNumVerts = 0				// Number of verticies in this batch
+  protected var nNumTextureUnits = 0		// Number of texture coordinate sets
+
+  protected var	bBatchDone = false;				// Batch has been built
+
+  protected var pVerts : M3DVector3fByteBuffer = null // Array of vertices
+  protected var pNormals : M3DVector3fByteBuffer = null // Array of normals
+  protected var pColors : M3DVector4fByteBuffer = null // Array of colors
+  protected var pTexCoords : Array[M3DVector2fByteBuffer] = null // Array of texture coordinates
+  
   override def finalize() {
 	// Vertex buffer objects
 	if(uiVertexArray != 0)
@@ -28,6 +47,8 @@ class GLBatch extends GLBatchBase {
 
 	for (array <- uiTextureCoordArray)
 	  glDeleteBuffers(array)
+
+	glDeleteVertexArrays(vertexArrayObject);
   }
 
   // Start populating the array
@@ -84,7 +105,7 @@ class GLBatch extends GLBatchBase {
 	// Set up the vertex array object
 	glBindVertexArray(vertexArrayObject)
 
-	if(uiVertexArray !=0) {
+	if(uiVertexArray != 0) {
 	  glEnableVertexAttribArray(GLT_ATTRIBUTE_VERTEX)
 	  glBindBuffer(GL_ARRAY_BUFFER, uiVertexArray)
 	  glVertexAttribPointer(GLT_ATTRIBUTE_VERTEX, 3, GL_FLOAT, false, 0, 0)
@@ -205,7 +226,7 @@ class GLBatch extends GLBatchBase {
 	if(uiVertexArray == 0) {	// Nope, we need to create it
 	  uiVertexArray = glGenBuffers();
 	  glBindBuffer(GL_ARRAY_BUFFER, uiVertexArray);
-	  glBufferData(GL_ARRAY_BUFFER, 0, GL_DYNAMIC_DRAW);
+	  glBufferData(GL_ARRAY_BUFFER, 4 * 3 * nNumVerts, GL_DYNAMIC_DRAW);
 	}
 
 	// Now see if it's already mapped, if not, map it
@@ -361,58 +382,45 @@ class GLBatch extends GLBatchBase {
 	pTexCoords(texture)(nVertsBuilding) = vTexCoord
   }
 
-  protected var primitiveType = 0		// What am I drawing....
-
-  protected var uiVertexArray : Int = _
-  protected var uiNormalArray : Int = _
-  protected var uiColorArray : Int = _
-  protected var uiTextureCoordArray : Array[Int] = _
-  protected var vertexArrayObject = 0
-
-  protected var nVertsBuilding = 0			// Building up vertexes counter (immediate mode emulator)
-  protected var nNumVerts = 0				// Number of verticies in this batch
-  protected var nNumTextureUnits = 0		// Number of texture coordinate sets
-
-  protected var	bBatchDone = false;				// Batch has been built
-
   class M3DVector2fByteBuffer {
 	var buffer : ByteBuffer = null
 
+	@inline def floatToByteIndex(nVert : Int, idx : Int = 0) = 4 * ((nVert * 2) + idx)
+
 	// Vert is index of the vertex, idx if coord inside the vertex
-	def update (vert : Int, idx : Int, value : Float) = buffer.putFloat((vert * 2) + idx, value)
+	def update (vert : Int, idx : Int, value : Float) = buffer.putFloat(floatToByteIndex(vert, idx), value)
 	def update (vert : Int, value : M3DVector2f) {
-	  buffer.putFloat((vert * 2), value(0))
-	  buffer.putFloat((vert * 2) + 1, value(1))
+	  buffer.putFloat(floatToByteIndex(vert), value(0))
+	  buffer.putFloat(value(1))
 	}
   }
 
   class M3DVector3fByteBuffer {
 	var buffer : ByteBuffer = null
 
+	@inline def floatToByteIndex(nVert : Int, idx : Int = 0) = 4 * ((nVert * 3) + idx)
+
 	// Vert is index of the vertex, idx if coord inside the vertex
-	def update (vert : Int, idx : Int, value : Float) = buffer.putFloat((vert * 3) + idx, value)
+	def update (vert : Int, idx : Int, value : Float) = buffer.putFloat(floatToByteIndex(vert, idx), value)
 	def update (vert : Int, value : M3DVector3f) {
-	  buffer.putFloat((vert * 3), value(0))
-	  buffer.putFloat((vert * 3) + 1, value(1))
-	  buffer.putFloat((vert * 3) + 2, value(2))
+	  buffer.putFloat(floatToByteIndex(vert), value(0))
+	  buffer.putFloat(value(1))
+	  buffer.putFloat(value(2))
 	}
   }
 
   class M3DVector4fByteBuffer {
 	var buffer : ByteBuffer = null
 
+	@inline def floatToByteIndex(nVert : Int, idx : Int = 0) = 4 * ((nVert * 3) + idx)
+
 	// Vert is index of the vertex, idx if coord inside the vertex
-	def update (vert : Int, idx : Int, value : Float) = buffer.putFloat((vert * 4) + idx, value)
+	def update (vert : Int, idx : Int, value : Float) = buffer.putFloat(floatToByteIndex(vert, idx), value)
 	def update (vert : Int, value : M3DVector4f) {
-	  buffer.putFloat((vert * 4), value(0))
-	  buffer.putFloat((vert * 4) + 1, value(1))
-	  buffer.putFloat((vert * 4) + 2, value(2))
-	  buffer.putFloat((vert * 4) + 3, value(3))
+	  buffer.putFloat(floatToByteIndex(vert), value(0))
+	  buffer.putFloat(value(1))
+	  buffer.putFloat(value(2))
+	  buffer.putFloat(value(3))
 	}
   }
-
-  protected var pVerts : M3DVector3fByteBuffer = null // Array of vertices
-  protected var pNormals : M3DVector3fByteBuffer = null // Array of normals
-  protected var pColors : M3DVector4fByteBuffer = null // Array of colors
-  protected var pTexCoords : Array[M3DVector2fByteBuffer] = null // Array of texture coordinates
 }

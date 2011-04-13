@@ -121,6 +121,8 @@ package object glut {
 	  fgState.ProgramName = args(0)
 	}
 
+	Keyboard.enableRepeatEvents(true)
+
 	fgCreateStructure();
 
 	/* Get start time */
@@ -385,6 +387,8 @@ package object glut {
 
 	window.f.setVisible(true)
 
+	window.f.pack
+
 	GLDisplay.setFullscreen(false)
 	GLDisplay.setVSyncEnabled(false)
 	GLDisplay.setParent(window.c)
@@ -444,12 +448,12 @@ package object glut {
 	}
   }
 
-   private def keyboardToKeyGlut(key : Int) = {
+  private def keyboardToKeyGlut(key : Int) = {
 	import org.lwjgl.input.Keyboard._
 	key match {
 	  case _ => 0
 	}
-   }
+  }
 
   def glutMainLoop() {
 	if (WindowHandler.mainWindow == null) {
@@ -496,13 +500,15 @@ package object glut {
 	  }
 
 	  while (Keyboard.next()) {
-		// Is this what it's supposed to send???
-		val key = keyboardToSpecialKeyGlut(Keyboard.getEventKey)
-		if (key > 0) {
-		  WindowHandler.specialFunc(key, Mouse.getX, Mouse.getY)
-		} else {
-		  if (!Keyboard.isRepeatEvent)
-			WindowHandler.keyboardFunc(Keyboard.getEventKey, Mouse.getX, Mouse.getY)
+		if (Keyboard.getEventKeyState || Keyboard.isRepeatEvent) {
+		  // Is this what it's supposed to send???
+		  val keyEvent = Keyboard.getEventKey
+		  val key = keyboardToSpecialKeyGlut(keyEvent)
+		  if (key > 0) {
+			WindowHandler.specialFunc(key, Mouse.getX, Mouse.getY)
+		  } else {
+			WindowHandler.keyboardFunc(Keyboard.getEventCharacter.toInt, Mouse.getX, Mouse.getY)
+		  }
 		}
 	  }
 	}

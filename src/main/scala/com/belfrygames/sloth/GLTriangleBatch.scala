@@ -80,8 +80,6 @@ class GLTriangleBatch extends GLBatchBase {
 		pTexCoords(nNumVerts).copy(vTexCoords(iVertex))
 		pIndexes(nNumIndexes) = nNumVerts
 
-		println("x:" + pVerts(nNumVerts)(0) + " y:" + pVerts(nNumVerts)(1) + " z: " + pVerts(nNumVerts)(2))
-
 		nNumIndexes += 1
 		nNumVerts += 1
 	  }
@@ -134,8 +132,6 @@ class GLTriangleBatch extends GLBatchBase {
   }
   
   def End(){
-	println(nNumVerts)
-
 	// Create the master vertex array object
 	vertexArrayBufferObject = glGenVertexArrays();
 	glBindVertexArray(vertexArrayBufferObject);

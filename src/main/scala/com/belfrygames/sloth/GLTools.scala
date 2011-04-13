@@ -572,8 +572,8 @@ object GLTools {
   }
 
 
-///////////////////////////////////////////////////////////////////////////////////////
-// Make a cube, centered at the origin, and with a specified "radius"
+  ///////////////////////////////////////////////////////////////////////////////////////
+  // Make a cube, centered at the origin, and with a specified "radius"
   def gltMakeCube(cubeBatch : GLBatch, fRadius : Float) {
     cubeBatch.Begin(GL_TRIANGLES, 36, 1);
 

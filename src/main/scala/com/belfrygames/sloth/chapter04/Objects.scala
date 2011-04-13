@@ -12,7 +12,7 @@ import org.lwjgl.opengl.GL11._
 
 object Objects {
   /////////////////////////////////////////////////////////////////////////////////
-// An assortment of needed classes
+  // An assortment of needed classes
   val shaderManager = GLShaderManager
   val modelViewMatrix = new GLMatrixStack
   val projectionMatrix = new GLMatrixStack
@@ -162,9 +162,9 @@ object Objects {
     glutPostRedisplay();
   }
 
-///////////////////////////////////////////////////////////////////////////////
-// Window has changed size, or has just been created. In either case, we need
-// to use the window dimensions to set the viewport and the projection matrix.
+  ///////////////////////////////////////////////////////////////////////////////
+  // Window has changed size, or has just been created. In either case, we need
+  // to use the window dimensions to set the viewport and the projection matrix.
   def ChangeSize(w : Int, h : Int)   {
 	glViewport(0, 0, w, h);
 	viewFrustum.SetPerspective(35.0f, w.toFloat / h.toFloat, 1.0f, 500.0f);
@@ -172,8 +172,8 @@ object Objects {
 	modelViewMatrix.LoadIdentity();
   }
 
-///////////////////////////////////////////////////////////////////////////////
-// Main entry point for GLUT based programs
+  ///////////////////////////////////////////////////////////////////////////////
+  // Main entry point for GLUT based programs
  def main(args: Array[String]): Unit = {
 	if (args.size > 0) gltSetWorkingDirectory(args(0))
 
