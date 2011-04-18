@@ -25,7 +25,7 @@ public class Main {
 	final ArrayList<Example> examples = new ArrayList<Example>();
 
 	public Main() {
-		examples.add(new Example("1", "Block", "", "", ExampleStatus.PENDING, "com.belfrygames.sloth.chapter01.Block"));
+		examples.add(new Example("1", "Block", "", "", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter01.Block"));
 
 		examples.add(new Example("2", "Bounce", "Bouncing box", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter02.Bounce"));
 		examples.add(new Example("2", "Move", "Moving rectangle", "Use arrow keys", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter02.Move"));
@@ -34,7 +34,7 @@ public class Main {
 		examples.add(new Example("3", "Blending", "", "", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter03.Blending"));
 		examples.add(new Example("3", "GeoTest", "", "Use arrow keys to move, F1-F5 for different effects. Should use GLUT to display menu.", ExampleStatus.ALMOST_PERFECT, "com.belfrygames.sloth.chapter03.GeoTest"));
 		examples.add(new Example("3", "Primitives", "", "", ExampleStatus.PENDING, "com.belfrygames.sloth.chapter03.Primitives"));
-		examples.add(new Example("3", "Scissor", "", "", ExampleStatus.UNKOWN, "com.belfrygames.sloth.chapter03.Scissor"));
+		examples.add(new Example("3", "Scissor", "", "", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter03.Scissor"));
 		examples.add(new Example("3", "Smoother", "Shows antialiasing", "F1, F2 to change modes. Should use GLUT to display menu.", ExampleStatus.ALMOST_PERFECT, "com.belfrygames.sloth.chapter03.Smoother"));
 
 		examples.add(new Example("4", "ModelViewProjection", "", "", ExampleStatus.PENDING, "com.belfrygames.sloth.chapter04.ModelViewProjection"));

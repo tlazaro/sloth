@@ -6,7 +6,6 @@ import java.awt.event.ComponentEvent
 import java.awt.event.ComponentListener
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
-import java.awt.event.WindowFocusListener
 import javax.swing.JFrame
 
 import org.lwjgl.input.Keyboard
@@ -483,18 +482,18 @@ package object glut {
 		val h = window.f.getContentPane.getHeight
 
 		// Re-create window, does not seem necesary, crash ocurrs anyway after several resizings
-		GLDisplay.destroy
-
-		window.f.remove(window.c)
-		window.c = new Canvas
+//		GLDisplay.destroy
+//
+//		window.f.remove(window.c)
+//		window.c = new Canvas
 		window.c.setSize(w, h)
 		window.c.setPreferredSize(window.c.getSize)
-		window.f.add(BorderLayout.CENTER, window.c)
+//		window.f.add(BorderLayout.CENTER, window.c)
 
 		window.f.pack
 
-		GLDisplay.setParent(window.c)
-		GLDisplay.create()
+//		GLDisplay.setParent(window.c)
+//		GLDisplay.create()
 
 		WindowHandler.reshapeFunc(w, h)
 

@@ -1,8 +1,8 @@
 package com.belfrygames.sloth.chapter05
 
-import com.belfrygames.sloth.Math3D._
 import com.belfrygames.sloth._
 import com.belfrygames.sloth.IntArray._
+import com.belfrygames.sloth.Math3D._
 import com.belfrygames.sloth.GLShaderManager._
 import com.belfrygames.sloth.GLTools._
 import com.belfrygames.sloth.glut._

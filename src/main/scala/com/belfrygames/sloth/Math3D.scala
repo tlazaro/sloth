@@ -1678,6 +1678,40 @@ object Math3D {
 	proj(15) = a * dx + b * dy + c * dz;
 	// Shadow matrix ready
   }
+  def m3dMakePlanarShadowMatrix(proj : M3DMatrix44f, planeEq : M3DVector4f, vLightPos : M3DVector4f) {
+	// These just make the code below easier to read. They will be
+	// removed by the optimizer.
+	val a = planeEq(0);
+	val b = planeEq(1);
+	val c = planeEq(2);
+	val d = planeEq(3);
+
+	val dx = -vLightPos(0);
+	val dy = -vLightPos(1);
+	val dz = -vLightPos(2);
+
+	// Now build the projection matrix
+	proj(0) = b * dy + c * dz;
+	proj(1) = -a * dy;
+	proj(2) = -a * dz;
+	proj(3) = 0.0f;
+
+	proj(4) = -b * dx;
+	proj(5) = a * dx + c * dz;
+	proj(6) = -b * dz;
+	proj(7) = 0.0f;
+
+	proj(8) = -c * dx;
+	proj(9) = -c * dy;
+	proj(10) = a * dx + b * dy;
+	proj(11) = 0.0f;
+
+	proj(12) = -d * dx;
+	proj(13) = -d * dy;
+	proj(14) = -d * dz;
+	proj(15) = a * dx + b * dy + c * dz;
+	// Shadow matrix ready
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   // Closest point on a ray to another point in space
