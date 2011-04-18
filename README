@@ -21,16 +21,33 @@ Could have been "Lwjgl Utility Scala Toolkit" ... Lust!
 "from Hell" stands for the massive suffering caused by C/C++ code conversion :P
 
 -------------------------------
+Status
+-------------------------------
+
+- All examples from the book until Chapter 5 are converted and fully working.
+- Most of the utility code is converted.
+- UI capabilities of Glut are not implemented at all and I don't think they will ever be. It's probablly better to use Nifty GUI for a real life applcation anyway.
+- Glew is not implemented at all but would be nice to have for real life applications.
+
+-------------------------------
+KNOWN BUGS - Fixes are welcome
+-------------------------------
+
+- There is some problem with the window resizing that I can't seem to completely fix, it may crash if the window is resized.
+- The closing of the application is not done properly, when the JFrame is closed it closes the app instead of finishing the game loop and let it close on it's own. 
+
+-------------------------------
 Setup
 -------------------------------
 
 This project uses Maven to build and manage dependencies because most IDEs don't understand SBT.
 SBT could be added but make sure you solve the natives and packaging.
 
+0. Make sure you have Scala installed working from the command line, otherwise code will not compile due to the configuration of the Fast Scala Compiler in the Maven pom.
 1. Checkout from GitHub
 2. Until LWJGL is in the standard Maven respository we must install it locally
 	a. Enter the lib/ folder and run mvn-lib-install.sh, or mvn-lib-install.sh if you are using Windows.
-3. Run the pom with mvn install and se if it's working
+3. Run the pom with "mvn run" using the Release profile and see if it's working
 
 The Release profile creates a complete .zip file ready to be run anywhere with a run.sh and run.bat files.
 
@@ -40,6 +57,12 @@ Sloth should actually be just a library to be included in a custom project, for 
 code to it to test your OpenGL skills. You can fork it using git to make it easier to track your own changes.
 
 We could later provide and archetype to make it easier to use.
+
+-------------------------------
+Source Code
+-------------------------------
+
+When editing source code use tab size 2 instead of 4 to see what I see when I develop. I use auto format but sometimes whitespace does not get fully converted to tabs and will not look nice with tab size of 4.
 
 -------------------------------
 IDE Support
