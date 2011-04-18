@@ -26,7 +26,7 @@ Status
 
 - All examples from the book until Chapter 5 are converted and fully working.
 - Most of the utility code is converted.
-- UI capabilities of Glut are not implemented at all and I don't think they will ever be. It's probablly better to use Nifty GUI for a real life applcation anyway.
+- UI capabilities of Glut are not implemented at all and I don't think they will ever be. It's probablly better to use Nifty GUI for a real life application anyway.
 - Glew is not implemented at all but would be nice to have for real life applications.
 
 -------------------------------
