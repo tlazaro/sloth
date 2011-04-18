@@ -4,6 +4,9 @@ import java.awt.BorderLayout
 import java.awt.Canvas
 import java.awt.event.ComponentEvent
 import java.awt.event.ComponentListener
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
+import java.awt.event.WindowFocusListener
 import javax.swing.JFrame
 
 import org.lwjgl.input.Keyboard
@@ -338,7 +341,7 @@ package object glut {
 	var c = new Canvas()
   }
 
-  object WindowHandler extends ComponentListener {
+  object WindowHandler extends WindowAdapter with ComponentListener {
 	var mainWindow : SFG_Window = _
 	var reshapeFunc : (Int, Int) => Unit = (x : Int, y : Int) => ()
 	var displayFunc : () => Unit = () => ()
@@ -349,28 +352,32 @@ package object glut {
 	var dirty = true
 	
 	def componentHidden(e : ComponentEvent) {
-	  println(e.getComponent().getClass().getName() + " --- Hidden");
-	  println(e)
+	  glutPostRedisplay
     }
 
     def componentMoved(e : ComponentEvent) {
-	  println(e.getComponent().getClass().getName() + " --- Moved");
-	  println(e)
+//	  println(e.getComponent().getClass().getName() + " --- Moved");
+//	  println(e)
     }
 
 	def componentResized(e : ComponentEvent) {
-	  println(e.getComponent().getClass().getName() + " --- Resized");
-	  println(e)
-
 	  // This is the AWT Thread, can't allow glViewport called from here
 	  // Do it from the main loop
 	  resizePending = true
     }
 
 	def componentShown(e : ComponentEvent) {
-	  println(e.getComponent().getClass().getName() + " --- Shown");
-	  println(e)
+	  glutPostRedisplay
     }
+
+	override def windowIconified(e : WindowEvent) {
+	  if (e.getID == WindowEvent.WINDOW_DEICONIFIED)
+		glutPostRedisplay
+	}
+
+	override def windowGainedFocus(e : WindowEvent) {
+	  glutPostRedisplay
+	}
   }
 
   def fgCreateWindow(parent : SFG_Window, title : String, positionUse : Boolean, x : Int, y : Int, sizeUse : Boolean, w : Int, h : Int, gameMode : Boolean, isMenu : Boolean) : SFG_Window = {
@@ -386,6 +393,10 @@ package object glut {
 	window.f.add(BorderLayout.CENTER, window.c)
 
 	window.f.setVisible(true)
+
+	window.f.addComponentListener(WindowHandler)
+	window.f.addWindowListener(WindowHandler)
+	window.f.addWindowFocusListener(WindowHandler)
 
 	window.f.pack
 
@@ -466,20 +477,25 @@ package object glut {
 	// Rendering
 	while (!GLDisplay.isCloseRequested()) {
 	  if (WindowHandler.resizePending) {
-		val w = window.f.getWidth
-		val h = window.f.getHeight
+		WindowHandler.resizePending = false
+		
+		val w = window.f.getContentPane.getWidth
+		val h = window.f.getContentPane.getHeight
 
-//		  Re-create window, does not seem necesarry, crash ocurrs anyway after several resizings
-//		  GLDisplay.destroy
-//
-//		  window.f.remove(window.c)
-//		  window.c = new Canvas()
-//		  window.c.setSize(w, h)
-//		  window.f.add(BorderLayout.CENTER, window.c)
-//
-//		  GLDisplay.setParent(window.c)
-//		  GLDisplay.create()
-		  
+		// Re-create window, does not seem necesary, crash ocurrs anyway after several resizings
+		GLDisplay.destroy
+
+		window.f.remove(window.c)
+		window.c = new Canvas
+		window.c.setSize(w, h)
+		window.c.setPreferredSize(window.c.getSize)
+		window.f.add(BorderLayout.CENTER, window.c)
+
+		window.f.pack
+
+		GLDisplay.setParent(window.c)
+		GLDisplay.create()
+
 		WindowHandler.reshapeFunc(w, h)
 
 		WindowHandler.resizePending = false
