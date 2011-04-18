@@ -93,6 +93,13 @@ class GLMatrixStack(private val stackDepth : Int = 64) {
 	m3dMatrixMultiply44(pStack(stackPointer), mTemp, mTemp2);
   }
 
+  def Translatev(vTranslate : M3DVector4f) {
+	m3dLoadIdentity44(mTemp2);
+	m3dSetMatrixColumn44(mTemp2, vTranslate, 3);
+	m3dCopyMatrix44(mTemp, pStack(stackPointer));
+	m3dMatrixMultiply44(pStack(stackPointer), mTemp, mTemp2);
+  }
+
 
   def Rotatev(angle : Float, vAxis : M3DVector3f) {
 	m3dRotationMatrix44(mTemp2, m3dDegToRad(angle).toFloat, vAxis(0), vAxis(1), vAxis(2));

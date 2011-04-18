@@ -47,10 +47,10 @@ public class Main {
 		examples.add(new Example("4", "SphereWorld3", "Rotating wire frame torus and sphere and spheres with camera", "Move with arrow keys", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter04.SphereWorld3"));
 		examples.add(new Example("4", "SphereWorld4", "Rotating torus and sphere and spheres with camera and point light", "Move with arrow keys", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter04.SphereWorld4"));
 
-		examples.add(new Example("5", "Anisotropic", "", "", ExampleStatus.PENDING, "com.belfrygames.sloth.chapter05.Anisotropic"));
-		examples.add(new Example("5", "Pyramid", "", "", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter05.Pyramid"));
-		examples.add(new Example("5", "SphereWorld", "", "", ExampleStatus.PENDING, "com.belfrygames.sloth.chapter05.SphereWorld"));
-		examples.add(new Example("5", "Tunnel", "", "", ExampleStatus.PENDING, "com.belfrygames.sloth.chapter05.Tunnel"));
+		examples.add(new Example("5", "Pyramid", "Basic Texturing Example", "Move with arrow keys.", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter05.Pyramid"));
+		examples.add(new Example("5", "Tunnel", "Texture Filtering Example", "F1 to F6 to change filtering modes. Move with arrow keys.", ExampleStatus.ALMOST_PERFECT, "com.belfrygames.sloth.chapter05.Tunnel"));
+		examples.add(new Example("5", "Anisotropic", "Texture Filtering Example with Anisotropic filtering", "F1 to F6 to change filtering modes. F7/F8 on/off anisotropic filtering. Move with arrow keys.", ExampleStatus.ALMOST_PERFECT, "com.belfrygames.sloth.chapter05.Anisotropic"));
+		examples.add(new Example("5", "SphereWorld", "General texturing example", "Move with arrow keys.", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter05.SphereWorld"));
 	}
 
 	public void run() {

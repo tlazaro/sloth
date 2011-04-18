@@ -128,7 +128,7 @@ object Pyramid {
 	pyramidBatch.End();
   }
 
-// Load a TGA as a 2D Texture. Completely initialize the state
+  // Load a TGA as a 2D Texture. Completely initialize the state
   def LoadTGATexture(szFileName : String, minFilter : Int, magFilter : Int, wrapMode : Int) : Boolean = {
 	// Read the texture bits
 	val (pBits, nWidth, nHeight, nComponents, eFormat) = gltReadTGABits(szFileName)
@@ -144,8 +144,6 @@ object Pyramid {
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glTexImage2D(GL_TEXTURE_2D, 0, nComponents, nWidth, nHeight, 0, eFormat, GL_UNSIGNED_BYTE, pBits);
-
-//    free(pBits);
 
     if(minFilter == GL_LINEAR_MIPMAP_LINEAR ||
        minFilter == GL_LINEAR_MIPMAP_NEAREST ||

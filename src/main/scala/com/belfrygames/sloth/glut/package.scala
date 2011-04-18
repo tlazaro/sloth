@@ -378,11 +378,11 @@ package object glut {
 
 	WindowHandler.mainWindow = window
 
-    window.f.setSize(w, h)
 	window.f.setTitle(title)
 	window.f.setLayout(new BorderLayout())
 
 	window.c.setSize(w, h)
+	window.c.setPreferredSize(window.c.getSize)
 	window.f.add(BorderLayout.CENTER, window.c)
 
 	window.f.setVisible(true)
