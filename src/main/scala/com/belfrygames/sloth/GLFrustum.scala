@@ -2,27 +2,19 @@ package com.belfrygames.sloth
 
 import com.belfrygames.sloth.Math3D._
 
-object GLFrustum {
-  def get () = {
-	val f = new GLFrustum
-	f.SetOrthographic(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f)
-	f
+class GLFrustum private(private[this] val ignore : Int) {
+  def this (fFov : Float, fAspect : Float, fNear : Float, fFar : Float) = {
+	this(0)
+	SetPerspective(fFov, fAspect, fNear, fFar)
   }
 
-  def get (fFov : Float, fAspect : Float, fNear : Float, fFar : Float) = {
-	val f = new GLFrustum
-	f.SetPerspective(fFov, fAspect, fNear, fFar)
-	f
+  def this (xMin : Float, xMax : Float, yMin : Float, yMax : Float, zMin : Float, zMax : Float) = {
+	this(0)
+	SetOrthographic(xMin, xMax, yMin, yMax, zMin, zMax)
   }
 
-  def get (xMin : Float, xMax : Float, yMin : Float, yMax : Float, zMin : Float, zMax : Float) = {
-	val f = new GLFrustum
-	f.SetOrthographic(xMin, xMax, yMin, yMax, zMin, zMax)
-	f
-  }
-}
+  def this() = this(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f)
 
-class GLFrustum private() {
    // The projection matrix for this frustum
   protected val projMatrix = new M3DMatrix44f;
 

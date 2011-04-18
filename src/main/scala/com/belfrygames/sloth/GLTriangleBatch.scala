@@ -1,14 +1,13 @@
 package com.belfrygames.sloth
 
 import com.belfrygames.sloth.Math3D._
-import java.nio.FloatBuffer
+import com.belfrygames.sloth.GLShaderManager._
 import java.nio.IntBuffer
 import org.lwjgl.opengl.GL11._
 import org.lwjgl.opengl.GL15._
 import org.lwjgl.opengl.GL20._
 import org.lwjgl.opengl.GL30._
 import org.lwjgl.BufferUtils
-import GLT_SHADER_ATTRIBUTE._
 
 class GLTriangleBatch extends GLBatchBase {
   val VERTEX_DATA =    0
@@ -30,12 +29,12 @@ class GLTriangleBatch extends GLBatchBase {
 
     // Allocate new blocks. In reality, the other arrays will be much shorter than the index array
     pIndexes = new Array(nMaxIndexes)
-    pVerts = M3DVector.array(nMaxIndexes)
-    pNorms = M3DVector.array(nMaxIndexes)
-    pTexCoords = M3DVector.array(nMaxIndexes)
+    pVerts = new M3DVector3fArray(nMaxIndexes)
+    pNorms = new M3DVector3fArray(nMaxIndexes)
+    pTexCoords = new M3DVector2fArray(nMaxIndexes)
   }
 
-  def AddTriangle(verts : Array[M3DVector3f], vNorms : Array[M3DVector3f], vTexCoords : Array[M3DVector2f]) {
+  def AddTriangle(verts : M3DVector3fArray, vNorms : M3DVector3fArray, vTexCoords : M3DVector2fArray) {
 	val e = 0.00001f; // How small a difference to equate
 	//
     // First thing we do is make sure the normals are unit length!
@@ -86,12 +85,12 @@ class GLTriangleBatch extends GLBatchBase {
 	}
   }
 
-  implicit private def floatSeqfToFloatBuffer(floats : Array[Float]) : FloatBuffer = {
-	val buffer = BufferUtils.createFloatBuffer(floats.length)
-	buffer put floats
-	buffer.flip()
-	buffer
-  }
+//  implicit private def floatSeqfToFloatBuffer(floats : Array[Float]) : FloatBuffer = {
+//	val buffer = BufferUtils.createFloatBuffer(floats.length)
+//	buffer put floats
+//	buffer.flip()
+//	buffer
+//  }
 
   implicit private def floatSeqfToIntBuffer(ints : Array[Int]) : IntBuffer = {
 	val buffer = BufferUtils.createIntBuffer(ints.length)
@@ -100,37 +99,6 @@ class GLTriangleBatch extends GLBatchBase {
 	buffer
   }
 
-  implicit def vector4fArrayToFloatBuffer (a : Array[M3DVector4f]) : FloatBuffer = {
-	val length = 4
-	val res = new Array[Float](a.length * length)
-
-	for (i <- 0 until a.length) {
-	  Array.copy(a(i).array, 0, res, i*length, length)
-	}
-
-	floatSeqfToFloatBuffer(res)
-  }
-  implicit def vector3fArrayToFloatBuffer (a : Array[M3DVector3f]) : FloatBuffer = {
-	val length = 3
-	val res = new Array[Float](a.length * length)
-
-	for (i <- 0 until a.length) {
-	  Array.copy(a(i).array, 0, res, i*length, length)
-	}
-
-	floatSeqfToFloatBuffer(res)
-  }
-  implicit def vector2fArrayToFloatBuffer (a : Array[M3DVector2f]) : FloatBuffer = {
-	val length = 2
-	val res = new Array[Float](a.length * length)
-
-	for (i <- 0 until a.length) {
-	  Array.copy(a(i).array, 0, res, i*length, length)
-	}
-
-	floatSeqfToFloatBuffer(res)
-  }
-  
   def End(){
 	// Create the master vertex array object
 	vertexArrayBufferObject = glGenVertexArrays();
@@ -193,9 +161,9 @@ class GLTriangleBatch extends GLBatchBase {
   }
 
   var pIndexes : Array[Int] = _ // Array of indexes
-  var pVerts : Array[M3DVector3f] = _ // Array of vertices
-  var pNorms : Array[M3DVector3f] = _ // Array of normals
-  var pTexCoords : Array[M3DVector2f] = _ // Array of texture coordinates
+  var pVerts : M3DVector3fArray = _ // Array of vertices
+  var pNorms : M3DVector3fArray = _ // Array of normals
+  var pTexCoords : M3DVector2fArray = _ // Array of texture coordinates
 
 
   var nMaxIndexes : Int = 0         // Maximum workspace

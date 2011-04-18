@@ -1,10 +1,10 @@
 package com.belfrygames.sloth.chapter03
 
 import com.belfrygames.sloth.Math3D.M3DVector
-import com.belfrygames.sloth.Math3D.M3DVector3f
+import com.belfrygames.sloth.Math3D.M3DVector3fArray
 import com.belfrygames.sloth._
-import com.belfrygames.sloth.GLT_STOCK_SHADER._
-import com.belfrygames.sloth.GLT_SHADER_ATTRIBUTE._
+import com.belfrygames.sloth.GLBatch._
+import com.belfrygames.sloth.GLShaderManager._
 import com.belfrygames.sloth.GLTools._
 import com.belfrygames.sloth.glut._
 import com.belfrygames.sloth.glut.Internal._
@@ -20,7 +20,7 @@ object Smoother {
   // Program by Richard S. Wright Jr.
 
   val shaderManager = GLShaderManager
-  val viewFrustum = GLFrustum.get
+  val viewFrustum = new GLFrustum
   val smallStarBatch = new GLBatch
   val mediumStarBatch = new GLBatch
   val largeStarBatch = new GLBatch
@@ -100,32 +100,10 @@ object Smoother {
     glutSwapBuffers();
   }
 
-  implicit def vector3fArrayToFloatSeq (a : Array[M3DVector3f]) : Seq[Float] = {
-	val length = 3
-	val res = new Array[Float](a.length * length)
-
-	for (i <- 0 until a.length) {
-	  Array.copy(a(i).array, 0, res, i*length, length)
-	}
-	
-	res
-  }
-
-  implicit def vector4fArrayToFloatArray (a : Array[M3DVector3f]) : Array[Float] = {
-	val length = 3
-	val res = new Array[Float](a.length * length)
-
-	for (i <- 0 until a.length) {
-	  Array.copy(a(i).array, 0, res, i*length, length)
-	}
-
-	res
-  }
-
-// This function does any needed initialization on the rendering
-// context.
+  // This function does any needed initialization on the rendering
+  // context.
   def SetupRC() {
-	val vVerts = M3DVector.array[M3DVector3f](SMALL_STARS)
+	val vVerts = new M3DVector3fArray(SMALL_STARS)
 
     shaderManager.InitializeStockShaders();
 
@@ -139,7 +117,7 @@ object Smoother {
 	  vVerts(i)(1) = (rand.nextFloat * (SCREEN_Y - 100)) + 100.0f;
 	  vVerts(i)(2) = 0.0f;
 	}
-	
+
     smallStarBatch.CopyVertexData3f(vVerts);
     smallStarBatch.End();
 

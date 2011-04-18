@@ -1,12 +1,12 @@
 package com.belfrygames.sloth.chapter02
 
 import com.belfrygames.sloth.GLBatch
+import com.belfrygames.sloth.GLBatch._
 import com.belfrygames.sloth.GLShaderManager
 import com.belfrygames.sloth.GLTools._
 import com.belfrygames.sloth.Math3D.M3DVector
 import com.belfrygames.sloth.glut._
-import com.belfrygames.sloth.GLT_STOCK_SHADER._
-import com.belfrygames.sloth.GLT_SHADER_ATTRIBUTE._
+import com.belfrygames.sloth.GLShaderManager._
 
 import org.lwjgl.opengl.GL11._
 

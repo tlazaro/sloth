@@ -2,8 +2,7 @@ package com.belfrygames.sloth.chapter04
 
 import com.belfrygames.sloth.Math3D._
 import com.belfrygames.sloth._
-import com.belfrygames.sloth.GLT_STOCK_SHADER._
-import com.belfrygames.sloth.GLT_SHADER_ATTRIBUTE._
+import com.belfrygames.sloth.GLShaderManager._
 import com.belfrygames.sloth.GLTools._
 import com.belfrygames.sloth.glut._
 import com.belfrygames.sloth.glut.Internal._
@@ -18,7 +17,7 @@ object Objects {
   val projectionMatrix = new GLMatrixStack
   val cameraFrame = new GLFrame
   val objectFrame = new GLFrame
-  val viewFrustum = GLFrustum.get
+  val viewFrustum = new GLFrustum
 
   val sphereBatch = new GLTriangleBatch
   val torusBatch = new GLTriangleBatch

@@ -1,8 +1,6 @@
 package com.belfrygames.sloth
 
 import com.belfrygames.sloth._
-import com.belfrygames.sloth.GLT_STOCK_SHADER._
-import com.belfrygames.sloth.GLT_SHADER_ATTRIBUTE._
 import com.belfrygames.sloth.GLTools._
 import com.belfrygames.sloth.Math3D._
 import com.belfrygames.sloth.glut._
@@ -101,10 +99,11 @@ class GLFrame {
   }
 
   // Move along X axis
+  private[this] val vTemp = new M3DVector3f;
   @inline def MoveRight(fDelta : Float)
   {
 	// Move along direction of right vector
-	val vCross = new M3DVector3f;
+	val vCross = vTemp
 	m3dCrossProduct3(vCross, vUp, vForward);
 
 	vOrigin(0) += vCross(0) * fDelta;
@@ -118,7 +117,7 @@ class GLFrame {
   def GetMatrix(matrix : M3DMatrix44f, bRotationOnly : Boolean = false)
   {
 	// Calculate the right side (x) vector, drop it right into the matrix
-	val vXAxis = new M3DVector3f;
+	val vXAxis = vTemp
 	m3dCrossProduct3(vXAxis, vUp, vForward);
 
 	// Set matrix column does not fill in the fourth value...
@@ -150,10 +149,14 @@ class GLFrame {
 
   ////////////////////////////////////////////////////////////////////////
   // Assemble the camera matrix
+  private[this] val vTemp2 = new M3DVector3f
+  private[this] val mTemp = new M3DMatrix44f
+  private[this] val mTemp2 = new M3DMatrix44f
+
   def GetCameraMatrix(m : M3DMatrix44f, bRotationOnly : Boolean = false)
   {
-	val x = new M3DVector3f
-	val z = new M3DVector3f
+	val x = vTemp
+	val z = vTemp2
 
 	// Make rotation matrix
 	// Z vector is reversed
@@ -188,8 +191,8 @@ class GLFrame {
 	  return;
 
 	// Apply translation too
-	val trans = new M3DMatrix44f
-	val M = new M3DMatrix44f
+	val trans = mTemp
+	val M = mTemp2
 	m3dTranslationMatrix44(trans, -vOrigin(0), -vOrigin(1), -vOrigin(2));
 
 	m3dMatrixMultiply44(M, m, trans);
@@ -202,14 +205,14 @@ class GLFrame {
   // Rotate around local Y
   def RotateLocalY(fAngle : Float)
   {
-	val rotMat = new M3DMatrix44f;
+	val rotMat = mTemp
 
 	// Just Rotate around the up vector
 	// Create a rotation matrix around my Up (Y) vector
 	m3dRotationMatrix44(rotMat, fAngle,
 						vUp(0), vUp(1), vUp(2));
 
-	val newVect = new M3DVector3f;
+	val newVect = vTemp
 
 	// Rotate forward pointing vector (@inlined 3x3 transform)
 	newVect(0) = rotMat(0) * vForward(0) + rotMat(4) * vForward(1) + rotMat(8) *  vForward(2);
@@ -222,24 +225,25 @@ class GLFrame {
   // Rotate around local Z
   def RotateLocalZ(fAngle : Float)
   {
-	val rotMat = new M3DMatrix44f;
+	val rotMat = mTemp
 
 	// Only the up vector needs to be rotated
 	m3dRotationMatrix44(rotMat, fAngle,
 						vForward(0), vForward(1), vForward(2));
 
-	val newVect = new M3DVector3f;
+	val newVect = vTemp
 	newVect(0) = rotMat(0) * vUp(0) + rotMat(4) * vUp(1) + rotMat(8) *  vUp(2);
 	newVect(1) = rotMat(1) * vUp(0) + rotMat(5) * vUp(1) + rotMat(9) *  vUp(2);
 	newVect(2) = rotMat(2) * vUp(0) + rotMat(6) * vUp(1) + rotMat(10) * vUp(2);
 	m3dCopyVector3(vUp, newVect);
   }
 
+  private[this] val mTemp3 = new M3DMatrix33f;
   def RotateLocalX(fAngle : Float)
   {
-	val rotMat = new M3DMatrix33f;
-	val localX = new M3DVector3f;
-	val rotVec = new M3DVector3f;
+	val rotMat = mTemp3
+	val localX = vTemp
+	val rotVec = vTemp2
 
 	// Get the local X axis
 	m3dCrossProduct3(localX, vUp, vForward);
@@ -260,7 +264,7 @@ class GLFrame {
   // if the matrix is long-lived and frequently transformed.
   def Normalize()
   {
-	val vCross = new M3DVector3f;
+	val vCross = vTemp
 
 	// Calculate cross product of up and forward vectors
 	m3dCrossProduct3(vCross, vUp, vForward);
@@ -277,12 +281,12 @@ class GLFrame {
   // Rotate in world coordinates...
   def RotateWorld(fAngle : Float, x : Float, y : Float, z : Float)
   {
-	val rotMat = new M3DMatrix44f;
+	val rotMat = mTemp
 
 	// Create the Rotation matrix
 	m3dRotationMatrix44(rotMat, fAngle, x, y, z);
 
-	val newVect = new M3DVector3f;
+	val newVect = vTemp
 
 	// Transform the up axis (@inlined 3x3 rotation)
 	newVect(0) = rotMat(0) * vUp(0) + rotMat(4) * vUp(1) + rotMat(8) *  vUp(2);
@@ -301,8 +305,8 @@ class GLFrame {
   // Rotate around a local axis
   def RotateLocal(fAngle : Float, x : Float, y : Float, z : Float)
   {
-	val vWorldVect = new M3DVector3f;
-	val vLocalVect = new M3DVector3f;
+	val vWorldVect = vTemp
+	val vLocalVect = vTemp2
 	m3dLoadVector3(vLocalVect, x, y, z);
 
 	LocalToWorld(vLocalVect, vWorldVect, true);
@@ -318,7 +322,7 @@ class GLFrame {
   def LocalToWorld(vLocal : M3DVector3f, vWorld : M3DVector3f, bRotOnly : Boolean = false)
   {
 	// Create the rotation matrix based on the vectors
-	val rotMat = new M3DMatrix44f;
+	val rotMat = mTemp
 
 	GetMatrix(rotMat, true);
 
@@ -340,14 +344,14 @@ class GLFrame {
   {
 	////////////////////////////////////////////////
 	// Translate the origin
-	val vNewWorld = new M3DVector3f;
+	val vNewWorld = vTemp
 	vNewWorld(0) = vWorld(0) - vOrigin(0);
 	vNewWorld(1) = vWorld(1) - vOrigin(1);
 	vNewWorld(2) = vWorld(2) - vOrigin(2);
 
 	// Create the rotation matrix based on the vectors
-	val rotMat = new M3DMatrix44f;
-	val invMat = new M3DMatrix44f;
+	val rotMat = mTemp
+	val invMat = mTemp2
 	GetMatrix(rotMat, true);
 
 	// Do the rotation based on inverted matrix
@@ -362,7 +366,7 @@ class GLFrame {
   // Transform a point by frame matrix
   def TransformPoint(vPointSrc : M3DVector3f, vPointDst : M3DVector3f)
   {
-	val m = new M3DMatrix44f;
+	val m = mTemp
 	GetMatrix(m, false);    // Rotate and translate
 	vPointDst(0) = m(0) * vPointSrc(0) + m(4) * vPointSrc(1) + m(8) *  vPointSrc(2) + m(12);// * v(3);
 	vPointDst(1) = m(1) * vPointSrc(0) + m(5) * vPointSrc(1) + m(9) *  vPointSrc(2) + m(13);// * v(3);
@@ -373,7 +377,7 @@ class GLFrame {
   // Rotate a vector by frame matrix
   def RotateVector(vVectorSrc : M3DVector3f, vVectorDst : M3DVector3f)
   {
-	val m = new M3DMatrix44f;
+	val m = mTemp
 	GetMatrix(m, true);    // Rotate only
 
 	vVectorDst(0) = m(0) * vVectorSrc(0) + m(4) * vVectorSrc(1) + m(8) *  vVectorSrc(2);

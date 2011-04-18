@@ -3,6 +3,7 @@ package com.belfrygames.sloth;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -24,19 +25,32 @@ public class Main {
 	final ArrayList<Example> examples = new ArrayList<Example>();
 
 	public Main() {
+		examples.add(new Example("1", "Block", "", "", ExampleStatus.PENDING, "com.belfrygames.sloth.chapter01.Block"));
+
 		examples.add(new Example("2", "Bounce", "Bouncing box", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter02.Bounce"));
 		examples.add(new Example("2", "Move", "Moving rectangle", "Use arrow keys", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter02.Move"));
 		examples.add(new Example("2", "Triangle", "Show Red Triangle in the middle of the screen", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter02.Triangle"));
 
-		examples.add(new Example("3", "Blending", "", "", ExampleStatus.UNKOWN, "com.belfrygames.sloth.chapter03.Blending"));
-		examples.add(new Example("3", "GeoTest", "", "", ExampleStatus.UNKOWN, "com.belfrygames.sloth.chapter03.GeoTest"));
-		examples.add(new Example("3", "Primitives", "", "", ExampleStatus.UNKOWN, "com.belfrygames.sloth.chapter03.Primitives"));
+		examples.add(new Example("3", "Blending", "", "", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter03.Blending"));
+		examples.add(new Example("3", "GeoTest", "", "Use arrow keys to move, F1-F5 for different effects. Should use GLUT to display menu.", ExampleStatus.ALMOST_PERFECT, "com.belfrygames.sloth.chapter03.GeoTest"));
+		examples.add(new Example("3", "Primitives", "", "", ExampleStatus.PENDING, "com.belfrygames.sloth.chapter03.Primitives"));
 		examples.add(new Example("3", "Scissor", "", "", ExampleStatus.UNKOWN, "com.belfrygames.sloth.chapter03.Scissor"));
 		examples.add(new Example("3", "Smoother", "Shows antialiasing", "F1, F2 to change modes. Should use GLUT to display menu.", ExampleStatus.ALMOST_PERFECT, "com.belfrygames.sloth.chapter03.Smoother"));
 
+		examples.add(new Example("4", "ModelViewProjection", "", "", ExampleStatus.PENDING, "com.belfrygames.sloth.chapter04.ModelViewProjection"));
+		examples.add(new Example("4", "Orthographic", "", "", ExampleStatus.PENDING, "com.belfrygames.sloth.chapter04.Orthographic"));
+		examples.add(new Example("4", "Perspective", "", "", ExampleStatus.PENDING, "com.belfrygames.sloth.chapter04.Perspective"));
 		examples.add(new Example("4", "Move", "Moving square with ProjectModel matrix", "Move with arrow keys.", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter04.Move"));
 		examples.add(new Example("4", "Objects", "Show basic shapes", "Arrow Keys to rotate, press SpaceBar to change object.", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter04.Objects"));
-		examples.add(new Example("4", "SphereWorld", "", "", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter04.SphereWorld"));
+		examples.add(new Example("4", "SphereWorld", "Rotating wire frame torus", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter04.SphereWorld"));
+		examples.add(new Example("4", "SphereWorld2", "Rotating wire frame torus and sphere with camera", "Move with arrow keys", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter04.SphereWorld2"));
+		examples.add(new Example("4", "SphereWorld3", "Rotating wire frame torus and sphere and spheres with camera", "Move with arrow keys", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter04.SphereWorld3"));
+		examples.add(new Example("4", "SphereWorld4", "Rotating torus and sphere and spheres with camera and point light", "Move with arrow keys", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter04.SphereWorld4"));
+
+		examples.add(new Example("5", "Anisotropic", "", "", ExampleStatus.PENDING, "com.belfrygames.sloth.chapter05.Anisotropic"));
+		examples.add(new Example("5", "Pyramid", "", "", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter05.Pyramid"));
+		examples.add(new Example("5", "SphereWorld", "", "", ExampleStatus.PENDING, "com.belfrygames.sloth.chapter05.SphereWorld"));
+		examples.add(new Example("5", "Tunnel", "", "", ExampleStatus.PENDING, "com.belfrygames.sloth.chapter05.Tunnel"));
 	}
 
 	public void run() {
@@ -107,12 +121,21 @@ public class Main {
 
 		@Override
 		public void run() {
+			if (status == ExampleStatus.PENDING) {
+				return;
+			}
+
 			try {
 				Method m = Class.forName(mainPath).getMethod("main", new Class[]{args.getClass()});
-				System.out.println("Invoking method: " + m);
 				m.invoke(null, new Object[]{args});
-			} catch (Exception ex) {
+			} catch (NoSuchMethodException ex) {
 				Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (ClassNotFoundException ex) {
+				Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (IllegalAccessException ex) {
+				Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (InvocationTargetException ex) {
+				Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex.getCause());
 			}
 		}
 

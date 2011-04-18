@@ -13,46 +13,47 @@ import org.lwjgl.opengl.GL20._
 
 import org.lwjgl.BufferUtils
 
-object GLT_STOCK_SHADER extends Enumeration {
-  val GLT_SHADER_IDENTITY, GLT_SHADER_FLAT, GLT_SHADER_SHADED, GLT_SHADER_DEFAULT_LIGHT, GLT_SHADER_POINT_LIGHT_DIFF, GLT_SHADER_TEXTURE_REPLACE,
-  GLT_SHADER_TEXTURE_MODULATE, GLT_SHADER_TEXTURE_POINT_LIGHT_DIFF, GLT_SHADER_TEXTURE_RECT_REPLACE = Value
-}
-
-object GLT_SHADER_ATTRIBUTE extends Enumeration {
-  val GLT_ATTRIBUTE_VERTEX, GLT_ATTRIBUTE_COLOR, GLT_ATTRIBUTE_NORMAL, GLT_ATTRIBUTE_TEXTURE0, GLT_ATTRIBUTE_TEXTURE1, GLT_ATTRIBUTE_TEXTURE2,
-  GLT_ATTRIBUTE_TEXTURE3, GLT_ATTRIBUTE_LAST = Value
-
-  // Allow usage as Int in LWJGL methods
-  implicit def GLT_SHADER_ATTRIBUTE2Int (attrib : GLT_SHADER_ATTRIBUTE.Value) : Int = attrib.id
-}
-
 object GLShaderManager {
+  val GLT_SHADER_IDENTITY = 0
+  val GLT_SHADER_FLAT = 1
+  val GLT_SHADER_SHADED = 2
+  val GLT_SHADER_DEFAULT_LIGHT = 3
+  val GLT_SHADER_POINT_LIGHT_DIFF = 4
+  val GLT_SHADER_TEXTURE_REPLACE = 5
+  val GLT_SHADER_TEXTURE_MODULATE = 6
+  val GLT_SHADER_TEXTURE_POINT_LIGHT_DIFF = 7
+  val GLT_SHADER_TEXTURE_RECT_REPLACE = 8
 
-  import GLT_STOCK_SHADER._
-  import GLT_SHADER_ATTRIBUTE._
+  val GLT_ATTRIBUTE_VERTEX = 0
+  val GLT_ATTRIBUTE_COLOR = 1
+  val GLT_ATTRIBUTE_NORMAL = 2
+  val GLT_ATTRIBUTE_TEXTURE0 = 3
+  val GLT_ATTRIBUTE_TEXTURE1 = 4
+  val GLT_ATTRIBUTE_TEXTURE2 = 5
+  val GLT_ATTRIBUTE_TEXTURE3 = 6
+  val GLT_ATTRIBUTE_LAST = 7
 
   case class SHADERLOOKUPETRY (szVertexShaderName : String, szFragShaderName : String, uiShaderID : Int)
 
-  protected var uiStockShaders = Map.empty[GLT_STOCK_SHADER.Value, Int]
+  protected var uiStockShaders = Map.empty[Int, Int]
 
   // Be warned, going over 128 shaders may cause a hickup for a reallocation.
-  // Notice the .id !!!
   def InitializeStockShaders() : Boolean = {
-	uiStockShaders(GLT_SHADER_IDENTITY) = gltLoadShaderPairSrcWithAttributes(szIdentityShaderVP, szIdentityShaderFP, 1, GLT_ATTRIBUTE_VERTEX.id, "vVertex")
-	uiStockShaders(GLT_SHADER_FLAT) = gltLoadShaderPairSrcWithAttributes(szFlatShaderVP, szFlatShaderFP, 1, GLT_ATTRIBUTE_VERTEX.id, "vVertex")
-	uiStockShaders(GLT_SHADER_SHADED) = gltLoadShaderPairSrcWithAttributes(szShadedVP, szShadedFP, 2, GLT_ATTRIBUTE_VERTEX.id, "vVertex", GLT_ATTRIBUTE_COLOR.id, "vColor")
+	uiStockShaders(GLT_SHADER_IDENTITY) = gltLoadShaderPairSrcWithAttributes(szIdentityShaderVP, szIdentityShaderFP, 1, GLT_ATTRIBUTE_VERTEX, "vVertex")
+	uiStockShaders(GLT_SHADER_FLAT) = gltLoadShaderPairSrcWithAttributes(szFlatShaderVP, szFlatShaderFP, 1, GLT_ATTRIBUTE_VERTEX, "vVertex")
+	uiStockShaders(GLT_SHADER_SHADED) = gltLoadShaderPairSrcWithAttributes(szShadedVP, szShadedFP, 2, GLT_ATTRIBUTE_VERTEX, "vVertex", GLT_ATTRIBUTE_COLOR, "vColor")
 
-	uiStockShaders(GLT_SHADER_DEFAULT_LIGHT) = gltLoadShaderPairSrcWithAttributes(szDefaultLightVP, szDefaultLightFP, 2, GLT_ATTRIBUTE_VERTEX.id, "vVertex", GLT_ATTRIBUTE_NORMAL.id, "vNormal")
+	uiStockShaders(GLT_SHADER_DEFAULT_LIGHT) = gltLoadShaderPairSrcWithAttributes(szDefaultLightVP, szDefaultLightFP, 2, GLT_ATTRIBUTE_VERTEX, "vVertex", GLT_ATTRIBUTE_NORMAL, "vNormal")
 
-	uiStockShaders(GLT_SHADER_POINT_LIGHT_DIFF) = gltLoadShaderPairSrcWithAttributes(szPointLightDiffVP, szPointLightDiffFP, 2, GLT_ATTRIBUTE_VERTEX.id, "vVertex", GLT_ATTRIBUTE_NORMAL.id, "vNormal")
+	uiStockShaders(GLT_SHADER_POINT_LIGHT_DIFF) = gltLoadShaderPairSrcWithAttributes(szPointLightDiffVP, szPointLightDiffFP, 2, GLT_ATTRIBUTE_VERTEX, "vVertex", GLT_ATTRIBUTE_NORMAL, "vNormal")
 
-	uiStockShaders(GLT_SHADER_TEXTURE_REPLACE) = gltLoadShaderPairSrcWithAttributes(szTextureReplaceVP, szTextureReplaceFP, 2, GLT_ATTRIBUTE_VERTEX.id, "vVertex", GLT_ATTRIBUTE_TEXTURE0.id, "vTexCoord0")
+	uiStockShaders(GLT_SHADER_TEXTURE_REPLACE) = gltLoadShaderPairSrcWithAttributes(szTextureReplaceVP, szTextureReplaceFP, 2, GLT_ATTRIBUTE_VERTEX, "vVertex", GLT_ATTRIBUTE_TEXTURE0, "vTexCoord0")
 
-	uiStockShaders(GLT_SHADER_TEXTURE_MODULATE) = gltLoadShaderPairSrcWithAttributes(szTextureModulateVP, szTextureModulateFP, 2, GLT_ATTRIBUTE_VERTEX.id, "vVertex", GLT_ATTRIBUTE_TEXTURE0.id, "vTexCoord0")
+	uiStockShaders(GLT_SHADER_TEXTURE_MODULATE) = gltLoadShaderPairSrcWithAttributes(szTextureModulateVP, szTextureModulateFP, 2, GLT_ATTRIBUTE_VERTEX, "vVertex", GLT_ATTRIBUTE_TEXTURE0, "vTexCoord0")
 
-	uiStockShaders(GLT_SHADER_TEXTURE_POINT_LIGHT_DIFF) = gltLoadShaderPairSrcWithAttributes(szTexturePointLightDiffVP, szTexturePointLightDiffFP, 3, GLT_ATTRIBUTE_VERTEX.id, "vVertex", GLT_ATTRIBUTE_NORMAL.id, "vNormal", GLT_ATTRIBUTE_TEXTURE0.id, "vTexCoord0")
+	uiStockShaders(GLT_SHADER_TEXTURE_POINT_LIGHT_DIFF) = gltLoadShaderPairSrcWithAttributes(szTexturePointLightDiffVP, szTexturePointLightDiffFP, 3, GLT_ATTRIBUTE_VERTEX, "vVertex", GLT_ATTRIBUTE_NORMAL, "vNormal", GLT_ATTRIBUTE_TEXTURE0, "vTexCoord0")
 
-    uiStockShaders(GLT_SHADER_TEXTURE_RECT_REPLACE) = gltLoadShaderPairSrcWithAttributes(szTextureRectReplaceVP, szTextureRectReplaceFP, 2, GLT_ATTRIBUTE_VERTEX.id, "vVertex", GLT_ATTRIBUTE_TEXTURE0.id, "vTexCoord0")
+    uiStockShaders(GLT_SHADER_TEXTURE_RECT_REPLACE) = gltLoadShaderPairSrcWithAttributes(szTextureRectReplaceVP, szTextureRectReplaceFP, 2, GLT_ATTRIBUTE_VERTEX, "vVertex", GLT_ATTRIBUTE_TEXTURE0, "vTexCoord0")
 
 	uiStockShaders(GLT_SHADER_IDENTITY) != 0
   }
@@ -69,18 +70,21 @@ object GLShaderManager {
   }
 
   private implicit def matrix4fToFloatBuffer(matrix : M3DMatrix44f) : FloatBuffer = {
-	getFloatBuffer(matrix.array)
+	matrix.array.position(0)
+	matrix.array
   }
 
   private implicit def vector3fToFloatBuffer(vector : M3DVector3f) : FloatBuffer = {
-	getFloatBuffer(vector.array)
+	vector.array.position(0)
+	vector.array
   }
 
   private implicit def vector4fToFloatBuffer(vector : M3DVector4f) : FloatBuffer = {
-	getFloatBuffer(vector.array)
+	vector.array.position(0)
+	vector.array
   }
 
-  def UseStockShader(nShaderID : GLT_STOCK_SHADER.Value, uniforms : Any*) : Int = {
+  def UseStockShader(nShaderID : Int, uniforms : Any*) : Int = {
 	// Bind to the correct shader
 	glUseProgram(uiStockShaders(nShaderID))
 
@@ -91,7 +95,7 @@ object GLShaderManager {
 	var pMatrix : M3DMatrix44f = null
 	var mvMatrix : M3DMatrix44f = null
 	var vColor : M3DVector4f = null
-	var vLightPos : M3DVector3f = null
+	var vLightPos : M3DVector4f = null
 
 	val va = new VarArgs(uniforms)
 
@@ -294,30 +298,30 @@ object GLShaderManager {
 // Point light, diffuse lighting only
   val szPointLightDiffVP =
 	"""uniform mat4 mvMatrix;
-  uniform mat4 pMatrix;
-  uniform vec3 vLightPos;
-  uniform vec4 vColor;
-  attribute vec4 vVertex;
-  attribute vec3 vNormal;
-  varying vec4 vFragColor;
-  void main(void) {
-	mat3 mNormalMatrix;
-	mNormalMatrix[0] = normalize(mvMatrix[0].xyz);
-	mNormalMatrix[1] = normalize(mvMatrix[1].xyz);
-	mNormalMatrix[2] = normalize(mvMatrix[2].xyz);
-	vec3 vNorm = normalize(mNormalMatrix * vNormal);
-	vec4 ecPosition;
-	vec3 ecPosition3;
-	ecPosition = mvMatrix * vVertex;
-	ecPosition3 = ecPosition.xyz /ecPosition.w;
-	vec3 vLightDir = normalize(vLightPos - ecPosition3);
-	float fDot = max(0.0, dot(vNorm, vLightDir));
-	vFragColor.rgb = vColor.rgb * fDot;
-	vFragColor.a = vColor.a;
-	mat4 mvpMatrix;
-	mvpMatrix = pMatrix * mvMatrix;
-	gl_Position = mvpMatrix * vVertex;
-  }"""
+	  uniform mat4 pMatrix;
+	  uniform vec3 vLightPos;
+	  uniform vec4 vColor;
+	  attribute vec4 vVertex;
+	  attribute vec3 vNormal;
+	  varying vec4 vFragColor;
+	  void main(void) {
+		mat3 mNormalMatrix;
+		mNormalMatrix[0] = normalize(mvMatrix[0].xyz);
+		mNormalMatrix[1] = normalize(mvMatrix[1].xyz);
+		mNormalMatrix[2] = normalize(mvMatrix[2].xyz);
+		vec3 vNorm = normalize(mNormalMatrix * vNormal);
+		vec4 ecPosition;
+		vec3 ecPosition3;
+		ecPosition = mvMatrix * vVertex;
+		ecPosition3 = ecPosition.xyz /ecPosition.w;
+		vec3 vLightDir = normalize(vLightPos - ecPosition3);
+		float fDot = max(0.0, dot(vNorm, vLightDir));
+		vFragColor.rgb = vColor.rgb * fDot;
+		vFragColor.a = vColor.a;
+		mat4 mvpMatrix;
+		mvpMatrix = pMatrix * mvMatrix;
+		gl_Position = mvpMatrix * vVertex;
+	  }"""
 
   val szPointLightDiffFP =
 	"""varying vec4 vFragColor;

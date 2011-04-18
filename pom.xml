@@ -95,6 +95,11 @@
 	</dependencies>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
 		<sourceDirectory>src/main/scala</sourceDirectory>
 		<testSourceDirectory>src/test/scala</testSourceDirectory>
 		<plugins>
@@ -194,6 +199,15 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<mainClass>${main.class}</mainClass>
+					<arguments>
+						<argument>${resources}</argument>
+						<argument>-classpath</argument>
+					</arguments>
+					<!-- automatically creates the classpath using all project dependencies, also adding the project build directory-->
+					<classpath/>
+				</configuration>
 			</plugin>
 			
 			<!--Does this work? remove this??-->

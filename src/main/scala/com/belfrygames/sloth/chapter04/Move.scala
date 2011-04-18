@@ -3,8 +3,8 @@ package com.belfrygames.sloth.chapter04
 import com.belfrygames.sloth.Math3D.M3DVector
 import com.belfrygames.sloth.Math3D._
 import com.belfrygames.sloth._
-import com.belfrygames.sloth.GLT_STOCK_SHADER._
-import com.belfrygames.sloth.GLT_SHADER_ATTRIBUTE._
+import com.belfrygames.sloth.GLBatch._
+import com.belfrygames.sloth.GLShaderManager._
 import com.belfrygames.sloth.GLTools._
 import com.belfrygames.sloth.glut._
 import com.belfrygames.sloth.glut.Internal._

@@ -11,10 +11,13 @@ class GLMatrixStack(private val stackDepth : Int = 64) {
   
   var lastError : GLT_STACK_ERROR.Value = GLT_STACK_NOERROR;
   var stackPointer : Int = 0;
-  var pStack = M3DVector.array[M3DMatrix44f](stackDepth)
+  var pStack = new M3DMatrix44fArray(stackDepth)
 
   m3dLoadIdentity44(pStack(0))
 
+  // Temporary matrixes
+  private[this] val mTemp = new M3DMatrix44f
+  private[this] val mTemp2 = new M3DMatrix44f
 
   @inline def LoadIdentity() {
 	m3dLoadIdentity44(pStack(stackPointer));
@@ -25,21 +28,18 @@ class GLMatrixStack(private val stackDepth : Int = 64) {
   }
 
   @inline def LoadMatrix(frame : GLFrame) {
-	val m = new M3DMatrix44f;
-	frame.GetMatrix(m);
-	LoadMatrix(m);
+	frame.GetMatrix(mTemp);
+	LoadMatrix(mTemp);
   }
-
+  
   @inline def MultMatrix(mMatrix : M3DMatrix44f) {
-	val mTemp = new M3DMatrix44f
 	m3dCopyMatrix44(mTemp, pStack(stackPointer));
 	m3dMatrixMultiply44(pStack(stackPointer), mTemp, mMatrix);
   }
 
   @inline def MultMatrix(frame : GLFrame) {
-	val m = new M3DMatrix44f
-	frame.GetMatrix(m);
-	MultMatrix(m);
+	frame.GetMatrix(mTemp2);
+	MultMatrix(mTemp2);
   }
 
   @inline def PushMatrix() {
@@ -58,64 +58,46 @@ class GLMatrixStack(private val stackDepth : Int = 64) {
 	  lastError = GLT_STACK_UNDERFLOW;
   }
 
+  
   def Scale(x : Float, y : Float, z : Float) {
-	val mTemp = new M3DMatrix44f
-	val mScale = new M3DMatrix44f
-	
-	m3dScaleMatrix44(mScale, x, y, z);
+	m3dScaleMatrix44(mTemp2, x, y, z);
 	m3dCopyMatrix44(mTemp, pStack(stackPointer));
-	m3dMatrixMultiply44(pStack(stackPointer), mTemp, mScale);
+	m3dMatrixMultiply44(pStack(stackPointer), mTemp, mTemp2);
   }
 
-
   def Translate(x : Float, y : Float, z : Float) {
-	val mTemp = new M3DMatrix44f
-	val mScale = new M3DMatrix44f
-	
-	m3dTranslationMatrix44(mScale, x, y, z);
+	m3dTranslationMatrix44(mTemp2, x, y, z);
 	m3dCopyMatrix44(mTemp, pStack(stackPointer));
-	m3dMatrixMultiply44(pStack(stackPointer), mTemp, mScale);
+	m3dMatrixMultiply44(pStack(stackPointer), mTemp, mTemp2);
   }
 
   def Rotate(angle : Float, x : Float, y : Float, z : Float) {
-	val mTemp = new M3DMatrix44f
-	val mRotate = new M3DMatrix44f
-
-	m3dRotationMatrix44(mRotate, m3dDegToRad(angle).toFloat, x, y, z);
+	m3dRotationMatrix44(mTemp2, m3dDegToRad(angle).toFloat, x, y, z);
 	m3dCopyMatrix44(mTemp, pStack(stackPointer));
-	m3dMatrixMultiply44(pStack(stackPointer), mTemp, mRotate);
+	m3dMatrixMultiply44(pStack(stackPointer), mTemp, mTemp2);
   }
 
 
   // I've always wanted vector versions of these
   def Scalev(vScale : M3DVector3f) {
-	val mTemp = new M3DMatrix44f
-	val mScale = new M3DMatrix44f
-	
-	m3dScaleMatrix44(mScale, vScale);
+	m3dScaleMatrix44(mTemp2, vScale);
 	m3dCopyMatrix44(mTemp, pStack(stackPointer));
-	m3dMatrixMultiply44(pStack(stackPointer), mTemp, mScale);
+	m3dMatrixMultiply44(pStack(stackPointer), mTemp, mTemp2);
   }
 
 
   def Translatev(vTranslate : M3DVector3f) {
-	val mTemp = new M3DMatrix44f
-	val mTranslate = new M3DMatrix44f
-
-	m3dLoadIdentity44(mTranslate);
-	m3dSetMatrixColumn44(mTranslate, vTranslate, 3);
+	m3dLoadIdentity44(mTemp2);
+	m3dSetMatrixColumn44(mTemp2, vTranslate, 3);
 	m3dCopyMatrix44(mTemp, pStack(stackPointer));
-	m3dMatrixMultiply44(pStack(stackPointer), mTemp, mTranslate);
+	m3dMatrixMultiply44(pStack(stackPointer), mTemp, mTemp2);
   }
 
 
   def Rotatev(angle : Float, vAxis : M3DVector3f) {
-	val mTemp = new M3DMatrix44f
-	val mRotation = new M3DMatrix44f
-
-	m3dRotationMatrix44(mRotation, m3dDegToRad(angle).toFloat, vAxis(0), vAxis(1), vAxis(2));
+	m3dRotationMatrix44(mTemp2, m3dDegToRad(angle).toFloat, vAxis(0), vAxis(1), vAxis(2));
 	m3dCopyMatrix44(mTemp, pStack(stackPointer));
-	m3dMatrixMultiply44(pStack(stackPointer), mTemp, mRotation);
+	m3dMatrixMultiply44(pStack(stackPointer), mTemp, mTemp2);
   }
 
 
@@ -130,9 +112,8 @@ class GLMatrixStack(private val stackDepth : Int = 64) {
   }
 
   def PushMatrix(frame : GLFrame) {
-	val m = new M3DMatrix44f
-	frame.GetMatrix(m);
-	PushMatrix(m);
+	frame.GetMatrix(mTemp);
+	PushMatrix(mTemp);
   }
 
   // Two different ways to get the matrix

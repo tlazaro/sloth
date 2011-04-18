@@ -1,5 +1,10 @@
 package com.belfrygames.sloth
 
+import java.nio.IntBuffer
+import java.nio.DoubleBuffer
+import java.nio.FloatBuffer
+import java.nio.Buffer
+
 object Math3D {
   import scala.math._
   
@@ -56,28 +61,92 @@ object Math3D {
 //
 
   // TODO somehow test if this is working, check .class files and see what happened
-  trait M3DVector[T] {
-	@inline def array : Array[T]
+  sealed trait M3DVector[T] {
+	@inline def array : Buffer
 
-	@inline final def apply(i : Int) : T = array(i)
-	@inline final def update(i : Int, x : T) : Unit = array(i) = x
-	@inline final def size() : Int = array.length
+	@inline def apply(i : Int) : T
+	@inline def update(i : Int, x : T) : Unit
+	@inline final def size() : Int = array.capacity
 
-	@inline final def copy(other : Array[T]) : Unit = Array.copy(other, 0, array, 0, size())
-	@inline final def copy(other : M3DVector[T]) : Unit = Array.copy(other.array, 0, array, 0, other.size())
-	@inline final def copy(offset : Int, other : M3DVector[T], otherOffset : Int, length : Int) : Unit = Array.copy(other.array, otherOffset, array, offset, length)
+	@inline def copy(other : Array[T]) : Unit
+	@inline def copy(other : M3DVector[T]) : Unit
+	@inline def copy(offset : Int, other : M3DVector[T], otherOffset : Int, length : Int) : Unit
+  }
+
+  sealed trait M3DVectorFloat extends M3DVector[Float] {
+	@inline final def apply(i : Int) : Float = array.asInstanceOf[FloatBuffer].get(i)
+	@inline final def update(i : Int, x : Float) : Unit = array.asInstanceOf[FloatBuffer].put(i, x)
+	@inline final def copy(other : Array[Float]) : Unit = {
+	  array.position(0)
+	  array.asInstanceOf[FloatBuffer].put(other)
+	}
+	@inline final def copy(other : M3DVector[Float]) : Unit = {
+	  array.position(0)
+	  other.array.position(0)
+	  array.asInstanceOf[FloatBuffer].put(other.array.asInstanceOf[FloatBuffer])
+	}
+
+	@inline final def copy(offset : Int, other : M3DVector[Float], otherOffset : Int, length : Int) : Unit = {
+	  array.position(offset)
+	  other.array.position(otherOffset)
+	  other.array.limit(otherOffset + length)
+	  array.asInstanceOf[FloatBuffer].put(other.array.asInstanceOf[FloatBuffer])
+	  other.array.clear()
+	}
+  }
+  sealed trait M3DVectorDouble extends M3DVector[Double] {
+	@inline final def apply(i : Int) : Double = array.asInstanceOf[DoubleBuffer].get(i)
+	@inline final def update(i : Int, x : Double) : Unit = array.asInstanceOf[DoubleBuffer].put(i, x)
+	@inline final def copy(other : Array[Double]) : Unit = {
+	  array.position(0)
+	  array.asInstanceOf[DoubleBuffer].put(other)
+	}
+	@inline final def copy(other : M3DVector[Double]) : Unit = {
+	  array.position(0)
+	  other.array.position(0)
+	  array.asInstanceOf[FloatBuffer].put(other.array.asInstanceOf[FloatBuffer])
+	}
+
+	@inline final def copy(offset : Int, other : M3DVector[Double], otherOffset : Int, length : Int) : Unit = {
+	  array.position(offset)
+	  other.array.position(otherOffset)
+	  other.array.limit(otherOffset + length)
+	  array.asInstanceOf[DoubleBuffer].put(other.array.asInstanceOf[DoubleBuffer])
+	  other.array.clear()
+	}
+  }
+  sealed trait M3DVectorInt extends M3DVector[Int] {
+	@inline final def apply(i : Int) : Int = array.asInstanceOf[IntBuffer].get(i)
+	@inline final def update(i : Int, x : Int) : Unit = array.asInstanceOf[IntBuffer].put(i, x)
+	@inline final def copy(other : Array[Int]) : Unit = {
+	  array.position(0)
+	  array.asInstanceOf[IntBuffer].put(other)
+	}
+	@inline final def copy(other : M3DVector[Int]) : Unit = {
+	  array.position(0)
+	  other.array.position(0)
+	  array.asInstanceOf[IntBuffer].put(other.array.asInstanceOf[IntBuffer])
+	}
+
+	@inline final def copy(offset : Int, other : M3DVector[Int], otherOffset : Int, length : Int) : Unit = {
+	  array.position(offset)
+	  other.array.position(otherOffset)
+	  other.array.limit(otherOffset + length)
+	  array.asInstanceOf[IntBuffer].put(other.array.asInstanceOf[IntBuffer])
+	  other.array.clear()
+	}
   }
 
   object M3DVector {
 	// Call to get an Array with initalized Vectors or Matrixes of the type you want ej val vecs : Array[Vector3f] = M3DVector.array(5)
 	// Scala type inference magic via implicits provides correct Array type
-	def array[T <: M3DVector[_]] (size : Int)(implicit man: Manifest[T]) : Array[T] = {
-	  val res = new Array[T](size)
-	  for (i <- 0 until res.length) {
-		res(i) =  man.erasure.newInstance.asInstanceOf[T]
-	  }
-	  res
-	}
+//	def array[T <: M3DVector[_]] (size : Int)(implicit man: Manifest[T]) : Array[T] = {
+//	  val res = new Array[T](size)
+//	  for (i <- 0 until res.length) {
+//		res(i) =  man.erasure.newInstance.asInstanceOf[T]
+//	  }
+//	  res
+//	}
 
 	def apply(x : Float, y : Float, z : Float, w : Float) = {
 	  val vec = new M3DVector4f
@@ -98,41 +167,153 @@ object Math3D {
   }
 
   // 3D points = 3D Vectors, but we need a 2D representations sometimes... (x,y) order
-  final class M3DVector2f extends M3DVector[Float] {
-	private[this] val a = Array[Float](0.0f, 0.0f)
+  final class M3DVector2f(private[this] val a : FloatBuffer = Buffers.createFloatBuffer(2)) extends M3DVectorFloat {
 	@inline override def array = a
   }
 
-  final class M3DVector2d extends M3DVector[Double] {
-	private[this] val a = Array[Double] (0.0, 0.0)
+  final class M3DVector2d(private[this] val a : DoubleBuffer = Buffers.createDoubleBuffer(2)) extends M3DVectorDouble {
+	def this () = this(Buffers.createDoubleBuffer(2))
 	@inline override def array = a
   }
 
   // Vector of three floats (x, y, z) Vector of three doubles (x, y, z)
-  final class M3DVector3f extends M3DVector[Float] {
-	private[this] val a = Array[Float](0.0f, 0.0f, 0.0f)
+  final class M3DVector3f(private[this] val a : FloatBuffer = Buffers.createFloatBuffer(3)) extends M3DVectorFloat {
 	@inline override def array = a
   }
 
-  final class M3DVector3d extends M3DVector[Double] {
-	private[this] val a = Array[Double](0.0, 0.0, 0.0)
+  final class M3DVector3d(private[this] val a : DoubleBuffer = Buffers.createDoubleBuffer(3)) extends M3DVectorDouble {
 	@inline override def array = a
   }
 
   // Lesser used... Do we really need these? Yes, occasionaly we do need a trailing w component
-  final class M3DVector4f extends M3DVector[Float] {
-	private[this] val a = Array[Float](0.0f, 0.0f, 0.0f, 0.0f)
+  final class M3DVector4f(private[this] val a : FloatBuffer = Buffers.createFloatBuffer(4)) extends M3DVectorFloat {
 	@inline override def array = a
   }
 
-  final class M3DVector4d extends M3DVector[Double] {
-	private[this] val a = Array[Double](0.0, 0.0, 0.0, 0.0)
+  final class M3DVector4d(private[this] val a : DoubleBuffer = Buffers.createDoubleBuffer(4)) extends M3DVectorDouble {
 	@inline override def array = a
   }
 
-  final class M3DVector4i extends M3DVector[Int] {
-	private[this] val a = Array[Int](0, 0, 0, 0)
+  final class M3DVector4i(private[this] val a : IntBuffer = Buffers.createIntBuffer(4)) extends M3DVectorInt {
 	@inline override def array = a
+  }
+
+  trait M3DVectorArray[T <: M3DVector[_]]
+
+  // Creates an array of Vectors that share a common FloatBuffer
+  final class M3DVector4fArray (private val buffer : FloatBuffer) extends M3DVectorArray[M3DVector4f] {
+	def this(size : Int) = this(Buffers.createFloatBuffer(4 * size))
+	private[this] val vectors = new Array[M3DVector4f](buffer.capacity / 4)
+
+	for (i <- 0 until vectors.length) {
+	  buffer.position(i * 4)
+	  buffer.limit(i * 4 + 4)
+	  vectors(i) =  new M3DVector4f(buffer.slice)
+	}
+	buffer.clear()
+
+	@inline final def apply(i : Int) : M3DVector4f = vectors(i)
+
+	def slice(length : Int, start : Int = 0) = {
+	  buffer.position(start * 4)
+	  buffer.limit(4 * (start + length))
+
+	  val res = buffer.slice
+
+	  buffer.clear()
+
+	  res
+	}
+  }
+
+  // Creates an array of Vectors that share a common FloatBuffer
+  final class M3DVector3fArray (private val buffer : FloatBuffer) extends M3DVectorArray[M3DVector3f] {
+	def this(size : Int) = this(Buffers.createFloatBuffer(3 * size))
+	private[this] val vectors = new Array[M3DVector3f](buffer.capacity / 3)
+
+	for (i <- 0 until vectors.length) {
+	  buffer.position(i * 3)
+	  buffer.limit(i * 3 + 3)
+	  vectors(i) =  new M3DVector3f(buffer.slice)
+	}
+	buffer.clear()
+
+	@inline final def apply(i : Int) : M3DVector3f = vectors(i)
+
+	def slice(length : Int, start : Int = 0) = {
+	  buffer.position(start * 3)
+	  buffer.limit(3 * (start + length))
+
+	  val res = buffer.slice
+
+	  buffer.clear()
+
+	  res
+	}
+  }
+
+  // Creates an array of Vectors that share a common FloatBuffer
+  final class M3DVector2fArray (private val buffer : FloatBuffer) extends M3DVectorArray[M3DVector2f] {
+	def this(size : Int) = this(Buffers.createFloatBuffer(2 * size))
+	private[this] val vectors = new Array[M3DVector2f](buffer.capacity / 2)
+
+	for (i <- 0 until vectors.length) {
+	  buffer.position(i * 2)
+	  buffer.limit(i * 2 + 2)
+	  vectors(i) =  new M3DVector2f(buffer.slice)
+	}
+	buffer.clear()
+
+	@inline final def apply(i : Int) : M3DVector2f = vectors(i)
+
+	def slice(length : Int, start : Int = 0) = {
+	  buffer.position(start * 2)
+	  buffer.limit(2 * (start + length))
+
+	  val res = buffer.slice
+
+	  buffer.clear()
+
+	  res
+	}
+  }
+
+  // Creates an array of Vectors that share a common FloatBuffer
+  final class M3DMatrix44fArray (private val buffer : FloatBuffer) extends M3DVectorArray[M3DMatrix44f] {
+	def this(size : Int) = this(Buffers.createFloatBuffer(2 * size))
+	private[this] val matrixes = new Array[M3DMatrix44f](buffer.capacity / 16)
+
+	for (i <- 0 until matrixes.length) {
+	  buffer.position(i * 16)
+	  buffer.limit(i * 16 + 16)
+	  matrixes(i) =  new M3DMatrix44f(buffer.slice)
+	}
+	buffer.clear()
+
+	@inline final def apply(i : Int) : M3DMatrix44f = matrixes(i)
+
+	def slice(length : Int, start : Int = 0) = {
+	  buffer.position(start * 16)
+	  buffer.limit(16 * (start + length))
+
+	  val res = buffer.slice
+
+	  buffer.clear()
+
+	  res
+	}
+  }
+
+  object M3DVector4fArray {
+	implicit def toFloatBuffer(vecArray : M3DVector4fArray) = vecArray.buffer
+  }
+
+  object M3DVector3fArray {
+	implicit def toFloatBuffer(vecArray : M3DVector3fArray) = vecArray.buffer
+  }
+
+  object M3DVector2fArray {
+	implicit def toFloatBuffer(vecArray : M3DVector2fArray) = vecArray.buffer
   }
 
   // 3x3 matrix - column major. X vector is 0, 1, 2, etc.
@@ -141,14 +322,12 @@ object Math3D {
   //		2	5	8
 
   // A 3 x 3 matrix, column major (floats) - OpenGL Style
-  final class M3DMatrix33f extends M3DVector[Float] {
-	private[this] val a = Array[Float](0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f)
+  final class M3DMatrix33f(private[this] val a : FloatBuffer = Buffers.createFloatBuffer(9)) extends M3DVectorFloat {
 	@inline override def array = a
   }
 
   // A 3 x 3 matrix, column major (doubles) - OpenGL Style
-  final class M3DMatrix33d extends M3DVector[Double] {
-	private[this] val a = Array[Double](0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+  final class M3DMatrix33d(private[this] val a : DoubleBuffer = Buffers.createDoubleBuffer(9)) extends M3DVectorDouble {
 	@inline override def array = a
   }
 
@@ -159,14 +338,12 @@ object Math3D {
   //	3	7	11	15
   //
   // A 4 x 4 matrix, column major (floats) - OpenGL Style
-  final class M3DMatrix44f extends M3DVector[Float] {
-	private[this] val a = Array[Float](0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f)
+  final class M3DMatrix44f(private[this] val a : FloatBuffer = Buffers.createFloatBuffer(16)) extends M3DVectorFloat {
 	@inline override def array = a
   }
 
   // A 4 x 4 matrix, column major (doubles) - OpenGL Style
-  final class M3DMatrix44d extends M3DVector[Double] {
-	private[this] val a = Array[Double](0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+  final class M3DMatrix44d(private[this] val a : DoubleBuffer = Buffers.createDoubleBuffer(16)) extends M3DVectorDouble {
 	@inline override def array = a
   }
 
@@ -324,6 +501,14 @@ object Math3D {
   { r(0) = a(0) - b(0); r(1) = a(1) - b(1); r(2) = a(2) - b(2); }
   @inline def m3dSubtractVectors3(r : M3DVector3d, a : M3DVector3d, b : M3DVector3d)
   { r(0) = a(0) - b(0); r(1) = a(1) - b(1); r(2) = a(2) - b(2); }
+  @inline def m3dSubtractVectors3(r : M3DVector3f, a : M3DVector4f, b : M3DVector4f)
+  { r(0) = a(0) - b(0); r(1) = a(1) - b(1); r(2) = a(2) - b(2); }
+  @inline def m3dSubtractVectors3(r : M3DVector3d, a : M3DVector4d, b : M3DVector4d)
+  { r(0) = a(0) - b(0); r(1) = a(1) - b(1); r(2) = a(2) - b(2); }
+  @inline def m3dSubtractVectors3(r : M3DVector4f, a : M3DVector3f, b : M3DVector3f)
+  { r(0) = a(0) - b(0); r(1) = a(1) - b(1); r(2) = a(2) - b(2); }
+  @inline def m3dSubtractVectors3(r : M3DVector4d, a : M3DVector3d, b : M3DVector3d)
+  { r(0) = a(0) - b(0); r(1) = a(1) - b(1); r(2) = a(2) - b(2); }
 
   @inline def m3dSubtractVectors4(r : M3DVector4f, a : M3DVector4f, b : M3DVector4f)
   { r(0) = a(0) - b(0); r(1) = a(1) - b(1); r(2) = a(2) - b(2); r(3) = a(3) - b(3); }
@@ -361,6 +546,12 @@ object Math3D {
 	result(1) = -u(0)*v(2) + v(0)*u(2);
 	result(2) = u(0)*v(1) - v(0)*u(1);
   }
+  @inline def m3dCrossProduct3(result : M3DVector3f, u : M3DVector4f, v : M3DVector4f)
+  {
+	result(0) = u(1)*v(2) - v(1)*u(2);
+	result(1) = -u(0)*v(2) + v(0)*u(2);
+	result(2) = u(0)*v(1) - v(0)*u(1);
+  }
 
   @inline def m3dCrossProduct3(result : M3DVector3d, u : M3DVector3d, v : M3DVector3d)
   {
@@ -368,7 +559,19 @@ object Math3D {
 	result(1) = -u(0)*v(2) + v(0)*u(2);
 	result(2) = u(0)*v(1) - v(0)*u(1);
   }
+  @inline def m3dCrossProduct3(result : M3DVector3d, u : M3DVector4d, v : M3DVector4d)
+  {
+	result(0) = u(1)*v(2) - v(1)*u(2);
+	result(1) = -u(0)*v(2) + v(0)*u(2);
+	result(2) = u(0)*v(1) - v(0)*u(1);
+  }
   @inline def m3dCrossProduct3(result : M3DVector4f, u : M3DVector3f, v : M3DVector3f)
+  {
+	result(0) = u(1)*v(2) - v(1)*u(2);
+	result(1) = -u(0)*v(2) + v(0)*u(2);
+	result(2) = u(0)*v(1) - v(0)*u(1);
+  }
+  @inline def m3dCrossProduct3(result : M3DVector4f, u : M3DVector4f, v : M3DVector4f)
   {
 	result(0) = u(1)*v(2) - v(1)*u(2);
 	result(1) = -u(0)*v(2) + v(0)*u(2);
@@ -381,13 +584,25 @@ object Math3D {
 	result(1) = -u(0)*v(2) + v(0)*u(2);
 	result(2) = u(0)*v(1) - v(0)*u(1);
   }
+  @inline def m3dCrossProduct3(result : M3DVector4d, u : M3DVector4d, v : M3DVector4d)
+  {
+	result(0) = u(1)*v(2) - v(1)*u(2);
+	result(1) = -u(0)*v(2) + v(0)*u(2);
+	result(2) = u(0)*v(1) - v(0)*u(1);
+  }
 
   //////////////////////////////////////////////////////////////////////////////////////
   // Dot Product, only for three component vectors
   // return u dot v
   @inline def m3dDotProduct3(u : M3DVector3f, v : M3DVector3f) : Float = u(0)*v(0) + u(1)*v(1) + u(2)*v(2);
+  @inline def m3dDotProduct3(u : M3DVector4f, v : M3DVector3f) : Float = u(0)*v(0) + u(1)*v(1) + u(2)*v(2);
+  @inline def m3dDotProduct3(u : M3DVector4f, v : M3DVector4f) : Float = u(0)*v(0) + u(1)*v(1) + u(2)*v(2);
+  @inline def m3dDotProduct3(u : M3DVector3f, v : M3DVector4f) : Float = u(0)*v(0) + u(1)*v(1) + u(2)*v(2);
 
   @inline def m3dDotProduct3(u : M3DVector3d, v : M3DVector3d) : Double = u(0)*v(0) + u(1)*v(1) + u(2)*v(2);
+  @inline def m3dDotProduct3(u : M3DVector4d, v : M3DVector3d) : Double = u(0)*v(0) + u(1)*v(1) + u(2)*v(2);
+  @inline def m3dDotProduct3(u : M3DVector4d, v : M3DVector4d) : Double = u(0)*v(0) + u(1)*v(1) + u(2)*v(2);
+  @inline def m3dDotProduct3(u : M3DVector3d, v : M3DVector4d) : Double = u(0)*v(0) + u(1)*v(1) + u(2)*v(2);
 
   //////////////////////////////////////////////////////////////////////////////////////
   // Angle between vectors, only for three component vectors. Angle is in radians...
@@ -1027,42 +1242,43 @@ object Math3D {
   // Calculates the normal of a triangle specified by the three points
   // p1, p2, and p3. Each pointer points to an array of three floats. The
   // triangle is assumed to be wound counter clockwise.
+  private[this] val v1f = new M3DVector4f
+  private[this] val v2f = new M3DVector4f
+  private[this] val v3f = new M3DVector3f
   def m3dFindNormal(result : M3DVector3f, point1 : M3DVector3f, point2 : M3DVector3f, point3 : M3DVector3f) {
-	val v1 = new M3DVector3f
-	val v2 = new M3DVector3f
-
 	// Calculate two vectors from the three points. Assumes counter clockwise
 	// winding!
-	v1(0) = point1(0) - point2(0);
-	v1(1) = point1(1) - point2(1);
-	v1(2) = point1(2) - point2(2);
+	v1f(0) = point1(0) - point2(0);
+	v1f(1) = point1(1) - point2(1);
+	v1f(2) = point1(2) - point2(2);
 
-	v2(0) = point2(0) - point3(0);
-	v2(1) = point2(1) - point3(1);
-	v2(2) = point2(2) - point3(2);
+	v2f(0) = point2(0) - point3(0);
+	v2f(1) = point2(1) - point3(1);
+	v2f(2) = point2(2) - point3(2);
 
 	// Take the cross product of the two vectors to get
 	// the normal vector.
-	m3dCrossProduct3(result, v1, v2);
+	m3dCrossProduct3(result, v1f, v2f);
   }
 
+  private[this] val v1d = new M3DVector4d
+  private[this] val v2d = new M3DVector4d
+  private[this] val v3d = new M3DVector3d
   def m3dFindNormal(result : M3DVector3d, point1 : M3DVector3d, point2 : M3DVector3d, point3 : M3DVector3d) {
-	val v1 = new M3DVector3d
-	val v2 = new M3DVector3d
 
 	// Calculate two vectors from the three points. Assumes counter clockwise
 	// winding!
-	v1(0) = point1(0) - point2(0);
-	v1(1) = point1(1) - point2(1);
-	v1(2) = point1(2) - point2(2);
+	v1d(0) = point1(0) - point2(0);
+	v1d(1) = point1(1) - point2(1);
+	v1d(2) = point1(2) - point2(2);
 
-	v2(0) = point2(0) - point3(0);
-	v2(1) = point2(1) - point3(1);
-	v2(2) = point2(2) - point3(2);
+	v2d(0) = point2(0) - point3(0);
+	v2d(1) = point2(1) - point3(1);
+	v2d(2) = point2(2) - point3(2);
 
 	// Take the cross product of the two vectors to get
 	// the normal vector.
-	m3dCrossProduct3(result, v1, v2);
+	m3dCrossProduct3(result, v1d, v2d);
   }
 
 
@@ -1077,21 +1293,19 @@ object Math3D {
   // Get plane equation from three points
   def m3dGetPlaneEquation(planeEq : M3DVector4f, p1 : M3DVector3f, p2 : M3DVector3f, p3 : M3DVector3f) {
 	// Get two vectors... do the cross product
-    val v1 = new M3DVector3f
-	val v2 = new M3DVector3f
 
     // V1 = p3 - p1
-    v1(0) = p3(0) - p1(0);
-    v1(1) = p3(1) - p1(1);
-    v1(2) = p3(2) - p1(2);
+    v1f(0) = p3(0) - p1(0);
+    v1f(1) = p3(1) - p1(1);
+    v1f(2) = p3(2) - p1(2);
 
     // V2 = P2 - p1
-    v2(0) = p2(0) - p1(0);
-    v2(1) = p2(1) - p1(1);
-    v2(2) = p2(2) - p1(2);
+    v2f(0) = p2(0) - p1(0);
+    v2f(1) = p2(1) - p1(1);
+    v2f(2) = p2(2) - p1(2);
 
     // Unit normal to plane - Not sure which is the best way here
-    m3dCrossProduct3(planeEq, v1, v2);
+    m3dCrossProduct3(planeEq, v1f, v2f);
     m3dNormalizeVector3(planeEq);
 
     // Back substitute to get D
@@ -1100,21 +1314,19 @@ object Math3D {
 
   def m3dGetPlaneEquation(planeEq : M3DVector4f, p1 : M3DVector4f, p2 : M3DVector4f, p3 : M3DVector4f) {
 	// Get two vectors... do the cross product
-    val v1 = new M3DVector3f
-	val v2 = new M3DVector3f
 
     // V1 = p3 - p1
-    v1(0) = p3(0) - p1(0);
-    v1(1) = p3(1) - p1(1);
-    v1(2) = p3(2) - p1(2);
+    v1f(0) = p3(0) - p1(0);
+    v1f(1) = p3(1) - p1(1);
+    v1f(2) = p3(2) - p1(2);
 
     // V2 = P2 - p1
-    v2(0) = p2(0) - p1(0);
-    v2(1) = p2(1) - p1(1);
-    v2(2) = p2(2) - p1(2);
+    v2f(0) = p2(0) - p1(0);
+    v2f(1) = p2(1) - p1(1);
+    v2f(2) = p2(2) - p1(2);
 
     // Unit normal to plane - Not sure which is the best way here
-    m3dCrossProduct3(planeEq, v1, v2);
+    m3dCrossProduct3(planeEq, v1f, v2f);
     m3dNormalizeVector3(planeEq);
 
     // Back substitute to get D
@@ -1123,21 +1335,19 @@ object Math3D {
   
   def m3dGetPlaneEquation(planeEq : M3DVector4d, p1 : M3DVector3d, p2 : M3DVector3d, p3 : M3DVector3d) {
 	// Get two vectors... do the cross product
-    val v1 = new M3DVector3d
-	val v2 = new M3DVector3d
 
     // V1 = p3 - p1
-    v1(0) = p3(0) - p1(0);
-    v1(1) = p3(1) - p1(1);
-    v1(2) = p3(2) - p1(2);
+    v1d(0) = p3(0) - p1(0);
+    v1d(1) = p3(1) - p1(1);
+    v1d(2) = p3(2) - p1(2);
 
     // V2 = P2 - p1
-    v2(0) = p2(0) - p1(0);
-    v2(1) = p2(1) - p1(1);
-    v2(2) = p2(2) - p1(2);
+    v2d(0) = p2(0) - p1(0);
+    v2d(1) = p2(1) - p1(1);
+    v2d(2) = p2(2) - p1(2);
 
     // Unit normal to plane - Not sure which is the best way here
-    m3dCrossProduct3(planeEq, v1, v2);
+    m3dCrossProduct3(planeEq, v1d, v2d);
     m3dNormalizeVector3(planeEq);
 
     // Back substitute to get D
@@ -1146,21 +1356,19 @@ object Math3D {
 
   def m3dGetPlaneEquation(planeEq : M3DVector4d, p1 : M3DVector4d, p2 : M3DVector4d, p3 : M3DVector4d) {
 	// Get two vectors... do the cross product
-    val v1 = new M3DVector3d
-	val v2 = new M3DVector3d
 
     // V1 = p3 - p1
-    v1(0) = p3(0) - p1(0);
-    v1(1) = p3(1) - p1(1);
-    v1(2) = p3(2) - p1(2);
+    v1d(0) = p3(0) - p1(0);
+    v1d(1) = p3(1) - p1(1);
+    v1d(2) = p3(2) - p1(2);
 
     // V2 = P2 - p1
-    v2(0) = p2(0) - p1(0);
-    v2(1) = p2(1) - p1(1);
-    v2(2) = p2(2) - p1(2);
+    v2d(0) = p2(0) - p1(0);
+    v2d(1) = p2(1) - p1(1);
+    v2d(2) = p2(2) - p1(2);
 
     // Unit normal to plane - Not sure which is the best way here
-    m3dCrossProduct3(planeEq, v1, v2);
+    m3dCrossProduct3(planeEq, v1d, v2d);
     m3dNormalizeVector3(planeEq);
 
     // Back substitute to get D
@@ -1174,7 +1382,7 @@ object Math3D {
   def m3dRaySphereTest(point : M3DVector3f, ray : M3DVector3f, sphereCenter : M3DVector3f, sphereRadius : Float) : Float = {
 	//m3dNormalizeVector(ray);	// Make sure ray is unit length
 
-	val rayToCenter = new M3DVector3f;	// Ray to center of sphere
+	val rayToCenter = v1f
 	rayToCenter(0) =  sphereCenter(0) - point(0);
 	rayToCenter(1) =  sphereCenter(1) - point(1);
 	rayToCenter(2) =  sphereCenter(2) - point(2);
@@ -1189,14 +1397,14 @@ object Math3D {
 	var dRet = (sphereRadius * sphereRadius) - distance2 + (a*a);
 
 	if(dRet > 0.0f)			// Return distance to intersection
-		dRet = a - sqrt(dRet).toFloat;
+	  dRet = a - sqrt(dRet).toFloat;
 
 	return dRet;
   }
   def m3dRaySphereTest(point : M3DVector3d, ray : M3DVector3d, sphereCenter : M3DVector3d, sphereRadius : Double) : Double = {
 	//m3dNormalizeVector(ray);	// Make sure ray is unit length
 
-	val rayToCenter = new M3DVector3d;	// Ray to center of sphere
+	val rayToCenter = v1d;	// Ray to center of sphere
 	rayToCenter(0) =  sphereCenter(0) - point(0);
 	rayToCenter(1) =  sphereCenter(1) - point(1);
 	rayToCenter(2) =  sphereCenter(2) - point(2);
@@ -1211,7 +1419,7 @@ object Math3D {
 	var dRet = (sphereRadius * sphereRadius) - distance2 + (a*a);
 
 	if(dRet > 0.0)			// Return distance to intersection
-		dRet = a - scala.math.sqrt(dRet);
+	  dRet = a - scala.math.sqrt(dRet);
 
 	return dRet;
   }
@@ -1222,8 +1430,8 @@ object Math3D {
   ///////////////////////////////////////////////////////////////////////////////////////
   // Get Window coordinates, discard Z...
   def m3dProjectXY( vPointOut : M3DVector2f, mModelView : M3DMatrix44f, mProjection : M3DMatrix44f, iViewPort : M3DVector4i, vPointIn : M3DVector3f) {
-	val vBack = new M3DVector4f
-	val vForth = new M3DVector4f
+	val vBack = v1f
+	val vForth = v2f
 
 	vBack.copy(vPointIn)
 	vBack(3) = 1.0f;
@@ -1253,8 +1461,8 @@ object Math3D {
   ///////////////////////////////////////////////////////////////////////////////////////
   // Get window coordinates, we also want Z....
   def m3dProjectXYZ(vPointOut : M3DVector3f, mModelView : M3DMatrix44f, mProjection : M3DMatrix44f, iViewPort : M3DVector4i, vPointIn : M3DVector3f) {
-	val vBack = new M3DVector4f
-	val vForth = new M3DVector4f
+	val vBack = v1f
+	val vForth = v2f
 
 	vBack.copy(vPointIn)
 	vBack(3) = 1.0f;
@@ -1292,20 +1500,20 @@ object Math3D {
 
     // X
     vOut(0) = 0.5f * ( ( 2.0f * vP1(0)) +
-                       (-vP0(0) + vP2(0)) * t +
-                       (2.0f * vP0(0) - 5.0f *vP1(0) + 4.0f * vP2(0) - vP3(0)) * t2 +
-                       (-vP0(0) + 3.0f*vP1(0) - 3.0f *vP2(0) + vP3(0)) * t3);
+					  (-vP0(0) + vP2(0)) * t +
+					  (2.0f * vP0(0) - 5.0f *vP1(0) + 4.0f * vP2(0) - vP3(0)) * t2 +
+					  (-vP0(0) + 3.0f*vP1(0) - 3.0f *vP2(0) + vP3(0)) * t3);
     // Y
     vOut(1) = 0.5f * ( ( 2.0f * vP1(1)) +
-                       (-vP0(1) + vP2(1)) * t +
-                       (2.0f * vP0(1) - 5.0f *vP1(1) + 4.0f * vP2(1) - vP3(1)) * t2 +
-                       (-vP0(1) + 3.0f*vP1(1) - 3.0f *vP2(1) + vP3(1)) * t3);
+					  (-vP0(1) + vP2(1)) * t +
+					  (2.0f * vP0(1) - 5.0f *vP1(1) + 4.0f * vP2(1) - vP3(1)) * t2 +
+					  (-vP0(1) + 3.0f*vP1(1) - 3.0f *vP2(1) + vP3(1)) * t3);
 
     // Z
     vOut(2) = 0.5f * ( ( 2.0f * vP1(2)) +
-                       (-vP0(2) + vP2(2)) * t +
-                       (2.0f * vP0(2) - 5.0f *vP1(2) + 4.0f * vP2(2) - vP3(2)) * t2 +
-                       (-vP0(2) + 3.0f*vP1(2) - 3.0f *vP2(2) + vP3(2)) * t3);
+					  (-vP0(2) + vP2(2)) * t +
+					  (2.0f * vP0(2) - 5.0f *vP1(2) + 4.0f * vP2(2) - vP3(2)) * t2 +
+					  (-vP0(2) + 3.0f*vP1(2) - 3.0f *vP2(2) + vP3(2)) * t3);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1318,20 +1526,20 @@ object Math3D {
 
     // X
     vOut(0) = 0.5f * ( ( 2.0f * vP1(0)) +
-                       (-vP0(0) + vP2(0)) * t +
-                       (2.0f * vP0(0) - 5.0f *vP1(0) + 4.0f * vP2(0) - vP3(0)) * t2 +
-                       (-vP0(0) + 3.0f*vP1(0) - 3.0f *vP2(0) + vP3(0)) * t3);
+					  (-vP0(0) + vP2(0)) * t +
+					  (2.0f * vP0(0) - 5.0f *vP1(0) + 4.0f * vP2(0) - vP3(0)) * t2 +
+					  (-vP0(0) + 3.0f*vP1(0) - 3.0f *vP2(0) + vP3(0)) * t3);
     // Y
     vOut(1) = 0.5f * ( ( 2.0f * vP1(1)) +
-                       (-vP0(1) + vP2(1)) * t +
-                       (2.0f * vP0(1) - 5.0f *vP1(1) + 4.0f * vP2(1) - vP3(1)) * t2 +
-                       (-vP0(1) + 3.0f*vP1(1) - 3.0f *vP2(1) + vP3(1)) * t3);
+					  (-vP0(1) + vP2(1)) * t +
+					  (2.0f * vP0(1) - 5.0f *vP1(1) + 4.0f * vP2(1) - vP3(1)) * t2 +
+					  (-vP0(1) + 3.0f*vP1(1) - 3.0f *vP2(1) + vP3(1)) * t3);
 
     // Z
     vOut(2) = 0.5f * ( ( 2.0f * vP1(2)) +
-                       (-vP0(2) + vP2(2)) * t +
-                       (2.0f * vP0(2) - 5.0f *vP1(2) + 4.0f * vP2(2) - vP3(2)) * t2 +
-                       (-vP0(2) + 3.0f*vP1(2) - 3.0f *vP2(2) + vP3(2)) * t3);
+					  (-vP0(2) + vP2(2)) * t +
+					  (2.0f * vP0(2) - 5.0f *vP1(2) + 4.0f * vP2(2) - vP3(2)) * t2 +
+					  (-vP0(2) + 3.0f*vP1(2) - 3.0f *vP2(2) + vP3(2)) * t3);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1351,8 +1559,8 @@ object Math3D {
   // Used for normal mapping. Finds the tangent bases for a triangle...
   // Only a floating point implementation is provided. This has no practical use as doubles.
   def m3dCalculateTangentBasis(vTangent : M3DVector3f, vTriangle : Tuple3[M3DVector3f, M3DVector3f, M3DVector3f], vTexCoords : Tuple3[M3DVector2f, M3DVector2f, M3DVector2f], N : M3DVector3f) {
-	val dv2v1 = new M3DVector3f
-	val dv3v1 = new M3DVector3f
+	val dv2v1 = v1f
+	val dv3v1 = v2f
     
     m3dSubtractVectors3(dv2v1, vTriangle._2, vTriangle._1);
     m3dSubtractVectors3(dv3v1, vTriangle._3, vTriangle._1);
@@ -1371,7 +1579,7 @@ object Math3D {
     m3dScaleVector3(vTangent, M);  // This potentially changes the direction of the vector
     m3dNormalizeVector3(vTangent);
 
-    val B = new M3DVector3f;
+    val B = v3f
     m3dCrossProduct3(B, N, vTangent);
     m3dCrossProduct3(vTangent, B, N);
     m3dNormalizeVector3(vTangent);
@@ -1382,18 +1590,18 @@ object Math3D {
   def m3dSmoothStep(edge1 : Double, edge2 : Double, x : Double) : Double = {
     var t = (x - edge1) / (edge2 - edge1);
     if(t > 1.0)
-        t = 1.0;
+	  t = 1.0;
 	else if(t < 0.0)
-        t = 0.0f;
+	  t = 0.0f;
 
     t * t * ( 3.0 - 2.0 * t);
   }
   def m3dSmoothStep(edge1 : Float, edge2 : Float, x : Float) : Float = {
 	var t = (x - edge1) / (edge2 - edge1);
     if(t > 1.0f)
-        t = 1.0f;
+	  t = 1.0f;
     else if(t < 0.0)
-        t = 0.0f;
+	  t = 0.0f;
 
     return t * t * ( 3.0f - 2.0f * t);
   }
@@ -1474,7 +1682,7 @@ object Math3D {
   /////////////////////////////////////////////////////////////////////////////
   // Closest point on a ray to another point in space
   def m3dClosestPointOnRay(vPointOnRay : M3DVector3d, vRayOrigin : M3DVector3d, vUnitRayDir : M3DVector3d, vPointInSpace : M3DVector3d) : Double = {
-	val v = new M3DVector3d;
+	val v = v1d
 	m3dSubtractVectors3(v, vPointInSpace, vRayOrigin);
 
 	val t = m3dDotProduct3(vUnitRayDir, v);
@@ -1488,7 +1696,7 @@ object Math3D {
   }
 
   def m3dClosestPointOnRay(vPointOnRay : M3DVector3f, vRayOrigin : M3DVector3f, vUnitRayDir : M3DVector3f, vPointInSpace : M3DVector3f) : Float = {
-	val v = new M3DVector3f;
+	val v = v1f
 	m3dSubtractVectors3(v, vPointInSpace, vRayOrigin);
 
 	val t = m3dDotProduct3(vUnitRayDir, v);

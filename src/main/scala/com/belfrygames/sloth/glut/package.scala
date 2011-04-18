@@ -491,10 +491,6 @@ package object glut {
 
 		WindowHandler.displayFunc()
 		GLDisplay.update()
-
-//		val currentRender = System.nanoTime()
-//		val time = (currentRender - lastRender) / 1000000000.0
-//		lastRender = currentRender
 	  } else {
 		GLDisplay.processMessages() // update calls processMessages
 	  }

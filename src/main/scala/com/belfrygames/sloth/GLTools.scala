@@ -3,7 +3,13 @@ package com.belfrygames.sloth
 import com.belfrygames.sloth.glut._
 import com.belfrygames.sloth.Math3D._
 
+import java.io.DataInputStream
+import java.io.File
+import java.nio.ByteBuffer
+import java.util.logging.Level
+import java.util.logging.Logger
 import org.lwjgl.opengl.GL11._
+import org.lwjgl.opengl.GL12._
 import org.lwjgl.opengl.GL20._
 import scala.math._
 
@@ -154,9 +160,9 @@ object GLTools {
 	  val x1 = cos(a1).toFloat
 	  val y1 = sin(a1).toFloat
 
-	  val vVertex = M3DVector.array[M3DVector3f](4)
-	  val vNormal = M3DVector.array[M3DVector3f](4)
-	  val vTexture = M3DVector.array[M3DVector2f](4)
+	  val vVertex = new M3DVector3fArray(4)
+	  val vNormal = new M3DVector3fArray(4)
+	  val vTexture = new M3DVector2fArray(4)
 
 	  for (j <- 0 until numMinor) {
 		var b = j * minorStep;
@@ -253,9 +259,9 @@ object GLTools {
 	  // for the caps of the sphere. This however introduces texturing
 	  // artifacts at the poles on some OpenGL implementations
 	  s = 0.0f;
-	  val vVertex = M3DVector.array[M3DVector3f](4)
-	  val vNormal = M3DVector.array[M3DVector3f](4)
-	  val vTexture = M3DVector.array[M3DVector2f](4)
+	  val vVertex = new M3DVector3fArray(4)
+	  val vNormal = new M3DVector3fArray(4)
+	  val vTexture = new M3DVector2fArray(4)
 
 	  for (j <- 0 until iSlices) {
 		var theta = if(j == iSlices) { 0.0f } else { j * dtheta }
@@ -351,9 +357,9 @@ object GLTools {
 
 	diskBatch.BeginMesh(nSlices * nStacks * 6);
 
-	val vVertex = M3DVector.array[M3DVector3f](4)
-	val vNormal = M3DVector.array[M3DVector3f](4)
-	val vTexture = M3DVector.array[M3DVector2f](4)
+	val vVertex = new M3DVector3fArray(4)
+	val vNormal = new M3DVector3fArray(4)
+	val vTexture = new M3DVector2fArray(4)
 
 	val fRadialScale = 1.0f / outerRadius;
 
@@ -441,9 +447,9 @@ object GLTools {
 
 	val fStepSizeSlice = (3.1415926536f * 2.0f) / numSlices.toFloat;
 
-	val vVertex = M3DVector.array[M3DVector3f](4)
-	val vNormal = M3DVector.array[M3DVector3f](4)
-	val vTexture = M3DVector.array[M3DVector2f](4)
+	val vVertex = new M3DVector3fArray(4)
+	val vNormal = new M3DVector3fArray(4)
+	val vTexture = new M3DVector2fArray(4)
 
     cylinderBatch.BeginMesh(numSlices * numStacks * 6);
 
@@ -732,6 +738,115 @@ object GLTools {
 	cubeBatch.MultiTexCoord2f(0, fRadius, 0.0f);
 	cubeBatch.Vertex3f(fRadius, -fRadius, -fRadius);
     cubeBatch.End();
+  }
+
+  // Define targa header. This is only used locally.
+  private class TGAHEADER (
+	var identsize : Byte,              // Size of ID field that follows header (0)
+	var colorMapType : Byte,           // 0 = None, 1 = paletted
+	var imageType : Byte,              // 0 = none, 1 = indexed, 2 = rgb, 3 = grey, +8=rle
+	var colorMapStart : Short,          // First colour map entry
+	var colorMapLength : Short,         // Number of colors
+	var colorMapBits : Byte,   // bits per palette entry
+	var xstart : Short,                 // image x origin
+	var ystart : Short,                 // image y origin
+	var width : Short,                  // width in pixels
+	var height : Short,                 // height in pixels
+	var bits : Byte,                   // bits per pixel (8 16, 24, 32)
+	var descriptor : Byte             // image descriptor
+  )
+
+  ////////////////////////////////////////////////////////////////////
+// Allocate memory and load targa bits. Returns pointer to new buffer,
+// height, and width of texture, and the OpenGL format of data.
+// Call free() on buffer when finished!
+// This only works on pretty vanilla targas... 8, 24, or 32 bit color
+// only, no palettes, no RLE encoding.
+  def gltReadTGABits(szFileName : String) : Tuple5[ByteBuffer, Int, Int, Int, Int] = {
+    // Default/Failed values
+    var eFormat = GL_RGB;
+    var iComponents = GL_RGB;
+	var iWidth = 0
+	var iHeight = 0
+	var pBits : ByteBuffer = null
+
+    // Attempt to open the file
+	var input : LEDataInputStream = null
+
+	try {
+	  input = new LEDataInputStream(getClass().getClassLoader().getResourceAsStream("com/belfrygames/sloth/resources/" + szFileName))
+
+	  //Read in header (binary)
+	  val tgaHeader = new TGAHEADER(input.readByte,
+									input.readByte,
+									input.readByte,
+									input.readShort,
+									input.readShort,
+									input.readByte,
+									input.readShort,
+									input.readShort,
+									input.readShort,
+									input.readShort,
+									input.readByte,
+									input.readByte)
+
+	  // Get width, height, and depth of texture
+	  iWidth = tgaHeader.width;
+	  iHeight = tgaHeader.height;
+	  val sDepth = tgaHeader.bits / 8;
+
+	  // Put some validity checks here. Very simply, I only understand
+	  // or care about 8, 24, or 32 bit targa's.
+	  if(tgaHeader.bits != 8 && tgaHeader.bits != 24 && tgaHeader.bits != 32)
+		throw new Exception("Wrong bits in TGA: " + tgaHeader.bits)
+
+	  // Calculate size of image buffer
+	  val lImageSize = tgaHeader.width * tgaHeader.height * sDepth;
+
+	  // Allocate memory and check for success
+	  pBits = Buffers.createByteBuffer(lImageSize)
+
+	  // Read in the bits
+	  // Check for read error. This should catch RLE or other weird formats that I don't want to recognize
+	  if (pBits.hasArray) {
+		input.readFully(pBits.array)
+	  } else {
+		var bytes = new Array[Byte](lImageSize)
+		input.readFully(bytes)
+		pBits.put(bytes)
+		pBits.flip
+	  }
+
+	  // Set OpenGL format expected
+	  sDepth match {
+		case 3 => {
+			eFormat = GL_BGR;
+			iComponents = GL_RGB;
+		  }
+		case 4 => {
+			eFormat = GL_BGRA;
+			iComponents = GL_RGBA;
+		  }
+		case 1 => {
+			eFormat = GL_LUMINANCE;
+			iComponents = GL_LUMINANCE;
+		  }
+	  }
+	} catch {
+	  case ex : Exception => {
+		  pBits = null
+		  Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
+	  }
+	} finally {
+	  try {
+		input.close
+	  } catch {
+		case ex : Exception => Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
+	  }
+	}
+
+    // Return pointer to image data
+    return (pBits, iWidth, iHeight, iComponents, eFormat);
   }
 }
 /*

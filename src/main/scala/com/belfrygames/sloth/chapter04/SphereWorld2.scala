@@ -9,7 +9,7 @@ import com.belfrygames.sloth.glut.Internal._
 
 import org.lwjgl.opengl.GL11._
 
-object SphereWorld {
+object SphereWorld2 {
   val shaderManager = GLShaderManager
   val modelViewMatrix = new GLMatrixStack
   val projectionMatrix = new GLMatrixStack
@@ -18,6 +18,9 @@ object SphereWorld {
 
   val torusBatch = new GLTriangleBatch
   val floorBatch = new GLBatch
+
+  val sphereBatch = new GLTriangleBatch
+  val cameraFrame = new GLFrame
 
   //////////////////////////////////////////////////////////////////
   // This function does any needed initialization on the rendering
@@ -34,6 +37,8 @@ object SphereWorld {
 	// This makes a torus
 	gltMakeTorus(torusBatch, 0.4f, 0.15f, 30, 30);
 
+    // This make a sphere
+    gltMakeSphere(sphereBatch, 0.1f, 26, 13);
 
 	floorBatch.Begin(GL_LINES, 324);
 	var x = -20.0f
@@ -49,13 +54,13 @@ object SphereWorld {
   }
 
 
-///////////////////////////////////////////////////
-// Screen changes size or is initialized
+  ///////////////////////////////////////////////////
+  // Screen changes size or is initialized
   def ChangeSize(nWidth : Int, nHeight : Int) {
 	glViewport(0, 0, nWidth, nHeight);
 
     // Create the projection matrix, and load it on the projection matrix stack
-	viewFrustum.SetPerspective(35.0f, nWidth.toFloat / nHeight.toFloat, 1.0f, 100.0f);
+	viewFrustum.SetPerspective(35.0f, nWidth.toFloat/ nHeight.toFloat, 1.0f, 100.0f);
 	projectionMatrix.LoadMatrix(viewFrustum.GetProjectionMatrix());
 
     // Set the transformation pipeline to use the two matrix stacks
@@ -63,42 +68,82 @@ object SphereWorld {
   }
 
 
-  // Called to draw scene
-  // Color values
+  // Respond to arrow keys by moving the camera frame of reference
+  def SpecialKeys(key : Int, x : Int, y : Int)
+  {
+	val linear = 0.1f;
+	val angular = m3dDegToRad(5.0f).toFloat
+
+	if(key == GLUT_KEY_UP)
+	  cameraFrame.MoveForward(linear);
+
+	if(key == GLUT_KEY_DOWN)
+	  cameraFrame.MoveForward(-linear);
+
+	if(key == GLUT_KEY_LEFT)
+	  cameraFrame.RotateWorld(angular, 0.0f, 1.0f, 0.0f);
+
+	if(key == GLUT_KEY_RIGHT)
+	  cameraFrame.RotateWorld(-angular, 0.0f, 1.0f, 0.0f);
+  }
+
   val vFloorColor = M3DVector(0.0f, 1.0f, 0.0f, 1.0f);
   val vTorusColor = M3DVector(1.0f, 0.0f, 0.0f, 1.0f);
-  lazy val rotTimer = new CStopWatch // Made lazy so that it gets initialized in RenderScene when needed and not on class creation
-  
+  val vSphereColor = M3DVector(0.0f, 0.0f, 1.0f, 1.0f);
+  lazy val rotTimer = new CStopWatch
+// Called to draw scene
   def RenderScene() {
+    // Color values
+
     // Time Based animation
-	var yRot = rotTimer.GetElapsedSeconds() * 60.0f;
+	val yRot = rotTimer.GetElapsedSeconds() * 60.0f;
 
 	// Clear the color and depth buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
     // Save the current modelview matrix (the identity matrix)
 	modelViewMatrix.PushMatrix();
 
+    val mCamera = new M3DMatrix44f
+    cameraFrame.GetCameraMatrix(mCamera);
+    modelViewMatrix.PushMatrix(mCamera);
+
 	// Draw the ground
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetModelViewProjectionMatrix(), vFloorColor);
+	shaderManager.UseStockShader(GLT_SHADER_FLAT,
+								 transformPipeline.GetModelViewProjectionMatrix(),
+								 vFloorColor);
 	floorBatch.Draw();
 
     // Draw the spinning Torus
     modelViewMatrix.Translate(0.0f, 0.0f, -2.5f);
-    modelViewMatrix.Rotate(yRot, 0.0f, 1.0f, 0.0f);
-    shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetModelViewProjectionMatrix(), vTorusColor);
-    torusBatch.Draw();
 
-	// Restore the previous modleview matrix (the idenity matrix)
+    // Save the Translation
+    modelViewMatrix.PushMatrix();
+
+	// Apply a rotation and draw the torus
+	modelViewMatrix.Rotate(yRot, 0.0f, 1.0f, 0.0f);
+	shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetModelViewProjectionMatrix(),
+								 vTorusColor);
+	torusBatch.Draw();
+    modelViewMatrix.PopMatrix(); // "Erase" the Rotation from before
+
+    // Apply another rotation, followed by a translation, then draw the sphere
+    modelViewMatrix.Rotate(yRot * -2.0f, 0.0f, 1.0f, 0.0f);
+    modelViewMatrix.Translate(0.8f, 0.0f, 0.0f);
+    shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetModelViewProjectionMatrix(),
+								 vSphereColor);
+    sphereBatch.Draw();
+
+	// Restore the previous modleview matrix (the identity matrix)
 	modelViewMatrix.PopMatrix();
-
+    modelViewMatrix.PopMatrix();
     // Do the buffer Swap
     glutSwapBuffers();
 
     // Tell GLUT to do it again
     glutPostRedisplay();
   }
-
 
   def main(args: Array[String]): Unit = {
 	if (args.size > 0) gltSetWorkingDirectory(args(0))
@@ -109,6 +154,7 @@ object SphereWorld {
 
     glutCreateWindow("OpenGL SphereWorld");
 
+    glutSpecialFunc(SpecialKeys);
     glutReshapeFunc(ChangeSize);
     glutDisplayFunc(RenderScene);
 
@@ -117,7 +163,6 @@ object SphereWorld {
 //	  fprintf(stderr, "GLEW Error: %s\n", glewGetErrorString(err));
 //	  return 1;
 //	}
-
 
     SetupRC();
     glutMainLoop();

@@ -1,9 +1,12 @@
 package com.belfrygames.sloth
 
+import com.belfrygames.sloth.GLShaderManager._
 import com.belfrygames.sloth.Math3D.M3DVector2f
 import com.belfrygames.sloth.Math3D.M3DVector3f
 import com.belfrygames.sloth.Math3D.M3DVector4f
-import java.nio.ByteBuffer
+import com.belfrygames.sloth.Math3D.M3DVector2fArray
+import com.belfrygames.sloth.Math3D.M3DVector3fArray
+import com.belfrygames.sloth.Math3D.M3DVector4fArray
 import java.nio.FloatBuffer
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11._
@@ -11,8 +14,6 @@ import org.lwjgl.opengl.GL15._
 import org.lwjgl.opengl.GL20._
 import org.lwjgl.opengl.GL30._
 
-import com.belfrygames.sloth.GLT_STOCK_SHADER._
-import com.belfrygames.sloth.GLT_SHADER_ATTRIBUTE._
 
 class GLBatch extends GLBatchBase {
   protected var primitiveType = 0		// What am I drawing....
@@ -29,10 +30,10 @@ class GLBatch extends GLBatchBase {
 
   protected var	bBatchDone = false;				// Batch has been built
 
-  protected var pVerts : M3DVector3fByteBuffer = null // Array of vertices
-  protected var pNormals : M3DVector3fByteBuffer = null // Array of normals
-  protected var pColors : M3DVector4fByteBuffer = null // Array of colors
-  protected var pTexCoords : Array[M3DVector2fByteBuffer] = null // Array of texture coordinates
+  protected var pVerts : M3DVector3fArray = null // Array of vertices
+  protected var pNormals : M3DVector3fArray = null // Array of normals
+  protected var pColors : M3DVector4fArray = null // Array of colors
+  protected var pTexCoords : Array[M3DVector2fArray] = null // Array of texture coordinates
   
   override def finalize() {
 	// Vertex buffer objects
@@ -62,7 +63,7 @@ class GLBatch extends GLBatchBase {
 	  uiTextureCoordArray = new Array(nNumTextureUnits)
 	  
 	  // An array of pointers to texture coordinate arrays
-	  pTexCoords = new Array[M3DVector2fByteBuffer](nNumTextureUnits)
+	  pTexCoords = new Array[M3DVector2fArray](nNumTextureUnits)
 	  for(i <- 0 until nNumTextureUnits) {
 		uiTextureCoordArray(i) = 0
 	  }
@@ -136,14 +137,8 @@ class GLBatch extends GLBatchBase {
 	glBindVertexArray(0)
   }
 
-  private implicit def floatSeqfToFloatBuffer(floats : Array[Float]) : FloatBuffer = {
-	val buffer = BufferUtils.createFloatBuffer(floats.length)
-	buffer put floats
-	buffer.flip()
-	buffer
-  }
-
-  def CopyVertexData3f(vVerts : Array[Float]) {
+  
+  def CopyVertexData3f(vVerts : FloatBuffer) {
 	// First time, create the buffer object, allocate the space
 	if(uiVertexArray == 0) {
 	  uiVertexArray = glGenBuffers()
@@ -158,7 +153,9 @@ class GLBatch extends GLBatchBase {
 	}
   }
 
-  def CopyNormalDataf(vNorms : Array[Float]) {
+  def CopyVertexData3f(vVerts : M3DVector3fArray) : Unit = CopyVertexData3f(vVerts.slice(nNumVerts))
+
+  def CopyNormalDataf(vNorms : FloatBuffer) {
 	// First time, create the buffer object, allocate the space
 	if(uiNormalArray == 0) {
 	  uiNormalArray = glGenBuffers()
@@ -173,7 +170,7 @@ class GLBatch extends GLBatchBase {
 	}
   }
   
-  def CopyColorData4f(vColors : Array[Float]) {
+  def CopyColorData4f(vColors : FloatBuffer) {
 	// First time, create the buffer object, allocate the space
 	if(uiColorArray == 0) {
 	  uiColorArray = glGenBuffers()
@@ -188,13 +185,13 @@ class GLBatch extends GLBatchBase {
 	}
   }
 
-  def CopyTexCoordData2f(vTexCoords : Array[Float], uiTextureLayer : Int) {
+  def CopyTexCoordData2f(vTexCoords : FloatBuffer, uiTextureLayer : Int) {
 	// First time, create the buffer object, allocate the space
 	if(uiTextureCoordArray(uiTextureLayer) == 0) {
 	  uiTextureCoordArray(uiTextureLayer) = glGenBuffers()
 	  glBindBuffer(GL_ARRAY_BUFFER, uiTextureCoordArray(uiTextureLayer))
 	  glBufferData(GL_ARRAY_BUFFER, vTexCoords, GL_DYNAMIC_DRAW)
-	}	else {	// Just bind to existing object
+	} else {	// Just bind to existing object
 	  glBindBuffer(GL_ARRAY_BUFFER, uiTextureCoordArray(uiTextureLayer))
 
 	  // Copy the data in
@@ -232,8 +229,7 @@ class GLBatch extends GLBatchBase {
 	// Now see if it's already mapped, if not, map it
 	if(pVerts == null) {
 	  glBindBuffer(GL_ARRAY_BUFFER, uiVertexArray);
-	  pVerts = new M3DVector3fByteBuffer
-	  pVerts.buffer = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY, null);
+	  pVerts = new M3DVector3fArray(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY, null).asFloatBuffer)
 	}
   }
 
@@ -245,9 +241,9 @@ class GLBatch extends GLBatchBase {
 	  return;
 
 	// Copy it in...
-	pVerts(nVertsBuilding, 0) = x;
-	pVerts(nVertsBuilding, 1) = y;
-	pVerts(nVertsBuilding, 2) = z;
+	pVerts(nVertsBuilding)(0) = x;
+	pVerts(nVertsBuilding)(1) = y;
+	pVerts(nVertsBuilding)(2) = z;
 	nVertsBuilding += 1;
   }
   def Vertex3fv(vVertex : M3DVector3f) {
@@ -258,7 +254,7 @@ class GLBatch extends GLBatchBase {
 	  return;
 
 	// Copy it in...
-	pVerts(nVertsBuilding) = vVertex
+	pVerts(nVertsBuilding).copy(vVertex)
 	nVertsBuilding += 1;
   }
 
@@ -267,14 +263,13 @@ class GLBatch extends GLBatchBase {
 	if(uiNormalArray == 0) {	// Nope, we need to create it
 	  uiNormalArray = glGenBuffers();
 	  glBindBuffer(GL_ARRAY_BUFFER, uiNormalArray);
-	  glBufferData(GL_ARRAY_BUFFER, 0, GL_DYNAMIC_DRAW);
+	  glBufferData(GL_ARRAY_BUFFER, 4 * 3 * nNumVerts, GL_DYNAMIC_DRAW);
 	}
 
 	// Now see if it's already mapped, if not, map it
 	if(pNormals == null) {
 	  glBindBuffer(GL_ARRAY_BUFFER, uiNormalArray);
-	  pNormals = new M3DVector3fByteBuffer
-	  pNormals.buffer = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY, null);
+	  pNormals = new M3DVector3fArray(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY, null).asFloatBuffer)
 	}
   }
 
@@ -286,9 +281,9 @@ class GLBatch extends GLBatchBase {
 	  return;
 
 	// Copy it in...
-	pNormals(nVertsBuilding, 0) = x;
-	pNormals(nVertsBuilding, 1) = y;
-	pNormals(nVertsBuilding, 2) = z;
+	pNormals(nVertsBuilding)(0) = x;
+	pNormals(nVertsBuilding)(1) = y;
+	pNormals(nVertsBuilding)(2) = z;
   }
   
   def Normal3fv(vNormal : M3DVector3f) {
@@ -299,7 +294,7 @@ class GLBatch extends GLBatchBase {
 	  return;
 
 	// Copy it in...
-	pNormals(nVertsBuilding) = vNormal
+	pNormals(nVertsBuilding).copy(vNormal)
   }
 
   private def setupColor4f () {
@@ -307,14 +302,13 @@ class GLBatch extends GLBatchBase {
 	if(uiColorArray == 0) {	// Nope, we need to create it
 	  uiColorArray = glGenBuffers();
 	  glBindBuffer(GL_ARRAY_BUFFER, uiColorArray);
-	  glBufferData(GL_ARRAY_BUFFER, 0, GL_DYNAMIC_DRAW);
+	  glBufferData(GL_ARRAY_BUFFER, 4 * 4 * nNumVerts, GL_DYNAMIC_DRAW);
 	}
 
 	// Now see if it's already mapped, if not, map it
 	if(pColors == null) {
 	  glBindBuffer(GL_ARRAY_BUFFER, uiColorArray);
-	  pColors = new M3DVector4fByteBuffer
-	  pColors.buffer = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY, null);
+	  pColors = new M3DVector4fArray(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY, null).asFloatBuffer)
 	}
   }
 
@@ -326,10 +320,10 @@ class GLBatch extends GLBatchBase {
 	  return;
 
 	// Copy it in...
-	pColors(nVertsBuilding, 0) = r;
-	pColors(nVertsBuilding, 1) = g;
-	pColors(nVertsBuilding, 2) = b;
-	pColors(nVertsBuilding, 3) = a;
+	pColors(nVertsBuilding)(0) = r;
+	pColors(nVertsBuilding)(1) = g;
+	pColors(nVertsBuilding)(2) = b;
+	pColors(nVertsBuilding)(3) = a;
   }
 
   def Color4fv(vColor : M3DVector4f) {
@@ -340,7 +334,7 @@ class GLBatch extends GLBatchBase {
 	  return;
 
 	// Copy it in...
-	pColors(nVertsBuilding) = vColor
+	pColors(nVertsBuilding).copy(vColor)
   }
 
   private def setupMultiTexCoord2f(texture : Int) {
@@ -348,14 +342,13 @@ class GLBatch extends GLBatchBase {
 	if(uiTextureCoordArray(texture) == 0) {	// Nope, we need to create it
 	  uiTextureCoordArray(texture) = glGenBuffers();
 	  glBindBuffer(GL_ARRAY_BUFFER, uiTextureCoordArray(texture));
-	  glBufferData(GL_ARRAY_BUFFER, 0, GL_DYNAMIC_DRAW);
+	  glBufferData(GL_ARRAY_BUFFER, 4 * 2 * nNumVerts, GL_DYNAMIC_DRAW);
 	}
 
 	// Now see if it's already mapped, if not, map it
 	if(pTexCoords(texture) == null) {
 	  glBindBuffer(GL_ARRAY_BUFFER, uiTextureCoordArray(texture));
-	  pTexCoords(texture) = new M3DVector2fByteBuffer
-	  pTexCoords(texture).buffer = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY, null);
+	  pTexCoords(texture) = new M3DVector2fArray(glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY, null).asFloatBuffer)
 	}
   }
 
@@ -367,8 +360,8 @@ class GLBatch extends GLBatchBase {
 	  return;
 
 	// Copy it in...
-	pTexCoords(texture)(nVertsBuilding, 0) = s;
-	pTexCoords(texture)(nVertsBuilding, 1) = t;
+	pTexCoords(texture)(nVertsBuilding)(0) = s;
+	pTexCoords(texture)(nVertsBuilding)(1) = t;
   }
   
   def MultiTexCoord2fv(texture : Int, vTexCoord : M3DVector2f) {
@@ -379,48 +372,15 @@ class GLBatch extends GLBatchBase {
 	  return;
 
 	// Copy it in...
-	pTexCoords(texture)(nVertsBuilding) = vTexCoord
+	pTexCoords(texture)(nVertsBuilding).copy(vTexCoord)
   }
+}
 
-  class M3DVector2fByteBuffer {
-	var buffer : ByteBuffer = null
-
-	@inline def floatToByteIndex(nVert : Int, idx : Int = 0) = 4 * ((nVert * 2) + idx)
-
-	// Vert is index of the vertex, idx if coord inside the vertex
-	def update (vert : Int, idx : Int, value : Float) = buffer.putFloat(floatToByteIndex(vert, idx), value)
-	def update (vert : Int, value : M3DVector2f) {
-	  buffer.putFloat(floatToByteIndex(vert), value(0))
-	  buffer.putFloat(value(1))
-	}
-  }
-
-  class M3DVector3fByteBuffer {
-	var buffer : ByteBuffer = null
-
-	@inline def floatToByteIndex(nVert : Int, idx : Int = 0) = 4 * ((nVert * 3) + idx)
-
-	// Vert is index of the vertex, idx if coord inside the vertex
-	def update (vert : Int, idx : Int, value : Float) = buffer.putFloat(floatToByteIndex(vert, idx), value)
-	def update (vert : Int, value : M3DVector3f) {
-	  buffer.putFloat(floatToByteIndex(vert), value(0))
-	  buffer.putFloat(value(1))
-	  buffer.putFloat(value(2))
-	}
-  }
-
-  class M3DVector4fByteBuffer {
-	var buffer : ByteBuffer = null
-
-	@inline def floatToByteIndex(nVert : Int, idx : Int = 0) = 4 * ((nVert * 3) + idx)
-
-	// Vert is index of the vertex, idx if coord inside the vertex
-	def update (vert : Int, idx : Int, value : Float) = buffer.putFloat(floatToByteIndex(vert, idx), value)
-	def update (vert : Int, value : M3DVector4f) {
-	  buffer.putFloat(floatToByteIndex(vert), value(0))
-	  buffer.putFloat(value(1))
-	  buffer.putFloat(value(2))
-	  buffer.putFloat(value(3))
-	}
+object GLBatch {
+  implicit def getFloatBuffer(a : Array[Float]) : FloatBuffer = {
+	val buffer = BufferUtils.createFloatBuffer(a.length)
+	buffer.put(a)
+	buffer.flip()
+	buffer
   }
 }
