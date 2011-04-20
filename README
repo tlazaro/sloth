@@ -47,7 +47,7 @@ SBT could be added but make sure you solve the natives and packaging.
 1. Checkout from GitHub
 2. Until LWJGL is in the standard Maven respository we must install it locally
 	a. Enter the lib/ folder and run mvn-lib-install.sh, or mvn-lib-install.bat if you are using Windows.
-3. Run the pom with "mvn run" using the Release profile and see if it's working
+3. Run the pom with "mvn -P Release install" and it will generate the file Sloth-0.5-SNAPSHOT-release.zip in the target folder
 
 The Release profile creates a complete .zip file ready to be run anywhere with a run.sh and run.bat files.
 
