@@ -3,8 +3,6 @@ package com.belfrygames.sloth
 import com.belfrygames.sloth.glut._
 import com.belfrygames.sloth.Math3D._
 
-import java.io.DataInputStream
-import java.io.File
 import java.nio.ByteBuffer
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -15,69 +13,226 @@ import scala.math._
 
 object GLTools {
   def gltSetWorkingDirectory(szArgv : String) {
-	// pending
+	// TODO
   }
   
   def gltLoadShaderSrc(szShaderSrc : String, shader : Int /*uint*/)	{
 	glShaderSource(shader, szShaderSrc)
   }
+
+  def gltLoadShaderPairWithAttributes(szVertexProg : String, szFragmentProg : String, args : Any*) : Int = {
+    // Create shader objects
+    val hVertexShader = glCreateShader(GL_VERTEX_SHADER);
+    val hFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+    // Load them. If fail clean up and return null
+    // Vertex Program
+    if(gltLoadShaderFile(szVertexProg, hVertexShader) == false)
+	{
+	  glDeleteShader(hVertexShader);
+	  glDeleteShader(hFragmentShader);
+	  println("The shader at " + szVertexProg + " could ot be found.");
+	  return 0;
+	}
+
+    // Fragment Program
+    if(gltLoadShaderFile(szFragmentProg, hFragmentShader) == false)
+	{
+	  glDeleteShader(hVertexShader);
+	  glDeleteShader(hFragmentShader);
+	  println("The shader at " + szFragmentProg + " could not be found.");
+	  return 0;
+	}
+
+    // Compile them both
+    glCompileShader(hVertexShader);
+    glCompileShader(hFragmentShader);
+
+    // Check for errors in vertex shader
+    var testVal = glGetShader(hVertexShader, GL_COMPILE_STATUS);
+    if(testVal == GL_FALSE)
+	{
+	  val infoLog = glGetShaderInfoLog(hVertexShader, 1024);
+	  println("The shader at " + szVertexProg + " failed to compile with the following error:\n" + infoLog);
+	  glDeleteShader(hVertexShader);
+	  glDeleteShader(hFragmentShader);
+	  return 0;
+	}
+
+    // Check for errors in fragment shader
+    testVal = glGetShader(hFragmentShader, GL_COMPILE_STATUS);
+    if(testVal == GL_FALSE)
+	{
+	  val infoLog = glGetShaderInfoLog(hFragmentShader, 1024);
+	  println("The shader at " + szFragmentProg + " failed to compile with the following error:\n" + infoLog);
+	  glDeleteShader(hVertexShader);
+	  glDeleteShader(hFragmentShader);
+	  return 0;
+	}
+
+    // Create the final program object, and attach the shaders
+    val hReturn = glCreateProgram();
+    glAttachShader(hReturn, hVertexShader);
+    glAttachShader(hReturn, hFragmentShader);
+
+
+    // Now, we need to bind the attribute names to their specific locations
+	// List of attributes
+    // Iterate over this argument list
+	val va = new VarArgs(args)
+	val iArgCount : Int = va.arg
+
+	// List of attributes
+	for (i <- 0 until iArgCount) {
+	  val index : Int = va.arg
+	  val szNextArg : String = va.arg
+	  glBindAttribLocation(hReturn, index, szNextArg)
+	}
+
+    // Attempt to link
+    glLinkProgram(hReturn);
+
+    // These are no longer needed
+    glDeleteShader(hVertexShader);
+    glDeleteShader(hFragmentShader);
+
+    // Make sure link worked too
+    testVal = glGetProgram(hReturn, GL_LINK_STATUS);
+    if(testVal == GL_FALSE)
+	{
+	  val infoLog = glGetShaderInfoLog(hReturn, 1024);
+	  println("The programs "+ szVertexProg +" and "+ szFragmentProg +" failed to link with the following errors:\n" + infoLog)
+	  glDeleteProgram(hReturn);
+	  return 0;
+	}
+
+    // All done, return our ready to use shader program
+    return hReturn;
+  }
+
+  /////////////////////////////////////////////////////////////////
+  // Load a pair of shaders, compile, and link together. Specify the complete
+  // file path for each shader. Note, there is no support for
+  // just loading say a vertex program... you have to do both.
+  def gltLoadShaderPair(szVertexProg : String, szFragmentProg : String) : Int = {
+    // Temporary Shader objects
+    var testVal = 0
+
+    // Create shader objects
+    val hVertexShader = glCreateShader(GL_VERTEX_SHADER);
+    val hFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+    // Load them. If fail clean up and return null
+    if(gltLoadShaderFile(szVertexProg, hVertexShader) == false)
+	{
+	  glDeleteShader(hVertexShader);
+	  glDeleteShader(hFragmentShader);
+	  return 0;
+	}
+
+    if(gltLoadShaderFile(szFragmentProg, hFragmentShader) == false)
+	{
+	  glDeleteShader(hVertexShader);
+	  glDeleteShader(hFragmentShader);
+	  return 0;
+	}
+
+    // Compile them
+    glCompileShader(hVertexShader);
+    glCompileShader(hFragmentShader);
+
+    // Check for errors
+    testVal = glGetShader(hVertexShader, GL_COMPILE_STATUS);
+    if(testVal == GL_FALSE)
+	{
+	  glDeleteShader(hVertexShader);
+	  glDeleteShader(hFragmentShader);
+	  return 0;
+	}
+
+    testVal = glGetShader(hFragmentShader, GL_COMPILE_STATUS);
+    if(testVal == GL_FALSE)
+	{
+	  glDeleteShader(hVertexShader);
+	  glDeleteShader(hFragmentShader);
+	  return 0;
+	}
+
+    // Link them - assuming it works...
+    val hReturn = glCreateProgram();
+    glAttachShader(hReturn, hVertexShader);
+    glAttachShader(hReturn, hFragmentShader);
+
+    glLinkProgram(hReturn);
+
+    // These are no longer needed
+    glDeleteShader(hVertexShader);
+    glDeleteShader(hFragmentShader);
+
+    // Make sure link worked too
+    testVal = glGetProgram(hReturn, GL_LINK_STATUS);
+    if(testVal == GL_FALSE)
+	{
+	  glDeleteProgram(hReturn);
+	  return 0;
+	}
+
+    return hReturn;
+  }
   
-//  def gltLoadShaderPairSrc(szVertexSrc : String, szFragmentSrc : String) : Int = {
-//    // Temporary Shader objects
-//    var hVertexShader : Int
-//    var hFragmentShader : Int
-//    val hReturn = 0
-//    val testVal : Int
-//
-//    // Create shader objects
-//    hVertexShader = glCreateShader(GL_VERTEX_SHADER);
-//    hFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-//
-//    // Load them.
-//    gltLoadShaderSrc(szVertexSrc, hVertexShader);
-//    gltLoadShaderSrc(szFragmentSrc, hFragmentShader);
-//
-//    // Compile them
-//    glCompileShader(hVertexShader);
-//    glCompileShader(hFragmentShader);
-//
-//    // Check for errors
-//    glGetShaderiv(hVertexShader, GL_COMPILE_STATUS, &testVal);
-//    if(testVal == GL_FALSE)
-//	{
-//	  glDeleteShader(hVertexShader);
-//	  glDeleteShader(hFragmentShader);
-//	  return (GLuint)NULL;
-//	}
-//
-//    glGetShaderiv(hFragmentShader, GL_COMPILE_STATUS, &testVal);
-//    if(testVal == GL_FALSE)
-//	{
-//	  glDeleteShader(hVertexShader);
-//	  glDeleteShader(hFragmentShader);
-//	  return (GLuint)NULL;
-//	}
-//
-//    // Link them - assuming it works...
-//    hReturn = glCreateProgram();
-//    glAttachShader(hReturn, hVertexShader);
-//    glAttachShader(hReturn, hFragmentShader);
-//    glLinkProgram(hReturn);
-//
-//    // These are no longer needed
-//    glDeleteShader(hVertexShader);
-//    glDeleteShader(hFragmentShader);
-//
-//    // Make sure link worked too
-//    glGetProgramiv(hReturn, GL_LINK_STATUS, &testVal);
-//    if(testVal == GL_FALSE)
-//	{
-//	  glDeleteProgram(hReturn);
-//	  return (GLuint)NULL;
-//	}
-//
-//    return hReturn;
-//  }
+  def gltLoadShaderPairSrc(szVertexSrc : String, szFragmentSrc : String) : Int = {
+    // Temporary Shader objects
+    var testVal : Int = 0
+
+    // Create shader objects
+    val hVertexShader = glCreateShader(GL_VERTEX_SHADER);
+    val hFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+    // Load them.
+    gltLoadShaderSrc(szVertexSrc, hVertexShader);
+    gltLoadShaderSrc(szFragmentSrc, hFragmentShader);
+
+    // Compile them
+    glCompileShader(hVertexShader);
+    glCompileShader(hFragmentShader);
+
+    // Check for errors
+    testVal = glGetShader(hVertexShader, GL_COMPILE_STATUS);
+    if(testVal == GL_FALSE)
+	{
+	  glDeleteShader(hVertexShader);
+	  glDeleteShader(hFragmentShader);
+	  return 0;
+	}
+
+    testVal = glGetShader(hFragmentShader, GL_COMPILE_STATUS);
+    if(testVal == GL_FALSE)
+	{
+	  glDeleteShader(hVertexShader);
+	  glDeleteShader(hFragmentShader);
+	  return 0;
+	}
+
+    // Link them - assuming it works...
+    val hReturn = glCreateProgram();
+    glAttachShader(hReturn, hVertexShader);
+    glAttachShader(hReturn, hFragmentShader);
+    glLinkProgram(hReturn);
+
+    // These are no longer needed
+    glDeleteShader(hVertexShader);
+    glDeleteShader(hFragmentShader);
+
+    // Make sure link worked too
+    testVal = glGetProgram(hReturn, GL_LINK_STATUS);
+    if(testVal == GL_FALSE)
+	{
+	  glDeleteProgram(hReturn);
+	  return 0;
+	}
+
+    return hReturn;
+  }
 
   /////////////////////////////////////////////////////////////////
   // Load a pair of shaders, compile, and link together. Specify the complete
@@ -836,7 +991,7 @@ object GLTools {
 	  case ex : Exception => {
 		  pBits = null
 		  Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
-	  }
+		}
 	} finally {
 	  try {
 		input.close
@@ -848,11 +1003,20 @@ object GLTools {
     // Return pointer to image data
     return (pBits, iWidth, iHeight, iComponents, eFormat);
   }
+
+  def gltLoadShaderFile(szFile : String, shader : Int) : Boolean = {
+	try {
+	  val shaderText = scala.io.Source.fromInputStream(getClass().getClassLoader().getResourceAsStream("com/belfrygames/sloth/resources/" + szFile)).mkString
+	  gltLoadShaderSrc(shaderText, shader)
+	} catch {
+	  case ex : Exception => Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex.getCause()); return false;
+	}
+
+	true
+  }
 }
 /*
- ///////////////////////////////////////////////////////////////////////////////
- //         THE LIBRARY....
- ///////////////////////////////////////////////////////////////////////////////
+ TODO
 
  // Get the OpenGL version
  void gltGetOpenGLVersion(GLint &nMajor, GLint &nMinor);
@@ -860,15 +1024,8 @@ object GLTools {
  // Check to see if an exension is supported
  int gltIsExtSupported(const char *szExtension);
 
- // Set working directoyr to /Resources on the Mac
- void gltSetWorkingDirectory(const char *szArgv);
-
  ///////////////////////////////////////////////////////////////////////////////
  GLbyte* gltReadBMPBits(const char *szFileName, int *nWidth, int *nHeight);
-
- /////////////////////////////////////////////////////////////////////////////////////
- // Load a .TGA file
- GLbyte *gltReadTGABits(const char *szFileName, GLint *iWidth, GLint *iHeight, GLint *iComponents, GLenum *eFormat);
 
  // Capture the frame buffer and write it as a .tga
  // Does not work on the iPhone
@@ -878,22 +1035,7 @@ object GLTools {
 
 
  // Make Objects
- void gltMakeTorus(GLTriangleBatch& torusBatch, GLfloat majorRadius, GLfloat minorRadius, GLint numMajor, GLint numMinor);
- void gltMakeSphere(GLTriangleBatch& sphereBatch, GLfloat fRadius, GLint iSlices, GLint iStacks);
- void gltMakeDisk(GLTriangleBatch& diskBatch, GLfloat innerRadius, GLfloat outerRadius, GLint nSlices, GLint nStacks);
- void gltMakeCylinder(GLTriangleBatch& cylinderBatch, GLfloat baseRadius, GLfloat topRadius, GLfloat fLength, GLint numSlices, GLint numStacks);
- void gltMakeCube(GLBatch& cubeBatch, GLfloat fRadius);
-
  // Shader loading support
- void	gltLoadShaderSrc(const char *szShaderSrc, GLuint shader);
- bool	gltLoadShaderFile(const char *szFile, GLuint shader);
-
- GLuint	gltLoadShaderPair(const char *szVertexProg, const char *szFragmentProg);
- GLuint   gltLoadShaderPairWithAttributes(const char *szVertexProg, const char *szFragmentProg, ...);
-
- GLuint gltLoadShaderPairSrc(const char *szVertexSrc, const char *szFragmentSrc);
- GLuint gltLoadShaderPairSrcWithAttributes(const char *szVertexProg, const char *szFragmentProg, ...);
-
  bool gltCheckErrors(GLuint progName = 0);
  void gltGenerateOrtho2DMat(GLuint width, GLuint height, M3DMatrix44f &orthoMatrix, GLBatch &screenQuad);
  */

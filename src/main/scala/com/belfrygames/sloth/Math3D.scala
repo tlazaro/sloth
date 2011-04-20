@@ -164,6 +164,10 @@ object Math3D {
 	  vec(2) = z
 	  vec
 	}
+
+	implicit def M3DVectorIntToBuffer(vec : M3DVectorInt) = vec.array.asInstanceOf[IntBuffer]
+	implicit def M3DVectorFloatToBuffer(vec : M3DVectorFloat) = vec.array.asInstanceOf[FloatBuffer]
+	implicit def M3DVectorDoubleToBuffer(vec : M3DVectorDouble) = vec.array.asInstanceOf[DoubleBuffer]
   }
 
   // 3D points = 3D Vectors, but we need a 2D representations sometimes... (x,y) order

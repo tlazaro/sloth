@@ -9,6 +9,7 @@ import scala.collection.mutable.Map
 
 import java.nio.FloatBuffer
 
+import org.lwjgl.opengl.GL11._
 import org.lwjgl.opengl.GL20._
 
 import org.lwjgl.BufferUtils
@@ -32,8 +33,6 @@ object GLShaderManager {
   val GLT_ATTRIBUTE_TEXTURE2 = 5
   val GLT_ATTRIBUTE_TEXTURE3 = 6
   val GLT_ATTRIBUTE_LAST = 7
-
-  case class SHADERLOOKUPETRY (szVertexShaderName : String, szFragShaderName : String, uiShaderID : Int)
 
   protected var uiStockShaders = Map.empty[Int, Int]
 
@@ -204,6 +203,109 @@ object GLShaderManager {
 	}
 
 	uiStockShaders(nShaderID)
+  }
+
+  private class SHADERLOOKUPETRY (
+	var szVertexShaderName : String = "",
+	var szFragShaderName : String = "",
+	var uiShaderID : Int = 0
+  )
+
+  // The sourcecode of the book has the code commented and returns 0 so I have no idea what to do :)
+  def LookupShader(szVertexProg : String, szFragProg : String = "") : Int = 0
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+  // Load the shader file, with the supplied named attributes
+  def LoadShaderPairWithAttributes(szVertexProgFileName : String, szFragmentProgFileName : String, args : Any*) : Int = {
+	// Check for duplicate
+	val uiShader = LookupShader(szVertexProgFileName, szFragmentProgFileName);
+	if(uiShader != 0)
+	  return uiShader;
+
+	val shaderEntry = new SHADERLOOKUPETRY
+
+    // Temporary Shader objects
+    var hVertexShader : Int = 0;
+    var hFragmentShader : Int = 0;
+    var testVal : Int = 0;
+
+    // Create shader objects
+    hVertexShader = glCreateShader(GL_VERTEX_SHADER);
+    hFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+    // Load them. If fail clean up and return null
+    if(!gltLoadShaderFile(szVertexProgFileName, hVertexShader))
+	{
+	  glDeleteShader(hVertexShader);
+	  glDeleteShader(hFragmentShader);
+	  return 0;
+	}
+
+    if(!gltLoadShaderFile(szFragmentProgFileName, hFragmentShader))
+	{
+	  glDeleteShader(hVertexShader);
+	  glDeleteShader(hFragmentShader);
+	  return 0;
+	}
+
+    // Compile them
+    glCompileShader(hVertexShader);
+    glCompileShader(hFragmentShader);
+
+    // Check for errors
+    testVal = glGetShader(hVertexShader, GL_COMPILE_STATUS);
+    if(testVal == GL_FALSE)
+	{
+	  glDeleteShader(hVertexShader);
+	  glDeleteShader(hFragmentShader);
+	  return 0;
+	}
+
+    testVal = glGetShader(hFragmentShader, GL_COMPILE_STATUS);
+    if(testVal == GL_FALSE)
+	{
+	  glDeleteShader(hVertexShader);
+	  glDeleteShader(hFragmentShader);
+	  return 0;
+	}
+
+    // Link them - assuming it works...
+	shaderEntry.uiShaderID = glCreateProgram();
+    glAttachShader(shaderEntry.uiShaderID, hVertexShader);
+    glAttachShader(shaderEntry.uiShaderID, hFragmentShader);
+
+
+	// List of attributes
+	var szNextArg : String = null
+	val va = new VarArgs(args)
+	val iArgCount : Int = va.arg
+
+	// List of attributes
+	for (i <- 0 until iArgCount) {
+	  val index : Int = va.arg
+	  szNextArg = va.arg
+	  glBindAttribLocation(shaderEntry.uiShaderID, index, szNextArg)
+	}
+
+    glLinkProgram(shaderEntry.uiShaderID);
+
+    // These are no longer needed
+    glDeleteShader(hVertexShader);
+    glDeleteShader(hFragmentShader);
+
+    // Make sure link worked too
+    testVal = glGetProgram(shaderEntry.uiShaderID, GL_LINK_STATUS)
+    if(testVal == GL_FALSE)
+	{
+	  glDeleteProgram(shaderEntry.uiShaderID);
+	  return 0;
+	}
+
+	// Add it...
+	shaderEntry.szVertexShaderName = szVertexProgFileName
+	shaderEntry.szFragShaderName = szFragmentProgFileName
+//	shaderTable.push_back(shaderEntry);
+	return shaderEntry.uiShaderID;
   }
 
 ///////////////////////////////////////////////////////////////////////////////

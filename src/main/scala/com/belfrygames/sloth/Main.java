@@ -51,6 +51,10 @@ public class Main {
 		examples.add(new Example("5", "Tunnel", "Texture Filtering Example", "F1 to F6 to change filtering modes. Move with arrow keys.", ExampleStatus.ALMOST_PERFECT, "com.belfrygames.sloth.chapter05.Tunnel"));
 		examples.add(new Example("5", "Anisotropic", "Texture Filtering Example with Anisotropic filtering", "F1 to F6 to change filtering modes. F7/F8 on/off anisotropic filtering. Move with arrow keys.", ExampleStatus.ALMOST_PERFECT, "com.belfrygames.sloth.chapter05.Anisotropic"));
 		examples.add(new Example("5", "SphereWorld", "General texturing example", "Move with arrow keys.", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter05.SphereWorld"));
+
+		examples.add(new Example("6", "Triangle", "Shows a Red Triangle in the middle of the screen BUT it's done with custom shaders", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter06.Triangle"));
+		examples.add(new Example("6", "ShadedTriangle", "Shows a cool Triangle in the middle of the screen", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter06.ShadedTriangle"));
+		examples.add(new Example("6", "ProvokingVertex", "Shows a Triangle in the middle of the screen that changes color via proxking vertex feature", "Press SpaceBar", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter06.ProvokingVertex"));
 	}
 
 	public void run() {
