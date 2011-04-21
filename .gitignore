@@ -1,1 +1,8 @@
 /target/
+/lib/lzma.jar
+/lib/lwjgl_util_applet.jar
+/lib/lwjgl-debug.jar
+/lib/AppleJavaExtensions.jar
+/lib/lwjgl_test.jar
+/lib/jinput.jar
+/lib/native/
