@@ -71,6 +71,16 @@ object Math3D {
 	@inline def copy(other : Array[T]) : Unit
 	@inline def copy(other : M3DVector[T]) : Unit
 	@inline def copy(offset : Int, other : M3DVector[T], otherOffset : Int, length : Int) : Unit
+
+	override def toString() : String = {
+	  var res = "Vector[" + apply(0)
+	  var i = 1
+	  while (i < size) {
+		res += ", " + apply(i)
+		i += 1
+	  }
+	  res + "]"
+	}
   }
 
   sealed trait M3DVectorFloat extends M3DVector[Float] {
@@ -138,16 +148,6 @@ object Math3D {
   }
 
   object M3DVector {
-	// Call to get an Array with initalized Vectors or Matrixes of the type you want ej val vecs : Array[Vector3f] = M3DVector.array(5)
-	// Scala type inference magic via implicits provides correct Array type
-//	def array[T <: M3DVector[_]] (size : Int)(implicit man: Manifest[T]) : Array[T] = {
-//	  val res = new Array[T](size)
-//	  for (i <- 0 until res.length) {
-//		res(i) =  man.erasure.newInstance.asInstanceOf[T]
-//	  }
-//	  res
-//	}
-
 	def apply(x : Float, y : Float, z : Float, w : Float) = {
 	  val vec = new M3DVector4f
 	  vec(0) = x
@@ -165,9 +165,11 @@ object Math3D {
 	  vec
 	}
 
-	implicit def M3DVectorIntToBuffer(vec : M3DVectorInt) = vec.array.asInstanceOf[IntBuffer]
-	implicit def M3DVectorFloatToBuffer(vec : M3DVectorFloat) = vec.array.asInstanceOf[FloatBuffer]
-	implicit def M3DVectorDoubleToBuffer(vec : M3DVectorDouble) = vec.array.asInstanceOf[DoubleBuffer]
+	// Write and Read to Vector don't depend on buffer position but reading the buffer directly needs position reset.
+	// This is the best place to do so because it's the only place that will be needed
+	implicit def M3DVectorIntToBuffer(vec : M3DVectorInt) = {vec.array.position(0); vec.array.asInstanceOf[IntBuffer]}
+	implicit def M3DVectorFloatToBuffer(vec : M3DVectorFloat) = {vec.array.position(0); vec.array.asInstanceOf[FloatBuffer]}
+	implicit def M3DVectorDoubleToBuffer(vec : M3DVectorDouble) = {vec.array.position(0); vec.array.asInstanceOf[DoubleBuffer]}
   }
 
   // 3D points = 3D Vectors, but we need a 2D representations sometimes... (x,y) order

@@ -55,6 +55,14 @@ public class Main {
 		examples.add(new Example("6", "Triangle", "Shows a Red Triangle in the middle of the screen BUT it's done with custom shaders", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter06.Triangle"));
 		examples.add(new Example("6", "ShadedTriangle", "Shows a cool Triangle in the middle of the screen", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter06.ShadedTriangle"));
 		examples.add(new Example("6", "ProvokingVertex", "Shows a Triangle in the middle of the screen that changes color via proxking vertex feature", "Press SpaceBar", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter06.ProvokingVertex"));
+		examples.add(new Example("6", "FlatShader", "Shows a wireframe Torus spining in the middle of the screen using uniforms", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter06.FlatShader"));
+		examples.add(new Example("6", "DiffuseLight", "Diffuse Light shader example", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter06.DiffuseLight"));
+		examples.add(new Example("6", "ADSGouraud", "ADS shader example", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter06.ADSGouraud"));
+		examples.add(new Example("6", "ADSPhong", "ADS Phong shader example", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter06.ADSPhong"));
+		examples.add(new Example("6", "Textured Triangle", "Identity Texture shader example", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter06.TexturedTriangle"));
+		examples.add(new Example("6", "LitTexture", "Texture and lightning shader", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter06.LitTexture"));
+		examples.add(new Example("6", "Dissolve", "Dissolve shader", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter06.Dissolve"));
+		examples.add(new Example("6", "ToonShader", "Toon shader", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter06.ToonShader"));
 	}
 
 	public void run() {

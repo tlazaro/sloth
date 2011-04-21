@@ -11,6 +11,7 @@ import javax.swing.JFrame
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11._
+import org.lwjgl.opengl.PixelFormat
 import org.lwjgl.opengl.{Display => GLDisplay}
 
 
@@ -403,13 +404,29 @@ package object glut {
 	GLDisplay.setVSyncEnabled(false)
 	GLDisplay.setParent(window.c)
 	GLDisplay.setLocation(x, y)
-	GLDisplay.create()
+
+	createDisplayContext()
 
 	// Setup GL
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
 	glViewport(0, 0, w, h)
 
 	window
+  }
+
+  private def createDisplayContext() {
+	val flags = fgState.DisplayMode
+	
+	def flag(f : Int) : Boolean = (flags & f) != 0
+	//GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STENCIL
+	
+	var format = new PixelFormat
+	if (flag(GLUT_DOUBLE)) format = format.withAuxBuffers(1)
+//	if (flag(GLUT_RGBA)) format = format.withBitsPerPixel(32)
+	if (flag(GLUT_DEPTH)) format = format.withDepthBits(24)
+	if (flag(GLUT_STENCIL)) format = format.withStencilBits(8)
+
+	GLDisplay.create(format)
   }
 
   def glutReshapeFunc(func : (Int, Int) => Unit) {
