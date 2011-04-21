@@ -16,13 +16,12 @@ smooth in vec3 vVaryingNormal;
 smooth in vec3 vVaryingLightDir;
 smooth in vec2 vVaryingTexCoord;
 
-void main(void)
-    { 
+void main(void) { 
     vec4 vCloudSample = texture(cloudTexture, vVaryingTexCoord);
 
     if(vCloudSample.r < dissolveFactor)
         discard;
-   
+
 
     // Dot product gives us diffuse intensity
     float diff = max(0.0, dot(normalize(vVaryingNormal), normalize(vVaryingLightDir)));
@@ -40,6 +39,19 @@ void main(void)
     if(diff != 0) {
         float fSpec = pow(spec, 128.0);
         vFragColor.rgb += vec3(fSpec, fSpec, fSpec);
-        }
     }
+
+    /*
+	// Sloth Easter EGG. It burns! Test it with white Torus for better effect.
+	float outBurnRadius = 0.04;
+    float burnRadius = 0.025;
+    float burnDegree = 0.80;
+	if (dissolveFactor + burnRadius > vCloudSample.r) {
+        float burn = burnDegree + burnRadius * (burnRadius / burnDegree);
+        vFragColor.rgb -= vec3(burn, burn, burn);
+    } else if (dissolveFactor + outBurnRadius > vCloudSample.r) {
+		float burn = burnDegree + outBurnRadius * (outBurnRadius / burnDegree);
+        vFragColor.r += burn;
+    }*/
+}
     
