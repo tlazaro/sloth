@@ -2,11 +2,11 @@ package com.belfrygames.sloth
 
 import com.belfrygames.sloth.Math3D._
 
-object GLT_STACK_ERROR extends Enumeration {
-  val GLT_STACK_NOERROR , GLT_STACK_OVERFLOW, GLT_STACK_UNDERFLOW = Value
-}
-
 class GLMatrixStack(private val stackDepth : Int = 64) {
+	object GLT_STACK_ERROR extends Enumeration {
+		val GLT_STACK_NOERROR , GLT_STACK_OVERFLOW, GLT_STACK_UNDERFLOW = Value
+	}
+	
   import GLT_STACK_ERROR._
   
   var lastError : GLT_STACK_ERROR.Value = GLT_STACK_NOERROR;

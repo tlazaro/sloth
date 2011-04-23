@@ -2,18 +2,14 @@
 Scala LWJGL OpenGL Toolkit from Hell
 ====================================
 
-This toolkit was created in order to help people work with OpenGL via LWJGL. The problem most people have is that
-documentation like the OpenGL SuperBible book makes use of some helper libraries and it becomes quite complex
-to follow the book without those.
+This toolkit was created in order to help people work with OpenGL via LWJGL. The problem most people have is that documentation like the OpenGL SuperBible book makes use of some helper libraries and it becomes quite complex to follow the book without those.
 
-In this toolkit we will attempt to provide a syntax as close as possible to the code in the book. That would
-allow people to use it as if they were working on C++.
+In this toolkit we will attempt to provide a syntax as close as possible to the code in the book. That would allow people to use it as if they were working on C++.
 
 ** We have just started the project, it is a work in progress **
 ** The plan is to implement all the helper libraries as well as the examples provided with the book **
 
-We chose Scala because it is a much better language to work with than Java while taking full advantage of the
-JVM, libraries and ecosystem. It is also easier to convert C++ into Scala than it is to Java.
+We chose Scala because it is a much better language to work with than Java while taking full advantage of the JVM, libraries and ecosystem. It is also easier to convert C++ into Scala than it is to Java.
 
 "Sloth" was chosen as compared to Glut (Gluttony).
 Could have been "Lwjgl Utility Scala Toolkit" ... Lust!
@@ -33,8 +29,7 @@ Status
 KNOWN BUGS - Fixes are welcome
 -------------------------------
 
-- There is some problem with the window resizing that I can't seem to completely fix, it may crash if the window is resized.
-- The closing of the application is not done properly, when the JFrame is closed it closes the app instead of finishing the game loop and let it close on it's own. 
+- There is some problem with the window resizing that I can't seem to completely fix, it may crash if the window is resized so I removed resizing.
 
 -------------------------------
 Prerequisites
@@ -56,15 +51,14 @@ This project uses Maven to build and manage dependencies because most IDEs don't
 2. Until LWJGL is in the standard Maven repository we must install it locally
 	a. Enter the lib/ folder and run mvn-lib-install.sh, or mvn-lib-install.bat if you are using Windows.
 3. Option Command Line) Run the pom with "mvn -P Release install" and it will generate the file Sloth-0.5-SNAPSHOT-release.zip in the target folder
-3. Option Netbeans) Open the project with Netbeans, right click project in Project Viewer -> "Set Configuration" -> "Release" then run the project. If Netbeans asks to know which class to run select com.belfrygames.sloth.Main for the current IDE session.
+3. Option Netbeans) Open the project with Netbeans, right click project in Project Viewer -> "Set Configuration" -> "Release" then run the project.
 
 Profiles :
+The default profile should be used while developing as it works in offline mode
 The Release profile creates a complete .zip file ready to be run anywhere with a run.sh and run.bat files.
-The default profile should be used while developing.
 
 Future Usage:
-Sloth should actually be just a library to be included in a custom project, for now use this and add your own
-code to it to test your OpenGL skills. You can fork it using git to make it easier to track your own changes.
+Sloth should actually be just a library to be included in a custom project, for now use this and add your own code to it to test your OpenGL skills. You can fork it using git to make it easier to track your own changes.
 
 We could later provide and archetype to make it easier to use.
 
@@ -78,7 +72,7 @@ When editing source code use tab size 2 instead of 4 to see what I see when I de
 IDE Support
 -------------------------------
 
-Netbeans 6.9 - 6.9.1 is fully working. I provided nbactions.xml that will allow the project to be run and find the native files without
-configuration on your end. You should have the Netbeans Scala Plugin so the IDE actually helps you with your scala code.
+Netbeans 6.9 - 6.9.1 and 7.0 is fully working. I provided nbactions.xml that will allow the project to be run and find the native files without configuration on your end. You should have the Netbeans Scala Plugin so the IDE actually helps you with your scala code.
+I recommend Netbeans 7.0 as it supports Git via a plugin.
 
 Feel free to provide additional files or patches to make it easier to use in other IDEs
