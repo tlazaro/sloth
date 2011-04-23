@@ -2,6 +2,7 @@ package com.belfrygames.sloth
 
 import java.awt.BorderLayout
 import java.awt.Canvas
+import java.awt.Dimension
 import java.awt.Frame
 import java.awt.event.ComponentEvent
 import java.awt.event.ComponentListener
@@ -368,7 +369,7 @@ package object glut {
 		def componentResized(e : ComponentEvent) {
 			// This is the AWT Thread, can't allow glViewport called from here
 			// Do it from the main loop
-			resizePending = true
+			setResizePending(true)
     }
 
 		def componentShown(e : ComponentEvent) {
@@ -395,10 +396,16 @@ package object glut {
 		WindowHandler.frame = new Frame(title)
 		WindowHandler.frame.setSize(w, h)
 		WindowHandler.frame.setVisible(true)
+		WindowHandler.frame.setLocation(x, y)
 		
+		initializeFrame(x, y, w, h, true)
+  }
+	
+	private def initializeFrame(x : Int, y : Int, w : Int, h : Int, format : Boolean) {
 		WindowHandler.canvas = new Canvas
 		WindowHandler.frame.add(WindowHandler.canvas, BorderLayout.CENTER)
-		
+		WindowHandler.canvas.setPreferredSize(new Dimension(w, h))
+		WindowHandler.frame.setResizable(false)
 		WindowHandler.frame.pack()
 
 		setWindowListeners()
@@ -406,15 +413,15 @@ package object glut {
 		Display.setFullscreen(false)
 		Display.setVSyncEnabled(false)
 		Display.setParent(WindowHandler.canvas)
-		Display.setDisplayMode(new DisplayMode(w, h))
-		Display.setLocation(x, y)
+//		Display.setDisplayMode(new DisplayMode(w, h))
+//		Display.setLocation(x, y)
 
-		createDisplayContext()
+		createDisplayContext(format)
 
 		// Setup GL
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
 		glViewport(0, 0, w, h)
-  }
+	}
 	
 	private def setWindowListeners() {
 		WindowHandler.frame.addComponentListener(WindowHandler)
@@ -428,18 +435,22 @@ package object glut {
 		WindowHandler.frame.removeWindowFocusListener(WindowHandler)
 	}
 
-  private def createDisplayContext() {
-		val flags = fgState.DisplayMode
-	
-		def flag(f : Int) : Boolean = (flags & f) != 0
-	
-		var format = new PixelFormat
-		if (flag(GLUT_DOUBLE)) format = format.withAuxBuffers(1)
-//	if (flag(GLUT_RGBA)) format = format.withBitsPerPixel(32)
-		if (flag(GLUT_DEPTH)) format = format.withDepthBits(24)
-		if (flag(GLUT_STENCIL)) format = format.withStencilBits(8)
+  private def createDisplayContext(format : Boolean) {
+		if (format) {
+			val flags = fgState.DisplayMode
 
-		Display.create(format)
+			def flag(f : Int) : Boolean = (flags & f) != 0
+
+			var format = new PixelFormat
+			if (flag(GLUT_DOUBLE)) format = format.withAuxBuffers(1)
+	//	if (flag(GLUT_RGBA)) format = format.withBitsPerPixel(32)
+			if (flag(GLUT_DEPTH)) format = format.withDepthBits(24)
+			if (flag(GLUT_STENCIL)) format = format.withStencilBits(8)
+
+			Display.create(format)
+		} else {
+			Display.create()
+		}
   }
 
   def glutReshapeFunc(func : (Int, Int) => Unit) {
@@ -501,41 +512,35 @@ package object glut {
 			return
 		}
 
-		WindowHandler.reshapeFunc(Display.getDisplayMode.getWidth, Display.getDisplayMode.getHeight)
-
+		WindowHandler.reshapeFunc(WindowHandler.frame.getWidth, WindowHandler.frame.getHeight)
+		setResizePending(false)
+		
 		// Rendering
 		while (!isFinished && !Display.isCloseRequested()) {
-			if (isResizePending) {
-				setResizePending(false)
-				
-//				clearFrameListeners()
+//			if (isResizePending()) {
+//				println("Rezising")
 //				
-//				window.f.pack
-//		
-//				val w = window.f.getContentPane.getWidth
-//				val h = window.f.getContentPane.getHeight
-//
+//				setResizePending(false)
+//				clearWindowListeners()
+////				
+//				val w = WindowHandler.frame.getWidth
+//				val h = WindowHandler.frame.getHeight
+//				val location = WindowHandler.frame.getLocation
+//				
 //				// Re-create window, does not seem necesary, crash ocurrs anyway after several resizings
-//				Display.destroy
-////
-//				window.f.remove(window.c)
-//				window.c = new AWTGLCanvas
-//				window.c.setSize(w, h)
-//				window.c.setPreferredSize(window.c.getSize)
-//				window.f.add(BorderLayout.CENTER, window.c)
-//
-//				window.f.pack
-//
-//				Display.setParent(window.c)
-//				Display.create()
+//				Display.destroy()
+//				
+//				WindowHandler.frame.remove(WindowHandler.canvas)
+//				
+//				initializeFrame(location.x, location.y, w, h, false)
 //
 //				println("Reshaping to: [" + w + ", " + h + "]")
 //				WindowHandler.reshapeFunc(w, h)
 //
-//				WindowHandler.dirty = true
+//				setDirty(true)
 //				
-//				setFrameListeners()
-			}
+//				setWindowListeners()
+//			}
 			
 			if (isDirty) {
 				setDirty(false)
@@ -570,7 +575,7 @@ package object glut {
   }
 
   def glutPostRedisplay() {
-		dirty = true
+		setDirty(true)
   }
 
   def glutSetWindowTitle(title : String) {
