@@ -26,7 +26,7 @@ Status
 
 - All examples from the book until Chapter 5 are converted and fully working.
 - Most of the utility code is converted.
-- UI capabilities of Glut are not implemented at all and I don't think they will ever be. It's probablly better to use Nifty GUI for a real life application anyway.
+- UI capabilities of Glut are not implemented at all and I don't think they will ever be. It's probably better to use Nifty GUI for a real life application anyway.
 - Glew is not implemented at all but would be nice to have for real life applications.
 
 -------------------------------
@@ -37,6 +37,15 @@ KNOWN BUGS - Fixes are welcome
 - The closing of the application is not done properly, when the JFrame is closed it closes the app instead of finishing the game loop and let it close on it's own. 
 
 -------------------------------
+Prerequisites
+-------------------------------
+
+- OS: Linux and Windows work fine, Mac should work too (let me know if it doesn't)
+- Scala 2.8.1 final installed with SCALA_HOME configured and SCALA_HOME/bin added to PATH.
+- Maven 2
+- Opengl 3.3 support. Update your graphic card drivers just in case. More info http://en.wikipedia.org/wiki/OpenGL#OpenGL_3.3
+
+-------------------------------
 Setup
 -------------------------------
 
@@ -44,7 +53,7 @@ This project uses Maven to build and manage dependencies because most IDEs don't
 
 0. Make sure you have Scala installed working from the command line, otherwise code will not compile due to the configuration of the Fast Scala Compiler in the Maven pom.
 1. Checkout from GitHub
-2. Until LWJGL is in the standard Maven respository we must install it locally
+2. Until LWJGL is in the standard Maven repository we must install it locally
 	a. Enter the lib/ folder and run mvn-lib-install.sh, or mvn-lib-install.bat if you are using Windows.
 3. Option Command Line) Run the pom with "mvn -P Release install" and it will generate the file Sloth-0.5-SNAPSHOT-release.zip in the target folder
 3. Option Netbeans) Open the project with Netbeans, right click project in Project Viewer -> "Set Configuration" -> "Release" then run the project. If Netbeans asks to know which class to run select com.belfrygames.sloth.Main for the current IDE session.
