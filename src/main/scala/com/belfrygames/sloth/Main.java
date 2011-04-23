@@ -90,7 +90,7 @@ public class Main {
 			public void actionPerformed(ActionEvent ae) {
 				int row = table.getSelectedRow();
 				if (row >= 0 && examples.get(row).getStatus() != ExampleStatus.PENDING) {
-					frame.setVisible(false);
+					frame.dispose();
 					new Thread(examples.get(row)).start();
 				}
 			}

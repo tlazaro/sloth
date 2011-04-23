@@ -2,24 +2,25 @@ package com.belfrygames.sloth
 
 import java.awt.BorderLayout
 import java.awt.Canvas
+import java.awt.Frame
 import java.awt.event.ComponentEvent
 import java.awt.event.ComponentListener
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
-import javax.swing.JFrame
 
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
+import org.lwjgl.opengl.Display
+import org.lwjgl.opengl.DisplayMode
 import org.lwjgl.opengl.GL11._
 import org.lwjgl.opengl.PixelFormat
-import org.lwjgl.opengl.{Display => GLDisplay}
 
 
 class VarArgs[T] (args : Seq[T], var position : Int = 0) {
   def arg[A] : A  = {
-	val ret = args(position).asInstanceOf[A]
-	position += 1
-	ret
+		val ret = args(position).asInstanceOf[A]
+		position += 1
+		ret
   }
 }
 
@@ -81,21 +82,21 @@ package object glut {
   val fgState = new SFG_State()
 
   def fgError(fmt : String) {
-	println("Sloth GLUT")
-	println(fgState.ProgramName)
-	String.format(fmt)
+		println("Sloth GLUT")
+		println(fgState.ProgramName)
+		String.format(fmt)
   }
 
   def fgError(fmt : String, message : String*) {
-	println("Sloth GLUT")
-	println(fgState.ProgramName)
-	String.format(fmt, message)
+		println("Sloth GLUT")
+		println(fgState.ProgramName)
+		String.format(fmt, message)
   }
 
   def fgSystemTime() = System.nanoTime
 
   def fgCreateStructure() {
-	/*
+		/*
      * We will be needing two lists: the first containing windows,
      * and the second containing the user-defined menus.
      * Also, no current window/menu is set, as none has been created yet.
@@ -114,22 +115,22 @@ package object glut {
   }
 
   def glutInit(args : Array[String]) {
-	val displayName = ""
-	val geometry = ""
+		val displayName = ""
+		val geometry = ""
 
-	if( fgState.Initialised )
-	  fgError( "illegal glutInit() reinitialization attempt" )
+		if( fgState.Initialised )
+			fgError( "illegal glutInit() reinitialization attempt" )
 
-	if (args.size > 0) {
-	  fgState.ProgramName = args(0)
-	}
+		if (args.size > 0) {
+			fgState.ProgramName = args(0)
+		}
 
-	Keyboard.enableRepeatEvents(true)
+		Keyboard.enableRepeatEvents(true)
 
-	fgCreateStructure();
+		fgCreateStructure();
 
-	/* Get start time */
-	fgState.Time = fgSystemTime();
+		/* Get start time */
+		fgState.Time = fgSystemTime();
   }
 //	  {
 //		  char* displayName = NULL;
@@ -295,10 +296,10 @@ package object glut {
   def glutInitDisplayMode(displayMode : Int) = fgState.DisplayMode = displayMode
 
   def glutInitWindowSize(width : Int, height : Int) {
-	fgState.Size.X = width;
+		fgState.Size.X = width;
     fgState.Size.Y = height;
 
-	fgState.Size.Use = ( width > 0 ) && ( height > 0 )
+		fgState.Size.Use = ( width > 0 ) && ( height > 0 )
   }
 
   /*
@@ -306,25 +307,25 @@ package object glut {
    * subsystems have been properly initialized and are ready to be used
    */
   def  FREEGLUT_EXIT_IF_NOT_INITIALISED( string : String) {
-	if ( ! fgState.Initialised ) {
-	  fgError ( " ERROR:  Function <%s> called without first calling 'glutInit'.", string ) ;
-	}
+		if ( ! fgState.Initialised ) {
+			fgError ( " ERROR:  Function <%s> called without first calling 'glutInit'.", string ) ;
+		}
   }
 
   def  FREEGLUT_INTERNAL_ERROR_EXIT_IF_NOT_INITIALISED( string : String)  {
-	if ( ! fgState.Initialised ) {
-	  fgError ( " ERROR:  Internal <%s> function called without first calling 'glutInit'.", (string) ) ;
-	}
+		if ( ! fgState.Initialised ) {
+			fgError ( " ERROR:  Internal <%s> function called without first calling 'glutInit'.", (string) ) ;
+		}
   }
 
   def  FREEGLUT_INTERNAL_ERROR_EXIT( cond : Boolean, string : String, function : String)  {
-	if ( ! ( cond ) )	{
-	  fgError ( " ERROR:  Internal error <%s> in function %s", string, function ) ;
-	}
+		if ( ! ( cond ) )	{
+			fgError ( " ERROR:  Internal error <%s> in function %s", string, function ) ;
+		}
   }
 
   def glutCreateWindow(title : String) {
-	/* XXX GLUT does not exit; it simply calls "glutInit" quietly if the
+		/* XXX GLUT does not exit; it simply calls "glutInit" quietly if the
      * XXX application has not already done so.  The "freeglut" community
      * XXX decided not to go this route (freeglut-developer e-mail from
      * XXX Steve Baker, 12/16/04, 4:22 PM CST, "Re: [Freeglut-developer]
@@ -332,27 +333,31 @@ package object glut {
      */
     FREEGLUT_EXIT_IF_NOT_INITIALISED ( "glutCreateWindow" );
 
-    return fgCreateWindow(null, title, fgState.Position.Use, fgState.Position.X, fgState.Position.Y, fgState.Size.Use, fgState.Size.X, fgState.Size.Y, false, false).ID;
+    fgCreateWindow(title, fgState.Position.Use, fgState.Position.X, fgState.Position.Y, fgState.Size.Use, fgState.Size.X, fgState.Size.Y, false, false)
   }
 
-  class SFG_Window (val ID : Int) {
-	val f = new JFrame()
-	f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
-	var c = new Canvas()
-  }
-
+	private[this] var finished = false
+	private[this] var resizePending = false
+	private[this] var dirty = true
+		
+	def isFinished() : Boolean = synchronized { finished }
+	def setFinished(b : Boolean) : Unit = synchronized { finished = b }
+	def isResizePending() : Boolean = synchronized { resizePending }
+	def setResizePending(b : Boolean) : Unit = synchronized { resizePending = b }
+	def isDirty() : Boolean = synchronized { dirty }
+	def setDirty(b : Boolean) : Unit = synchronized { dirty = b }
+		
   object WindowHandler extends WindowAdapter with ComponentListener {
-	var mainWindow : SFG_Window = _
-	var reshapeFunc : (Int, Int) => Unit = (x : Int, y : Int) => ()
-	var displayFunc : () => Unit = () => ()
-	var specialFunc : (Int, Int, Int) => Unit = (key : Int, x : Int, y : Int) => ()
-	var keyboardFunc : (Int, Int, Int) => Unit = (key : Int, x : Int, y : Int) => ()
+		var frame : Frame = _
+		var canvas : Canvas = _
+		
+		var reshapeFunc : (Int, Int) => Unit = (x : Int, y : Int) => ()
+		var displayFunc : () => Unit = () => ()
+		var specialFunc : (Int, Int, Int) => Unit = (key : Int, x : Int, y : Int) => ()
+		var keyboardFunc : (Int, Int, Int) => Unit = (key : Int, x : Int, y : Int) => ()
 
-	var resizePending = true
-	var dirty = true
-	
-	def componentHidden(e : ComponentEvent) {
-	  glutPostRedisplay
+		def componentHidden(e : ComponentEvent) {
+			glutPostRedisplay
     }
 
     def componentMoved(e : ComponentEvent) {
@@ -360,199 +365,216 @@ package object glut {
 //	  println(e)
     }
 
-	def componentResized(e : ComponentEvent) {
-	  // This is the AWT Thread, can't allow glViewport called from here
-	  // Do it from the main loop
-	  resizePending = true
+		def componentResized(e : ComponentEvent) {
+			// This is the AWT Thread, can't allow glViewport called from here
+			// Do it from the main loop
+			resizePending = true
     }
 
-	def componentShown(e : ComponentEvent) {
-	  glutPostRedisplay
+		def componentShown(e : ComponentEvent) {
+			glutPostRedisplay
     }
 
-	override def windowIconified(e : WindowEvent) {
-	  if (e.getID == WindowEvent.WINDOW_DEICONIFIED)
-		glutPostRedisplay
-	}
+		override def windowIconified(e : WindowEvent) {
+			if (e.getID == WindowEvent.WINDOW_DEICONIFIED)
+				glutPostRedisplay
+		}
 
-	override def windowGainedFocus(e : WindowEvent) {
-	  glutPostRedisplay
-	}
+		override def windowGainedFocus(e : WindowEvent) {
+			canvas.requestFocus
+			glutPostRedisplay
+		}
+		
+		override def windowClosing(e : WindowEvent) {
+			println("Closed")
+			setFinished(true)
+		}
   }
 
-  def fgCreateWindow(parent : SFG_Window, title : String, positionUse : Boolean, x : Int, y : Int, sizeUse : Boolean, w : Int, h : Int, gameMode : Boolean, isMenu : Boolean) : SFG_Window = {
-	val window = new SFG_Window(0)
+  def fgCreateWindow(title : String, positionUse : Boolean, x : Int, y : Int, sizeUse : Boolean, w : Int, h : Int, gameMode : Boolean, isMenu : Boolean) {
+		WindowHandler.frame = new Frame(title)
+		WindowHandler.frame.setSize(w, h)
+		WindowHandler.frame.setVisible(true)
+		
+		WindowHandler.canvas = new Canvas
+		WindowHandler.frame.add(WindowHandler.canvas, BorderLayout.CENTER)
+		
+		WindowHandler.frame.pack()
 
-	WindowHandler.mainWindow = window
+		setWindowListeners()
 
-	window.f.setTitle(title)
-	window.f.setLayout(new BorderLayout())
+		Display.setFullscreen(false)
+		Display.setVSyncEnabled(false)
+		Display.setParent(WindowHandler.canvas)
+		Display.setDisplayMode(new DisplayMode(w, h))
+		Display.setLocation(x, y)
 
-	window.c.setSize(w, h)
-	window.c.setPreferredSize(window.c.getSize)
-	window.f.add(BorderLayout.CENTER, window.c)
+		createDisplayContext()
 
-	window.f.setVisible(true)
-
-	window.f.addComponentListener(WindowHandler)
-	window.f.addWindowListener(WindowHandler)
-	window.f.addWindowFocusListener(WindowHandler)
-
-	window.f.pack
-
-	GLDisplay.setFullscreen(false)
-	GLDisplay.setVSyncEnabled(false)
-	GLDisplay.setParent(window.c)
-	GLDisplay.setLocation(x, y)
-
-	createDisplayContext()
-
-	// Setup GL
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
-	glViewport(0, 0, w, h)
-
-	window
+		// Setup GL
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
+		glViewport(0, 0, w, h)
   }
+	
+	private def setWindowListeners() {
+		WindowHandler.frame.addComponentListener(WindowHandler)
+		WindowHandler.frame.addWindowListener(WindowHandler)
+		WindowHandler.frame.addWindowFocusListener(WindowHandler)
+	}
+	
+	private def clearWindowListeners() {
+		WindowHandler.frame.removeComponentListener(WindowHandler)
+		WindowHandler.frame.removeWindowListener(WindowHandler)
+		WindowHandler.frame.removeWindowFocusListener(WindowHandler)
+	}
 
   private def createDisplayContext() {
-	val flags = fgState.DisplayMode
+		val flags = fgState.DisplayMode
 	
-	def flag(f : Int) : Boolean = (flags & f) != 0
-	//GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STENCIL
+		def flag(f : Int) : Boolean = (flags & f) != 0
 	
-	var format = new PixelFormat
-	if (flag(GLUT_DOUBLE)) format = format.withAuxBuffers(1)
+		var format = new PixelFormat
+		if (flag(GLUT_DOUBLE)) format = format.withAuxBuffers(1)
 //	if (flag(GLUT_RGBA)) format = format.withBitsPerPixel(32)
-	if (flag(GLUT_DEPTH)) format = format.withDepthBits(24)
-	if (flag(GLUT_STENCIL)) format = format.withStencilBits(8)
+		if (flag(GLUT_DEPTH)) format = format.withDepthBits(24)
+		if (flag(GLUT_STENCIL)) format = format.withStencilBits(8)
 
-	GLDisplay.create(format)
+		Display.create(format)
   }
 
   def glutReshapeFunc(func : (Int, Int) => Unit) {
-	WindowHandler.reshapeFunc = func
+		WindowHandler.reshapeFunc = func
   }
 
   def glutDisplayFunc(func : () => Unit) {
-	WindowHandler.displayFunc = func
+		WindowHandler.displayFunc = func
   }
 
   def glutSpecialFunc(func : (Int, Int, Int) => Unit) {
-	WindowHandler.specialFunc = func
+		WindowHandler.specialFunc = func
   }
 
   def glutKeyboardFunc(func : (Int, Int, Int) => Unit) {
-	WindowHandler.keyboardFunc = func
+		WindowHandler.keyboardFunc = func
   }
 
   var lastRender = 0L
 
   private def keyboardToSpecialKeyGlut(key : Int) = {
-	import org.lwjgl.input.Keyboard._
-	key match {
-	  case KEY_F1 => GLUT_KEY_F1
-	  case KEY_F2 => GLUT_KEY_F2
-	  case KEY_F3 => GLUT_KEY_F3
-	  case KEY_F4 => GLUT_KEY_F4
-	  case KEY_F5 => GLUT_KEY_F5
-	  case KEY_F6 => GLUT_KEY_F6
-	  case KEY_F7 => GLUT_KEY_F7
-	  case KEY_F8 => GLUT_KEY_F8
-	  case KEY_F9 => GLUT_KEY_F9
-	  case KEY_F10 => GLUT_KEY_F10
-	  case KEY_F11 => GLUT_KEY_F11
-	  case KEY_F12 => GLUT_KEY_F12
-	  case KEY_LEFT => GLUT_KEY_LEFT
-	  case KEY_UP => GLUT_KEY_UP
-	  case KEY_RIGHT => GLUT_KEY_RIGHT
-	  case KEY_DOWN => GLUT_KEY_DOWN
-	  case KEY_PRIOR => GLUT_KEY_PAGE_UP // ????
-	  case KEY_NEXT => GLUT_KEY_PAGE_DOWN // ????
-	  case KEY_HOME => GLUT_KEY_HOME
-	  case KEY_END => GLUT_KEY_END
-	  case KEY_INSERT => GLUT_KEY_INSERT
-	  case _ => 0
-	}
+		import org.lwjgl.input.Keyboard._
+		key match {
+			case KEY_F1 => GLUT_KEY_F1
+			case KEY_F2 => GLUT_KEY_F2
+			case KEY_F3 => GLUT_KEY_F3
+			case KEY_F4 => GLUT_KEY_F4
+			case KEY_F5 => GLUT_KEY_F5
+			case KEY_F6 => GLUT_KEY_F6
+			case KEY_F7 => GLUT_KEY_F7
+			case KEY_F8 => GLUT_KEY_F8
+			case KEY_F9 => GLUT_KEY_F9
+			case KEY_F10 => GLUT_KEY_F10
+			case KEY_F11 => GLUT_KEY_F11
+			case KEY_F12 => GLUT_KEY_F12
+			case KEY_LEFT => GLUT_KEY_LEFT
+			case KEY_UP => GLUT_KEY_UP
+			case KEY_RIGHT => GLUT_KEY_RIGHT
+			case KEY_DOWN => GLUT_KEY_DOWN
+			case KEY_PRIOR => GLUT_KEY_PAGE_UP // ????
+			case KEY_NEXT => GLUT_KEY_PAGE_DOWN // ????
+			case KEY_HOME => GLUT_KEY_HOME
+			case KEY_END => GLUT_KEY_END
+			case KEY_INSERT => GLUT_KEY_INSERT
+			case _ => 0
+		}
   }
 
   private def keyboardToKeyGlut(key : Int) = {
-	import org.lwjgl.input.Keyboard._
-	key match {
-	  case _ => 0
-	}
+		import org.lwjgl.input.Keyboard._
+		key match {
+			case _ => 0
+		}
   }
 
   def glutMainLoop() {
-	if (WindowHandler.mainWindow == null) {
-	  println("Main Window not Initalized, exiting rendering loop.")
-	  return
-	}
-
-	val window = WindowHandler.mainWindow
-
-	// Rendering
-	while (!GLDisplay.isCloseRequested()) {
-	  if (WindowHandler.resizePending) {
-		WindowHandler.resizePending = false
-		
-		val w = window.f.getContentPane.getWidth
-		val h = window.f.getContentPane.getHeight
-
-		// Re-create window, does not seem necesary, crash ocurrs anyway after several resizings
-//		GLDisplay.destroy
-//
-//		window.f.remove(window.c)
-//		window.c = new Canvas
-		window.c.setSize(w, h)
-		window.c.setPreferredSize(window.c.getSize)
-//		window.f.add(BorderLayout.CENTER, window.c)
-
-		window.f.pack
-
-//		GLDisplay.setParent(window.c)
-//		GLDisplay.create()
-
-		WindowHandler.reshapeFunc(w, h)
-
-		WindowHandler.resizePending = false
-		WindowHandler.dirty = true
-	  }
-	  
-	  if (WindowHandler.dirty) {
-		WindowHandler.dirty = false
-
-		WindowHandler.displayFunc()
-		GLDisplay.update()
-	  } else {
-		GLDisplay.processMessages() // update calls processMessages
-	  }
-
-	  while (Keyboard.next()) {
-		if (Keyboard.getEventKeyState || Keyboard.isRepeatEvent) {
-		  // Is this what it's supposed to send???
-		  val keyEvent = Keyboard.getEventKey
-		  val key = keyboardToSpecialKeyGlut(keyEvent)
-		  if (key > 0) {
-			WindowHandler.specialFunc(key, Mouse.getX, Mouse.getY)
-		  } else {
-			WindowHandler.keyboardFunc(Keyboard.getEventCharacter.toInt, Mouse.getX, Mouse.getY)
-		  }
+		if (!Display.isCreated) {
+			println("Main Window not Initalized, exiting rendering loop.")
+			return
 		}
-	  }
-	}
+
+		WindowHandler.reshapeFunc(Display.getDisplayMode.getWidth, Display.getDisplayMode.getHeight)
+
+		// Rendering
+		while (!isFinished && !Display.isCloseRequested()) {
+			if (isResizePending) {
+				setResizePending(false)
+				
+//				clearFrameListeners()
+//				
+//				window.f.pack
+//		
+//				val w = window.f.getContentPane.getWidth
+//				val h = window.f.getContentPane.getHeight
+//
+//				// Re-create window, does not seem necesary, crash ocurrs anyway after several resizings
+//				Display.destroy
+////
+//				window.f.remove(window.c)
+//				window.c = new AWTGLCanvas
+//				window.c.setSize(w, h)
+//				window.c.setPreferredSize(window.c.getSize)
+//				window.f.add(BorderLayout.CENTER, window.c)
+//
+//				window.f.pack
+//
+//				Display.setParent(window.c)
+//				Display.create()
+//
+//				println("Reshaping to: [" + w + ", " + h + "]")
+//				WindowHandler.reshapeFunc(w, h)
+//
+//				WindowHandler.dirty = true
+//				
+//				setFrameListeners()
+			}
+			
+			if (isDirty) {
+				setDirty(false)
+
+				WindowHandler.displayFunc()
+				Display.update()
+			} else {
+				Display.processMessages() // update calls processMessages
+			}
+
+			while (Keyboard.next()) {
+				if (Keyboard.getEventKeyState || Keyboard.isRepeatEvent) {
+					// Is this what it's supposed to send???
+					val keyEvent = Keyboard.getEventKey
+					val key = keyboardToSpecialKeyGlut(keyEvent)
+					if (key > 0) {
+						WindowHandler.specialFunc(key, Mouse.getX, Mouse.getY)
+					} else {
+						WindowHandler.keyboardFunc(Keyboard.getEventCharacter.toInt, Mouse.getX, Mouse.getY)
+					}
+				}
+			}
+		}
+		
+		println("Exited Display loop")
+		Display.destroy()
+		WindowHandler.frame.dispose()
   }
 
   def glutSwapBuffers() {
-//	GLDisplay.swapBuffers // <- should not be called, called by GLDisplay.update()
+//	Display.swapBuffers // <- should not be called, called by Display.update()
   }
 
   def glutPostRedisplay() {
-	WindowHandler.dirty = true
+		dirty = true
   }
 
   def glutSetWindowTitle(title : String) {
-	if (WindowHandler.mainWindow.f != null)
-	  WindowHandler.mainWindow.f.setTitle(title)
+		if (Display.isCreated)
+			WindowHandler.frame.setTitle(title)
   }
-
 }
