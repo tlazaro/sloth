@@ -63,6 +63,9 @@ public class Main {
 		examples.add(new Example("6", "LitTexture", "Texture and lightning shader", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter06.LitTexture"));
 		examples.add(new Example("6", "Dissolve", "Dissolve shader", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter06.Dissolve"));
 		examples.add(new Example("6", "ToonShader", "Toon shader", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter06.ToonShader"));
+		
+		examples.add(new Example("7", "TextureRect", "Showing of Texture Rect", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter07.TextureRect"));
+		examples.add(new Example("7", "Cubemap", "Cubemap", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter07.Cubemap"));
 	}
 
 	public void run() {
