@@ -19,8 +19,7 @@ import org.lwjgl.opengl.GL31._
 import org.lwjgl.opengl.GL32._
 import org.lwjgl.opengl.GL33._
 
-
-object Cubemap {
+object MultiTexture {
 	val viewFrame = new GLFrame
 	val viewFrustum = new GLFrustum
 	val sphereBatch = new GLTriangleBatch
@@ -30,6 +29,7 @@ object Cubemap {
 	val transformPipeline = new GLGeometryTransform
 	
 	var cubeTexture = 0
+	var tarnishTexture = 0
 	var reflectionShader = 0
 	var skyBoxShader = 0
 
@@ -37,6 +37,9 @@ object Cubemap {
 	var locMVReflect = 0
 	var locNormalReflect = 0
 	var locInvertedCamera = 0
+	
+	var locCubeMap = 0
+	var locTarnishMap = 0
 	var locMVPSkyBox = 0
 
 	// Six sides of a cube map
@@ -58,7 +61,21 @@ object Cubemap {
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
     glEnable(GL_DEPTH_TEST);
-        
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+		// Load the tarnish texture
+		tarnishTexture = glGenTextures();
+		glBindTexture(GL_TEXTURE_2D, tarnishTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+		val (pBytes, iWidth, iHeight, iComponents, eFormat) = gltReadTGABits("tarnish.tga")
+    glTexImage2D(GL_TEXTURE_2D, 0, iComponents, iWidth, iHeight, 0, eFormat, GL_UNSIGNED_BYTE, pBytes);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    // Load the cube map    
     cubeTexture = glGenTextures();
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTexture);
         
@@ -67,12 +84,10 @@ object Cubemap {
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);       
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);             
   
     // Load Cube Map images
-    for(i <- 0 until 6) {
+    for(i <- 0 until 6) {        
 			// Load this texture map
 			val (pBytes, iWidth, iHeight, iComponents, eFormat) = gltReadTGABits(szCubeFaces(i))
 			glTexImage2D(cube(i), 0, iComponents, iWidth, iHeight, 0, eFormat, GL_UNSIGNED_BYTE, pBytes);
@@ -83,21 +98,29 @@ object Cubemap {
     gltMakeSphere(sphereBatch, 1.0f, 52, 26);
     gltMakeCube(cubeBatch, 20.0f);
     
-    reflectionShader = gltLoadShaderPairWithAttributes("Reflection.vp", "Reflection.fp", 2, 
+    reflectionShader = gltLoadShaderPairWithAttributes("Reflection2.vp", "Reflection2.fp", 3, 
 																											 GLT_ATTRIBUTE_VERTEX, "vVertex",
-																											 GLT_ATTRIBUTE_NORMAL, "vNormal");
+																											 GLT_ATTRIBUTE_NORMAL, "vNormal",
+																											 GLT_ATTRIBUTE_TEXTURE0, "vTexCoords");
                                                 
     locMVPReflect = glGetUniformLocation(reflectionShader, "mvpMatrix");
     locMVReflect = glGetUniformLocation(reflectionShader, "mvMatrix");
     locNormalReflect = glGetUniformLocation(reflectionShader, "normalMatrix");
 		locInvertedCamera = glGetUniformLocation(reflectionShader, "mInverseCamera");
-                                                
+    locCubeMap = glGetUniformLocation(reflectionShader, "cubeMap");
+		locTarnishMap = glGetUniformLocation(reflectionShader, "tarnishMap");
                                                 
     skyBoxShader = gltLoadShaderPairWithAttributes("SkyBox.vp", "SkyBox.fp", 2, 
 																									 GLT_ATTRIBUTE_VERTEX, "vVertex",
 																									 GLT_ATTRIBUTE_NORMAL, "vNormal");
 
 		locMVPSkyBox = glGetUniformLocation(skyBoxShader, "mvpMatrix");
+
+    // Set textures to their texture units
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, tarnishTexture);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTexture);
 	}
 
 	def ShutdownRC() {
@@ -112,7 +135,6 @@ object Cubemap {
     // Clear the window
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
-    
     viewFrame.GetCameraMatrix(mCamera, false);
     viewFrame.GetCameraMatrix(mCameraRotOnly, true);
 		m3dInvertMatrix44(mInverseCamera, mCameraRotOnly);
@@ -125,6 +147,8 @@ object Cubemap {
 		glUniformMatrix4(locMVReflect, false, transformPipeline.GetModelViewMatrix());
 		glUniformMatrix3(locNormalReflect, false, transformPipeline.GetNormalMatrix());
 		glUniformMatrix4(locInvertedCamera, false, mInverseCamera);
+		glUniform1i(locCubeMap, 0);
+		glUniform1i(locTarnishMap, 1);
 
 		glEnable(GL_CULL_FACE);
 		sphereBatch.Draw();
@@ -175,10 +199,9 @@ object Cubemap {
 
 	def main(args: Array[String]): Unit = {
     glutInit(args);
-		
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(800,600);
-    glutCreateWindow("OpenGL Cube Maps");
+    glutCreateWindow("OpenGL MultiTexture");
     glutReshapeFunc(ChangeSize);
     glutDisplayFunc(RenderScene);
     glutSpecialFunc(SpecialKeys);

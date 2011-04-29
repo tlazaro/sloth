@@ -102,13 +102,6 @@ object Dissolve {
 
   }
 
-  // After googling and cleaning this is fmod I guess
-  def fmod(x : Float, y : Float) = {
-		def modf(x : Float) = x - x.toInt
-
-		if (y == 0) 0 else {modf(x / y) * y}
-  }
-  
 // Called to draw scene
   lazy val rotTimer = new CStopWatch
   val vEyeLight = M3DVector( -100.0f, 100.0f, 100.0f )
