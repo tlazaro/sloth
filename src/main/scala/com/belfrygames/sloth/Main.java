@@ -63,12 +63,14 @@ public class Main {
 		examples.add(new Example("6", "LitTexture", "Texture and lightning shader", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter06.LitTexture"));
 		examples.add(new Example("6", "Dissolve", "Dissolve shader", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter06.Dissolve"));
 		examples.add(new Example("6", "ToonShader", "Toon shader", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter06.ToonShader"));
-		
+
 		examples.add(new Example("7", "TextureRect", "Showing of Texture Rect", "Move with arrow keys.", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter07.TextureRect"));
 		examples.add(new Example("7", "Cubemap", "Cubemap", "Move with arrow keys.", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter07.Cubemap"));
 		examples.add(new Example("7", "MultiTexture", "Multitexturing, cubemap and reflection", "Move with arrow keys.", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter07.MultiTexture"));
 		examples.add(new Example("7", "PointSprites", "PointSprites", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter07.PointSprites"));
 		examples.add(new Example("7", "TextureArrays", "TextureArrays", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter07.TextureArrays"));
+		examples.add(new Example("7", "NormalMapped", "NormalMapped", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter07.NormalMapped"));
+		examples.add(new Example("7", "SphereMapped", "SphereMapped", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter07.SphereMapped"));
 	}
 
 	public void run() {

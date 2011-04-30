@@ -16,9 +16,9 @@ object Buffers {
    * @return a ByteBuffer
    */
   def createByteBuffer(size : Int, direct : Boolean = true) : ByteBuffer = if (direct) {
-	ByteBuffer.allocateDirect(size).order(ByteOrder.nativeOrder());
+		ByteBuffer.allocateDirect(size).order(ByteOrder.nativeOrder());
   } else {
-	ByteBuffer.allocate(size).order(ByteOrder.nativeOrder());
+		ByteBuffer.allocate(size).order(ByteOrder.nativeOrder());
   }
 
   /**
@@ -28,7 +28,7 @@ object Buffers {
    * @return a ShortBuffer
    */
   def createShortBuffer(size : Int, direct : Boolean = true) : ShortBuffer = {
-	return createByteBuffer(size << 1, direct).asShortBuffer();
+		return createByteBuffer(size << 1, direct).asShortBuffer();
   }
 
   /**
@@ -38,7 +38,7 @@ object Buffers {
    * @return an CharBuffer
    */
   def createCharBuffer(size : Int, direct : Boolean = true) : CharBuffer = {
-	return createByteBuffer(size << 1, direct).asCharBuffer();
+		return createByteBuffer(size << 1, direct).asCharBuffer();
   }
 
   /**
@@ -48,7 +48,7 @@ object Buffers {
    * @return an IntBuffer
    */
   def createIntBuffer(size : Int, direct : Boolean = true) : IntBuffer = {
-	return createByteBuffer(size << 2, direct).asIntBuffer();
+		return createByteBuffer(size << 2, direct).asIntBuffer();
   }
 
   /**
@@ -58,7 +58,7 @@ object Buffers {
    * @return an LongBuffer
    */
   def createLongBuffer(size : Int, direct : Boolean = true) : LongBuffer = {
-	return createByteBuffer(size << 3, direct).asLongBuffer();
+		return createByteBuffer(size << 3, direct).asLongBuffer();
   }
 
   /**
@@ -68,7 +68,7 @@ object Buffers {
    * @return a FloatBuffer
    */
   def createFloatBuffer(size : Int, direct : Boolean = true) : FloatBuffer = {
-	return createByteBuffer(size << 2, direct).asFloatBuffer();
+		return createByteBuffer(size << 2, direct).asFloatBuffer();
   }
 
   /**
@@ -78,6 +78,6 @@ object Buffers {
    * @return a FloatBuffer
    */
   def createDoubleBuffer(size : Int, direct : Boolean = true) : DoubleBuffer = {
-	return createByteBuffer(size << 3, direct).asDoubleBuffer();
+		return createByteBuffer(size << 3, direct).asDoubleBuffer();
   }
 }

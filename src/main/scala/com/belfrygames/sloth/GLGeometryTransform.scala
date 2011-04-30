@@ -14,27 +14,27 @@ class GLGeometryTransform {
   @inline def SetProjectionMatrixStack(mProjection : GLMatrixStack) { _mProjection = mProjection; }
 
   @inline def SetMatrixStacks(mModelView : GLMatrixStack, mProjection : GLMatrixStack) {
-	_mModelView = mModelView;
-	_mProjection = mProjection;
+		_mModelView = mModelView;
+		_mProjection = mProjection;
   }
 
   def GetModelViewProjectionMatrix() : M3DMatrix44f = {
-	m3dMatrixMultiply44(_mModelViewProjection, _mProjection.GetMatrix(), _mModelView.GetMatrix());
-	return _mModelViewProjection;
+		m3dMatrixMultiply44(_mModelViewProjection, _mProjection.GetMatrix(), _mModelView.GetMatrix());
+		return _mModelViewProjection;
   }
 
   @inline def GetModelViewMatrix() : M3DMatrix44f = _mModelView.GetMatrix()
   @inline def GetProjectionMatrix() : M3DMatrix44f = _mProjection.GetMatrix()
 
   def GetNormalMatrix(bNormalize : Boolean = false) : M3DMatrix33f = {
-	m3dExtractRotationMatrix33(_mNormalMatrix, GetModelViewMatrix());
+		m3dExtractRotationMatrix33(_mNormalMatrix, GetModelViewMatrix());
 
-	if(bNormalize) {
-	  m3dNormalizeVector3(_mNormalMatrix, 0);
-	  m3dNormalizeVector3(_mNormalMatrix, 3);
-	  m3dNormalizeVector3(_mNormalMatrix, 6);
-	}
+		if(bNormalize) {
+			m3dNormalizeVector3(_mNormalMatrix, 0);
+			m3dNormalizeVector3(_mNormalMatrix, 3);
+			m3dNormalizeVector3(_mNormalMatrix, 6);
+		}
 
-	return _mNormalMatrix;
+		return _mNormalMatrix;
   }
 }

@@ -75,9 +75,9 @@ package object glut {
   /*
    * GLUT API macro definitions -- additional keyboard and joystick definitions
    */
-  val  GLUT_KEY_REPEAT_OFF =                0x0000
-  val  GLUT_KEY_REPEAT_ON  =	            0x0001
-  val  GLUT_KEY_REPEAT_DEFAULT =            0x0002
+  val  GLUT_KEY_REPEAT_OFF = 0x0000
+  val  GLUT_KEY_REPEAT_ON  = 0x0001
+  val  GLUT_KEY_REPEAT_DEFAULT = 0x0002
 
   val fgState = new SFG_State()
 
