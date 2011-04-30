@@ -72,7 +72,7 @@ public class Main {
 		examples.add(new Example("7", "NormalMapped", "NormalMapped", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter07.NormalMapped"));
 		examples.add(new Example("7", "SphereMapped", "SphereMapped", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter07.SphereMapped"));
 		
-		examples.add(new Example("8", "PixBuffs", "Pixel Buffer Blur Effect", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter08.PixBuffs"));
+		examples.add(new Example("8", "PixBuffs", "Blur Effect with and without PBO. In modern harware PBOs are way faster, in my old hardware it runs slower!", "Press 'P' to swap to PBO and manual memory. +/- to change moving object speed", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter08.PixBuffs"));
 	}
 
 	public void run() {
