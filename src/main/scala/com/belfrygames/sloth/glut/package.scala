@@ -3,12 +3,12 @@ package com.belfrygames.sloth
 import java.awt.BorderLayout
 import java.awt.Canvas
 import java.awt.Dimension
-import java.awt.Frame
 import java.awt.event.ComponentEvent
 import java.awt.event.ComponentListener
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 
+import javax.swing.JFrame
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.Display
@@ -348,7 +348,7 @@ package object glut {
 	def setDirty(b : Boolean) : Unit = synchronized { dirty = b }
 		
   object WindowHandler extends WindowAdapter with ComponentListener {
-		var frame : Frame = _
+		var frame : JFrame = _
 		var canvas : Canvas = _
 		
 		var reshapeFunc : (Int, Int) => Unit = (x : Int, y : Int) => ()
@@ -392,7 +392,7 @@ package object glut {
   }
 
   def fgCreateWindow(title : String, positionUse : Boolean, x : Int, y : Int, sizeUse : Boolean, w : Int, h : Int, gameMode : Boolean, isMenu : Boolean) {
-		WindowHandler.frame = new Frame(title)
+		WindowHandler.frame = new JFrame(title)
 		WindowHandler.frame.setSize(w, h)
 		WindowHandler.frame.setVisible(true)
 		WindowHandler.frame.setLocation(x, y)
@@ -442,7 +442,8 @@ package object glut {
 
 			var format = new PixelFormat
 			if (flag(GLUT_DOUBLE)) format = format.withAuxBuffers(1)
-	//	if (flag(GLUT_RGBA)) format = format.withBitsPerPixel(32)
+//			if (flag(GLUT_RGBA)) format = format.withBitsPerPixel(32)
+//			if (flag(GLUT_RGB)) format = format.withBitsPerPixel(32)
 			if (flag(GLUT_DEPTH)) format = format.withDepthBits(24)
 			if (flag(GLUT_STENCIL)) format = format.withStencilBits(8)
 
@@ -454,6 +455,9 @@ package object glut {
 
   def glutReshapeFunc(func : (Int, Int) => Unit) {
 		WindowHandler.reshapeFunc = func
+		
+		WindowHandler.reshapeFunc(WindowHandler.frame.getContentPane.getWidth, WindowHandler.frame.getContentPane.getHeight)
+		setResizePending(false)
   }
 
   def glutDisplayFunc(func : () => Unit) {
@@ -511,9 +515,6 @@ package object glut {
 			return
 		}
 
-		WindowHandler.reshapeFunc(WindowHandler.frame.getWidth, WindowHandler.frame.getHeight)
-		setResizePending(false)
-		
 		// Rendering
 		while (!isFinished && !Display.isCloseRequested()) {
 //			if (isResizePending()) {

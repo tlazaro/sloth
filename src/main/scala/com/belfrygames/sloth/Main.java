@@ -71,6 +71,8 @@ public class Main {
 		examples.add(new Example("7", "TextureArrays", "TextureArrays", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter07.TextureArrays"));
 		examples.add(new Example("7", "NormalMapped", "NormalMapped", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter07.NormalMapped"));
 		examples.add(new Example("7", "SphereMapped", "SphereMapped", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter07.SphereMapped"));
+		
+		examples.add(new Example("8", "PixBuffs", "Pixel Buffer Blur Effect", "None", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter08.PixBuffs"));
 	}
 
 	public void run() {

@@ -894,21 +894,21 @@ object GLTools {
 		cubeBatch.Vertex3f(fRadius, -fRadius, -fRadius);
     cubeBatch.End();
   }
-
+	
   // Define targa header. This is only used locally.
   private class TGAHEADER (
-		var identsize : Byte,              // Size of ID field that follows header (0)
-		var colorMapType : Byte,           // 0 = None, 1 = paletted
-		var imageType : Byte,              // 0 = none, 1 = indexed, 2 = rgb, 3 = grey, +8=rle
-		var colorMapStart : Short,          // First colour map entry
-		var colorMapLength : Short,         // Number of colors
-		var colorMapBits : Byte,   // bits per palette entry
-		var xstart : Short,                 // image x origin
-		var ystart : Short,                 // image y origin
-		var width : Short,                  // width in pixels
-		var height : Short,                 // height in pixels
-		var bits : Byte,                   // bits per pixel (8 16, 24, 32)
-		var descriptor : Byte             // image descriptor
+		val identsize : Byte,              // Size of ID field that follows header (0)
+		val colorMapType : Byte,           // 0 = None, 1 = paletted
+		val imageType : Byte,              // 0 = none, 1 = indexed, 2 = rgb, 3 = grey, +8=rle
+		val colorMapStart : Short,          // First colour map entry
+		val colorMapLength : Short,         // Number of colors
+		val colorMapBits : Byte,   // bits per palette entry
+		val xstart : Short,                 // image x origin
+		val ystart : Short,                 // image y origin
+		val width : Short,                  // width in pixels
+		val height : Short,                 // height in pixels
+		val bits : Byte,                   // bits per pixel (8 16, 24, 32)
+		val descriptor : Byte             // image descriptor
   )
 
 	////////////////////////////////////////////////////////////////////
@@ -1003,6 +1003,126 @@ object GLTools {
     // Return pointer to image data
     return (pBits, iWidth, iHeight, iComponents, eFormat);
   }
+	
+	private class RGB (
+		val blue : Byte,
+		val green : Byte,
+		val red : Byte,
+		val alpha : Byte
+	)
+
+	private class BMPInfoHeader (
+		val size : Int,
+		val width : Int,
+		val height : Int,
+		val planes : Short,
+		val bits : Short,
+		val compression : Int,
+		val imageSize : Int,
+		val xScale : Int,
+		val yScale : Int,
+		val colors : Int,
+		val importantColors : Int
+	)
+
+	private class BMPHeader (
+		val	`type` : Short,
+		val size : Int, 
+		val unused : Short,
+		val unused2 : Short, 
+		val offset : Int
+	)
+
+	private class BMPInfo (
+		val header : BMPInfoHeader,
+		val colors : RGB
+	)
+	
+	def gltReadBMPBits(szFileName : String) : Tuple3[ByteBuffer, Int, Int] = {
+		var lInfoSize = 0;
+		var lBitSize = 0;
+		
+		var nWidth = 0
+		var nHeight = 0
+		var pBits : ByteBuffer = null
+		
+		// Attempt to open the file
+		var input : LEDataInputStream = null
+
+		try {
+			input = new LEDataInputStream(getClass().getClassLoader().getResourceAsStream("com/belfrygames/sloth/resources/" + szFileName))
+			
+			// File is Open. Read in bitmap header information
+			val bitmapHeader = new BMPHeader(input.readShort,
+																			 input.readInt,
+																			 input.readShort,
+																			 input.readShort,
+																			 input.readInt)
+			
+			// Read in bitmap information structure
+			lInfoSize = bitmapHeader.offset - 14; // Header size = 14
+			val bitmapInfoHeader = new BMPInfoHeader(input.readInt,
+																							 input.readInt,
+																							 input.readInt,
+																							 input.readShort,
+																							 input.readShort,
+																							 input.readInt,
+																							 input.readInt,
+																							 input.readInt,
+																							 input.readInt,
+																							 input.readInt,
+																							 input.readInt)
+			
+			val deltaOffset = lInfoSize - 40
+			if (deltaOffset > 0) {
+				input.skipBytes(deltaOffset)
+			} else if (deltaOffset < 0) {
+				throw new Exception("Wrong offset: " + deltaOffset)
+			}
+			
+			val pBitmapInfo = new BMPInfo(bitmapInfoHeader, null)
+			
+			// Save the size and dimensions of the bitmap
+			nWidth = pBitmapInfo.header.width;
+			nHeight = pBitmapInfo.header.height;
+			lBitSize = pBitmapInfo.header.imageSize;
+			
+			// If the size isn't specified, calculate it anyway	
+			if(pBitmapInfo.header.bits != 24) {
+				throw new Exception("Wrong bits in BMP: " + pBitmapInfo.header.bits)
+			}
+				
+			if(lBitSize == 0)
+				lBitSize = (nWidth * pBitmapInfo.header.bits + 7) / 8 * abs(nHeight);
+			
+			// Allocate space for the actual bitmap
+			pBits = Buffers.createByteBuffer(lBitSize)
+
+			// Read in the bits
+			if (pBits.hasArray) {
+				input.readFully(pBits.array)
+			} else {
+				var bytes = new Array[Byte](lBitSize)
+				input.readFully(bytes)
+				pBits.put(bytes)
+				pBits.flip
+			}
+		} catch {
+			case ex : Exception => {
+					pBits = null
+					Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Failed loading file: " + szFileName + " with exception:", ex);
+				}
+		} finally {
+			try {
+				input.close
+			} catch {
+				case ex : Exception => ()
+			}
+		}
+
+		(pBits, nWidth, nHeight)
+	}
+
 
   def gltLoadShaderFile(szFile : String, shader : Int) : Boolean = {
 		try {
@@ -1014,6 +1134,129 @@ object GLTools {
 
 		true
   }
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Create a matrix that maps geometry to the screen. 1 unit in the x directionequals one pixel 
+	// of width, same with the y direction.
+	def gltGenerateOrtho2DMat(screenWidth : Int, screenHeight : Int, orthoMatrix : M3DMatrix44f, screenQuad : GLBatch) {
+    val right = screenWidth.toFloat
+		val left  = 0.0f;
+		val top = screenHeight.toFloat
+		val bottom = 0.0f;
+	
+    // set ortho matrix
+		orthoMatrix(0) = (2 / (right - left));
+		orthoMatrix(1) = 0.0f;
+		orthoMatrix(2) = 0.0f;
+		orthoMatrix(3) = 0.0f;
+
+		orthoMatrix(4) = 0.0f;
+		orthoMatrix(5) = (2 / (top - bottom));
+		orthoMatrix(6) = 0.0f;
+		orthoMatrix(7) = 0.0f;
+
+		orthoMatrix(8) = 0.0f;
+		orthoMatrix(9) = 0.0f;
+		orthoMatrix(10) = (-2 / (1.0f - 0.0f));
+		orthoMatrix(11) = 0.0f;
+
+		orthoMatrix(12) = -1*(right + left) / (right - left);
+		orthoMatrix(13) = -1*(top + bottom) / (top - bottom);
+		orthoMatrix(14) = -1.0f;
+		orthoMatrix(15) =  1.0f;
+
+    // set screen quad vertex array
+		screenQuad.Reset();
+		screenQuad.Begin(GL_TRIANGLE_STRIP, 4, 1);
+		screenQuad.Color4f(0.0f, 1.0f, 0.0f, 1.0f);
+		screenQuad.MultiTexCoord2f(0, 0.0f, 0.0f); 
+		screenQuad.Vertex3f(0.0f, 0.0f, 0.0f);
+
+		screenQuad.Color4f(0.0f, 1.0f, 0.0f, 1.0f);
+		screenQuad.MultiTexCoord2f(0, 1.0f, 0.0f);
+		screenQuad.Vertex3f(screenWidth, 0.0f, 0.0f);
+
+		screenQuad.Color4f(0.0f, 1.0f, 0.0f, 1.0f);
+		screenQuad.MultiTexCoord2f(0, 0.0f, 1.0f);
+		screenQuad.Vertex3f(0.0f, screenHeight, 0.0f);
+
+		screenQuad.Color4f(0.0f, 1.0f, 0.0f, 1.0f);
+		screenQuad.MultiTexCoord2f(0, 1.0f, 1.0f);
+		screenQuad.Vertex3f(screenWidth, screenHeight, 0.0f);
+		screenQuad.End();
+	}
+	
+	/////////////////////////////////////////////////////////////////
+	// Check for any GL errors that may affect rendering
+	// Check the framebuffer, the shader, and general errors
+	def gltCheckErrors(progName : Int = 0) : Boolean = {
+		import org.lwjgl.opengl.GL20._
+		import org.lwjgl.opengl.GL30._
+		import org.lwjgl.opengl.GL32._
+		
+    var bFoundError = false;
+		val error = glGetError();
+		
+		if (error != GL_NO_ERROR) {
+	    printf("A GL Error has occured %d\n", error);
+			bFoundError = true;
+		}
+		
+		val fboStatus = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
+
+		if(fboStatus != GL_FRAMEBUFFER_COMPLETE) {
+			bFoundError = true;
+			printf("The framebuffer is not complete - ");
+			fboStatus match {
+				case GL_FRAMEBUFFER_UNDEFINED => {
+						// Oops, no window exists?
+						printf("GL_FRAMEBUFFER_UNDEFINED\n");
+					}
+				case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT => {
+						// Check the status of each attachment
+						printf("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT\n");
+					}
+				case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT => {
+						// Attach at least one buffer to the FBO
+						printf("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT\n");
+					}
+				case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER => {
+						// Check that all attachments enabled via
+						// glDrawBuffers exist in FBO
+						printf("GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER\n");
+					}
+				case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER => {
+						// Check that the buffer specified via
+						// glReadBuffer exists in FBO
+						printf("GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER\n");
+					}
+				case GL_FRAMEBUFFER_UNSUPPORTED => {
+						// Reconsider formats used for attached buffers
+						printf("GL_FRAMEBUFFER_UNSUPPORTED\n");
+					}
+				case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE => {
+						// Make sure the number of samples for each 
+						// attachment is the same 
+						printf("GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE\n");
+					} 
+				case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS => {
+						// Make sure the number of layers for each 
+						// attachment is the same 
+						printf("GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS\n");
+					}
+			}
+		}
+
+		if (progName != 0) {
+			glValidateProgram(progName);
+			val iIsProgValid = glGetProgram(progName, GL_VALIDATE_STATUS);
+			if(iIsProgValid == 0) {
+				bFoundError = true;
+				printf("The current program(%d) is not valid\n", progName);
+			}
+		}
+    return bFoundError;
+	}
 }
 /*
  TODO
@@ -1025,17 +1268,9 @@ object GLTools {
  int gltIsExtSupported(const char *szExtension);
 
  ///////////////////////////////////////////////////////////////////////////////
- GLbyte* gltReadBMPBits(const char *szFileName, int *nWidth, int *nHeight);
-
  // Capture the frame buffer and write it as a .tga
  // Does not work on the iPhone
  #ifndef OPENGL_ES
  GLint gltGrabScreenTGA(const char *szFileName);
  #endif
-
-
- // Make Objects
- // Shader loading support
- bool gltCheckErrors(GLuint progName = 0);
- void gltGenerateOrtho2DMat(GLuint width, GLuint height, M3DMatrix44f &orthoMatrix, GLBatch &screenQuad);
  */
