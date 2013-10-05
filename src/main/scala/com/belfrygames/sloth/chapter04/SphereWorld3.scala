@@ -192,6 +192,5 @@ object SphereWorld3 {
 
     SetupRC();
     glutMainLoop();
-    return 0;
   }
 }

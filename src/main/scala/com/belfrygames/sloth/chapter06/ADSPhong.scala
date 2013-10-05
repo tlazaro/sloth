@@ -130,6 +130,5 @@ object ADSPhong {
 	SetupRC();
 	glutMainLoop();
 	ShutdownRC();
-	return 0;
   }
 }

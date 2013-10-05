@@ -11,6 +11,8 @@ import com.belfrygames.sloth.GLShaderManager._
 import org.lwjgl.opengl.GL11._
 
 object Bounce {
+  import GLBatch._
+
   // Bounce.cpp
 // Bounce a Block around the screen
 
@@ -128,6 +130,5 @@ object Bounce {
 	SetupRC();
 
 	glutMainLoop();
-	return 0;
   }
 }

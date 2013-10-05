@@ -11,7 +11,7 @@ import org.lwjgl.opengl.GL11._
 
 object Orthographic {
   val viewFrame = new GLFrame
-  val viewFrustum = new GLFrustum 
+  val viewFrustum = new GLFrustum
   val tubeBatch = new GLBatch
   val innerBatch  = new GLBatch
   val modelViewMatix = new GLMatrixStack
@@ -530,6 +530,5 @@ object Orthographic {
 		SetupRC();
 
 		glutMainLoop();
-		return 0;
   }
 }

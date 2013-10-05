@@ -12,12 +12,14 @@ import com.belfrygames.sloth.glut.Internal._
 import org.lwjgl.opengl.GL11._
 
 object Move {
+  import GLBatch._
+
   val squareBatch = new GLBatch
 
   val shaderManager = GLShaderManager
 
   val blockSize = 0.1f;
-  val vVerts = Array(-blockSize, -blockSize, 0.0f, 
+  val vVerts = Array(-blockSize, -blockSize, 0.0f,
 					 blockSize, -blockSize, 0.0f,
 					 blockSize,  blockSize, 0.0f,
 					 -blockSize,  blockSize, 0.0f)
@@ -130,6 +132,5 @@ object Move {
 	SetupRC();
 
 	glutMainLoop();
-	return 0;
   }
 }

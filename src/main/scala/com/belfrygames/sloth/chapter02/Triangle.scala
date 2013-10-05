@@ -11,9 +11,11 @@ import com.belfrygames.sloth.glut.Internal._
 import org.lwjgl.opengl.GL11._
 
 object Triangle {
+  import GLBatch._
+
   val triangleBatch = new GLBatch
   val shaderManager = GLShaderManager
-  
+
 ///////////////////////////////////////////////////////////////////////////////
 // Window has changed size, or has just been created. In either case, we need
 // to use the window dimensions to set the viewport and the projection matrix.
@@ -34,7 +36,7 @@ object Triangle {
 	val vVerts = Array(-0.5f, 0.0f, 0.0f,
 					   0.5f, 0.0f, 0.0f,
 					   0.0f, 0.5f, 0.0f)
-	 
+
 	triangleBatch.Begin(GL_TRIANGLES, 3)
 	triangleBatch.CopyVertexData3f(vVerts)
 	triangleBatch.End()

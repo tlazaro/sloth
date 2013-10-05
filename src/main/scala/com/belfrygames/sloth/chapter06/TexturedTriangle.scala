@@ -16,6 +16,8 @@ import org.lwjgl.opengl.GL30._
 import org.lwjgl.opengl.GL32._
 
 object TexturedTriangle {
+  import GLBatch._
+
   val triangleBatch = new GLBatch
   val shaderManager = GLShaderManager
 
@@ -32,7 +34,7 @@ object TexturedTriangle {
 
 
 // Load a TGA as a 2D Texture. Completely initialize the state
-  def LoadTGATexture(szFileName : String, minFilter : Int, magFilter : Int, wrapMode : Int)
+  def LoadTGATexture(szFileName : String, minFilter : Int, magFilter : Int, wrapMode : Int): Boolean =
   {
 	// Read the texture bits
 	val (pBits, nWidth, nHeight, nComponents, eFormat) = gltReadTGABits(szFileName)
@@ -141,7 +143,5 @@ object TexturedTriangle {
 	glutMainLoop();
 
 	ShutdownRC();
-
-	return 0;
   }
 }

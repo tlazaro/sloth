@@ -13,6 +13,8 @@ import org.lwjgl.opengl.GL11._
 import scala.math._
 
 object Primitives {
+  import GLBatch._
+
   /////////////////////////////////////////////////////////////////////////////////
   // An assortment of needed classes
   val shaderManager = GLShaderManager
@@ -344,6 +346,5 @@ object Primitives {
 	SetupRC();
 
 	glutMainLoop();
-	return 0;
   }
 }

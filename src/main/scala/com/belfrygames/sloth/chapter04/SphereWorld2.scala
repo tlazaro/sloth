@@ -166,6 +166,5 @@ object SphereWorld2 {
 
     SetupRC();
     glutMainLoop();
-    return 0;
   }
 }

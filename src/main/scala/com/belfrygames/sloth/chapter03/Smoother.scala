@@ -14,6 +14,8 @@ import org.lwjgl.opengl.GL11._
 import scala.math._
 
 object Smoother {
+  import GLBatch._
+
   // Smoother.cpp
   // OpenGL SuperBible
   // Demonstrates point and line antialiasing
@@ -109,7 +111,7 @@ object Smoother {
 
     // Populate star list
 		val rand = new scala.util.Random
-	
+
     smallStarBatch.Begin(GL_POINTS, SMALL_STARS);
     for(i <- 0 until SMALL_STARS) {
 			vVerts(i)(0) = (rand.nextFloat * SCREEN_X);

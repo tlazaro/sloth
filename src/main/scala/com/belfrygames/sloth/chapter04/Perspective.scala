@@ -533,6 +533,5 @@ object Perspective {
 	SetupRC();
 
 	glutMainLoop();
-	return 0;
   }
 }

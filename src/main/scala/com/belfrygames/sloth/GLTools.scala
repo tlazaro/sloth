@@ -15,7 +15,7 @@ object GLTools {
   def gltSetWorkingDirectory(szArgv : String) {
 		// TODO
   }
-  
+
   def gltLoadShaderSrc(szShaderSrc : String, shader : Int /*uint*/)	{
 		glShaderSource(shader, szShaderSrc)
   }
@@ -49,7 +49,7 @@ object GLTools {
     glCompileShader(hFragmentShader);
 
     // Check for errors in vertex shader
-    var testVal = glGetShader(hVertexShader, GL_COMPILE_STATUS);
+    var testVal = glGetShaderi(hVertexShader, GL_COMPILE_STATUS);
     if(testVal == GL_FALSE)
 		{
 			val infoLog = glGetShaderInfoLog(hVertexShader, 1024);
@@ -60,7 +60,7 @@ object GLTools {
 		}
 
     // Check for errors in fragment shader
-    testVal = glGetShader(hFragmentShader, GL_COMPILE_STATUS);
+    testVal = glGetShaderi(hFragmentShader, GL_COMPILE_STATUS);
     if(testVal == GL_FALSE)
 		{
 			val infoLog = glGetShaderInfoLog(hFragmentShader, 1024);
@@ -97,7 +97,7 @@ object GLTools {
     glDeleteShader(hFragmentShader);
 
     // Make sure link worked too
-    testVal = glGetProgram(hReturn, GL_LINK_STATUS);
+    testVal = glGetProgrami(hReturn, GL_LINK_STATUS);
     if(testVal == GL_FALSE)
 		{
 			val infoLog = glGetShaderInfoLog(hReturn, 1024);
@@ -142,7 +142,7 @@ object GLTools {
     glCompileShader(hFragmentShader);
 
     // Check for errors
-    testVal = glGetShader(hVertexShader, GL_COMPILE_STATUS);
+    testVal = glGetShaderi(hVertexShader, GL_COMPILE_STATUS);
     if(testVal == GL_FALSE)
 		{
 			glDeleteShader(hVertexShader);
@@ -150,7 +150,7 @@ object GLTools {
 			return 0;
 		}
 
-    testVal = glGetShader(hFragmentShader, GL_COMPILE_STATUS);
+    testVal = glGetShaderi(hFragmentShader, GL_COMPILE_STATUS);
     if(testVal == GL_FALSE)
 		{
 			glDeleteShader(hVertexShader);
@@ -170,7 +170,7 @@ object GLTools {
     glDeleteShader(hFragmentShader);
 
     // Make sure link worked too
-    testVal = glGetProgram(hReturn, GL_LINK_STATUS);
+    testVal = glGetProgrami(hReturn, GL_LINK_STATUS);
     if(testVal == GL_FALSE)
 		{
 			glDeleteProgram(hReturn);
@@ -179,7 +179,7 @@ object GLTools {
 
     return hReturn;
   }
-  
+
   def gltLoadShaderPairSrc(szVertexSrc : String, szFragmentSrc : String) : Int = {
     // Temporary Shader objects
     var testVal : Int = 0
@@ -197,7 +197,7 @@ object GLTools {
     glCompileShader(hFragmentShader);
 
     // Check for errors
-    testVal = glGetShader(hVertexShader, GL_COMPILE_STATUS);
+    testVal = glGetShaderi(hVertexShader, GL_COMPILE_STATUS);
     if(testVal == GL_FALSE)
 		{
 			glDeleteShader(hVertexShader);
@@ -205,7 +205,7 @@ object GLTools {
 			return 0;
 		}
 
-    testVal = glGetShader(hFragmentShader, GL_COMPILE_STATUS);
+    testVal = glGetShaderi(hFragmentShader, GL_COMPILE_STATUS);
     if(testVal == GL_FALSE)
 		{
 			glDeleteShader(hVertexShader);
@@ -224,7 +224,7 @@ object GLTools {
     glDeleteShader(hFragmentShader);
 
     // Make sure link worked too
-    testVal = glGetProgram(hReturn, GL_LINK_STATUS);
+    testVal = glGetProgrami(hReturn, GL_LINK_STATUS);
     if(testVal == GL_FALSE)
 		{
 			glDeleteProgram(hReturn);
@@ -255,14 +255,14 @@ object GLTools {
     glCompileShader(hFragmentShader)
 
     // Check for errors
-    var testVal = glGetShader(hVertexShader, GL_COMPILE_STATUS)
+    var testVal = glGetShaderi(hVertexShader, GL_COMPILE_STATUS)
     if(testVal == GL_FALSE) {
 			glDeleteShader(hVertexShader)
 			glDeleteShader(hFragmentShader)
 			return 0
 		}
 
-    testVal = glGetShader(hFragmentShader, GL_COMPILE_STATUS)
+    testVal = glGetShaderi(hFragmentShader, GL_COMPILE_STATUS)
     if(testVal == GL_FALSE) {
 			glDeleteShader(hVertexShader)
 			glDeleteShader(hFragmentShader)
@@ -292,7 +292,7 @@ object GLTools {
     glDeleteShader(hFragmentShader)
 
     // Make sure link worked too
-    testVal = glGetProgram(hReturn, GL_LINK_STATUS)
+    testVal = glGetProgrami(hReturn, GL_LINK_STATUS)
     if(testVal == GL_FALSE) {
 			glDeleteProgram(hReturn);
 			return 0;
@@ -523,8 +523,8 @@ object GLTools {
 				val inner = innerRadius + (i.toFloat) * fStepSizeRadial;
 				val outer = innerRadius + ((i+1).toFloat) * fStepSizeRadial;
 
-				var theyta = fStepSizeSlice * j.toFloat;
-				var theytaNext = if(j == (nSlices - 1))
+				val theyta = fStepSizeSlice * j.toFloat;
+				val theytaNext = if(j == (nSlices - 1))
 					0.0f;
 				else
 					fStepSizeSlice * (j+1).toFloat;
@@ -894,7 +894,7 @@ object GLTools {
 		cubeBatch.Vertex3f(fRadius, -fRadius, -fRadius);
     cubeBatch.End();
   }
-	
+
   // Define targa header. This is only used locally.
   private class TGAHEADER (
 		val identsize : Byte,              // Size of ID field that follows header (0)
@@ -966,7 +966,7 @@ object GLTools {
 			if (pBits.hasArray) {
 				input.readFully(pBits.array)
 			} else {
-				var bytes = new Array[Byte](lImageSize)
+				val bytes = new Array[Byte](lImageSize)
 				input.readFully(bytes)
 				pBits.put(bytes)
 				pBits.flip
@@ -1003,7 +1003,7 @@ object GLTools {
     // Return pointer to image data
     return (pBits, iWidth, iHeight, iComponents, eFormat);
   }
-	
+
 	private class RGB (
 		val blue : Byte,
 		val green : Byte,
@@ -1027,9 +1027,9 @@ object GLTools {
 
 	private class BMPHeader (
 		val	`type` : Short,
-		val size : Int, 
+		val size : Int,
 		val unused : Short,
-		val unused2 : Short, 
+		val unused2 : Short,
 		val offset : Int
 	)
 
@@ -1037,28 +1037,28 @@ object GLTools {
 		val header : BMPInfoHeader,
 		val colors : RGB
 	)
-	
+
 	def gltReadBMPBits(szFileName : String) : Tuple3[ByteBuffer, Int, Int] = {
 		var lInfoSize = 0;
 		var lBitSize = 0;
-		
+
 		var nWidth = 0
 		var nHeight = 0
 		var pBits : ByteBuffer = null
-		
+
 		// Attempt to open the file
 		var input : LEDataInputStream = null
 
 		try {
 			input = new LEDataInputStream(getClass().getClassLoader().getResourceAsStream("com/belfrygames/sloth/resources/" + szFileName))
-			
+
 			// File is Open. Read in bitmap header information
 			val bitmapHeader = new BMPHeader(input.readShort,
 																			 input.readInt,
 																			 input.readShort,
 																			 input.readShort,
 																			 input.readInt)
-			
+
 			// Read in bitmap information structure
 			lInfoSize = bitmapHeader.offset - 14; // Header size = 14
 			val bitmapInfoHeader = new BMPInfoHeader(input.readInt,
@@ -1072,29 +1072,29 @@ object GLTools {
 																							 input.readInt,
 																							 input.readInt,
 																							 input.readInt)
-			
+
 			val deltaOffset = lInfoSize - 40
 			if (deltaOffset > 0) {
 				input.skipBytes(deltaOffset)
 			} else if (deltaOffset < 0) {
 				throw new Exception("Wrong offset: " + deltaOffset)
 			}
-			
+
 			val pBitmapInfo = new BMPInfo(bitmapInfoHeader, null)
-			
+
 			// Save the size and dimensions of the bitmap
 			nWidth = pBitmapInfo.header.width;
 			nHeight = pBitmapInfo.header.height;
 			lBitSize = pBitmapInfo.header.imageSize;
-			
-			// If the size isn't specified, calculate it anyway	
+
+			// If the size isn't specified, calculate it anyway
 			if(pBitmapInfo.header.bits != 24) {
 				throw new Exception("Wrong bits in BMP: " + pBitmapInfo.header.bits)
 			}
-				
+
 			if(lBitSize == 0)
 				lBitSize = (nWidth * pBitmapInfo.header.bits + 7) / 8 * abs(nHeight);
-			
+
 			// Allocate space for the actual bitmap
 			pBits = Buffers.createByteBuffer(lBitSize)
 
@@ -1102,7 +1102,7 @@ object GLTools {
 			if (pBits.hasArray) {
 				input.readFully(pBits.array)
 			} else {
-				var bytes = new Array[Byte](lBitSize)
+				val bytes = new Array[Byte](lBitSize)
 				input.readFully(bytes)
 				pBits.put(bytes)
 				pBits.flip
@@ -1134,16 +1134,16 @@ object GLTools {
 
 		true
   }
-	
+
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Create a matrix that maps geometry to the screen. 1 unit in the x directionequals one pixel 
+	// Create a matrix that maps geometry to the screen. 1 unit in the x directionequals one pixel
 	// of width, same with the y direction.
 	def gltGenerateOrtho2DMat(screenWidth : Int, screenHeight : Int, orthoMatrix : M3DMatrix44f, screenQuad : GLBatch) {
     val right = screenWidth.toFloat
 		val left  = 0.0f;
 		val top = screenHeight.toFloat
 		val bottom = 0.0f;
-	
+
     // set ortho matrix
 		orthoMatrix(0) = (2 / (right - left));
 		orthoMatrix(1) = 0.0f;
@@ -1169,7 +1169,7 @@ object GLTools {
 		screenQuad.Reset();
 		screenQuad.Begin(GL_TRIANGLE_STRIP, 4, 1);
 		screenQuad.Color4f(0.0f, 1.0f, 0.0f, 1.0f);
-		screenQuad.MultiTexCoord2f(0, 0.0f, 0.0f); 
+		screenQuad.MultiTexCoord2f(0, 0.0f, 0.0f);
 		screenQuad.Vertex3f(0.0f, 0.0f, 0.0f);
 
 		screenQuad.Color4f(0.0f, 1.0f, 0.0f, 1.0f);
@@ -1185,7 +1185,7 @@ object GLTools {
 		screenQuad.Vertex3f(screenWidth, screenHeight, 0.0f);
 		screenQuad.End();
 	}
-	
+
 	/////////////////////////////////////////////////////////////////
 	// Check for any GL errors that may affect rendering
 	// Check the framebuffer, the shader, and general errors
@@ -1193,15 +1193,15 @@ object GLTools {
 		import org.lwjgl.opengl.GL20._
 		import org.lwjgl.opengl.GL30._
 		import org.lwjgl.opengl.GL32._
-		
+
     var bFoundError = false;
 		val error = glGetError();
-		
+
 		if (error != GL_NO_ERROR) {
 	    printf("A GL Error has occured %d\n", error);
 			bFoundError = true;
 		}
-		
+
 		val fboStatus = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
 
 		if(fboStatus != GL_FRAMEBUFFER_COMPLETE) {
@@ -1235,13 +1235,13 @@ object GLTools {
 						printf("GL_FRAMEBUFFER_UNSUPPORTED\n");
 					}
 				case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE => {
-						// Make sure the number of samples for each 
-						// attachment is the same 
+						// Make sure the number of samples for each
+						// attachment is the same
 						printf("GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE\n");
-					} 
+					}
 				case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS => {
-						// Make sure the number of layers for each 
-						// attachment is the same 
+						// Make sure the number of layers for each
+						// attachment is the same
 						printf("GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS\n");
 					}
 			}
@@ -1249,7 +1249,7 @@ object GLTools {
 
 		if (progName != 0) {
 			glValidateProgram(progName);
-			val iIsProgValid = glGetProgram(progName, GL_VALIDATE_STATUS);
+			val iIsProgValid = glGetProgrami(progName, GL_VALIDATE_STATUS);
 			if(iIsProgValid == 0) {
 				bFoundError = true;
 				printf("The current program(%d) is not valid\n", progName);

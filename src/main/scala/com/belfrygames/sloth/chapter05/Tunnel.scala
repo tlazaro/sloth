@@ -279,7 +279,5 @@ object Tunnel {
     SetupRC();
     glutMainLoop();
     ShutdownRC();
-
-    return 0;
   }
 }

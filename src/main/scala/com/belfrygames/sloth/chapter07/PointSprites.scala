@@ -37,31 +37,31 @@ object PointSprites {
 	def LoadTGATexture(szFileName : String, minFilter : Int, magFilter : Int, wrapMode : Int) : Boolean = {
 		// Read the texture bits
 		val (pBits, nWidth, nHeight, nComponents, eFormat) = gltReadTGABits(szFileName)
-		if(pBits == null) 
+		if(pBits == null)
 			return false;
-	
+
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
-	
+
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
-    
+
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		glTexImage2D(GL_TEXTURE_2D, 0, nComponents, nWidth, nHeight, 0,
 								 eFormat, GL_UNSIGNED_BYTE, pBits);
-	
-    if(minFilter == GL_LINEAR_MIPMAP_LINEAR || 
+
+    if(minFilter == GL_LINEAR_MIPMAP_LINEAR ||
        minFilter == GL_LINEAR_MIPMAP_NEAREST ||
        minFilter == GL_NEAREST_MIPMAP_LINEAR ||
        minFilter == GL_NEAREST_MIPMAP_NEAREST)
 				 glGenerateMipmap(GL_TEXTURE_2D);
-    
+
 		return true;
 	}
 
 
 	// This function does any needed initialization on the rendering
-	// context. 
+	// context.
 	val fColors = M3DVector4fArray(1.0f, 1.0f, 1.0f, 1.0f, // White
 																 0.67f, 0.68f, 0.82f, 1.0f, // Blue Stars
 																 1.0f, 0.5f, 0.5f, 1.0f, // Reddish
@@ -73,7 +73,7 @@ object PointSprites {
 		glEnable(GL_POINT_SPRITE);
 
     // Randomly place the stars in their initial positions, and pick a random color
-		
+
 		val rand = new scala.util.Random
     starsBatch.Begin(GL_POINTS, NUM_STARS);
     for(i <- 0 until NUM_STARS) {
@@ -90,9 +90,9 @@ object PointSprites {
 			// One in 100 is amber
 			if(rand.nextFloat * 100 <= 1)
 				iColor = 3;
-		
+
 			starsBatch.Color4fv(fColors(iColor));
-			    
+
 			val vPosition = new M3DVector3f
 			vPosition(0) = (3000 - (rand.nextFloat * 6000)) * 0.1f;
 			vPosition(1) = (3000 - (rand.nextFloat * 6000)) * 0.1f;
@@ -109,7 +109,7 @@ object PointSprites {
 		locMVP = glGetUniformLocation(starFieldShader, "mvpMatrix");
 		locTexture = glGetUniformLocation(starFieldShader, "starImage");
     locTimeStamp = glGetUniformLocation(starFieldShader, "timeStamp");
-    
+
 		starTexture = glGenTextures();
 		glBindTexture(GL_TEXTURE_2D, starTexture);
 		LoadTGATexture("star.tga", GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE);
@@ -126,7 +126,7 @@ object PointSprites {
 	def RenderScene() {
 		// Clear the window and the depth buffer
 		glClear(GL_COLOR_BUFFER_BIT);
-		
+
     // Turn on additive blending
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_ONE, GL_ONE);
@@ -145,7 +145,7 @@ object PointSprites {
 
     // Draw the stars
     starsBatch.Draw();
-    
+
     glutSwapBuffers();
 		glutPostRedisplay();
 	}
@@ -177,10 +177,9 @@ object PointSprites {
 //			fprintf(stderr, "GLEW Error: %s\n", glewGetErrorString(err));
 //			return 1;
 //    }
-	
-		SetupRC();    
+
+		SetupRC();
 		glutMainLoop();
 		ShutdownRC();
-		return 0;
 	}
 }

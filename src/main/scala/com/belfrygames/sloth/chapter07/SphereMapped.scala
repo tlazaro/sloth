@@ -39,29 +39,29 @@ object SphereMapped {
 	def LoadTGATexture(szFileName : String, minFilter : Int, magFilter : Int, wrapMode : Int) : Boolean = {
 		// Read the texture bits
 		val (pBits, nWidth, nHeight, nComponents, eFormat) = gltReadTGABits(szFileName)
-		if(pBits == null) 
+		if(pBits == null)
 			return false;
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
-	
+
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
-    
+
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		glTexImage2D(GL_TEXTURE_2D, 0, nComponents, nWidth, nHeight, 0, eFormat, GL_UNSIGNED_BYTE, pBits);
-	
-    if(minFilter == GL_LINEAR_MIPMAP_LINEAR || 
+
+    if(minFilter == GL_LINEAR_MIPMAP_LINEAR ||
        minFilter == GL_LINEAR_MIPMAP_NEAREST ||
        minFilter == GL_NEAREST_MIPMAP_LINEAR ||
        minFilter == GL_NEAREST_MIPMAP_NEAREST)
 				 glGenerateMipmap(GL_TEXTURE_2D);
-    
+
 		return true;
 	}
 
 	// This function does any needed initialization on the rendering
-	// context. 
+	// context.
 	def SetupRC() {
 		// Background
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f );
@@ -99,7 +99,7 @@ object SphereMapped {
 
 		// Clear the window and the depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
+
     modelViewMatrix.PushMatrix(viewFrame);
 		modelViewMatrix.Rotate(rotTimer.GetElapsedSeconds() * 10.0f, 0.0f, 1.0f, 0.0f);
 
@@ -125,7 +125,7 @@ object SphereMapped {
     glViewport(0, 0, w, h);
 
     viewFrustum.SetPerspective(35.0f, w.toFloat / h.toFloat, 1.0f, 100.0f);
-    
+
     projectionMatrix.LoadMatrix(viewFrustum.GetProjectionMatrix());
     transformPipeline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
 	}
@@ -145,10 +145,9 @@ object SphereMapped {
 //			fprintf(stderr, "GLEW Error: %s\n", glewGetErrorString(err));
 //			return 1;
 //    }
-	
-		SetupRC();    
+
+		SetupRC();
 		glutMainLoop();
 		ShutdownRC();
-		return 0;
 	}
 }

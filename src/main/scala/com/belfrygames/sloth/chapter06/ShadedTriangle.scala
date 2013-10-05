@@ -13,6 +13,8 @@ import org.lwjgl.opengl.GL11._
 import org.lwjgl.opengl.GL20._
 
 object ShadedTriangle {
+  import GLBatch._
+
   val triangleBatch = new GLBatch
   val shaderManager = GLShaderManager
 
@@ -98,7 +100,5 @@ object ShadedTriangle {
 	glutMainLoop();
 
 	ShutdownRC();
-
-	return 0;
   }
 }

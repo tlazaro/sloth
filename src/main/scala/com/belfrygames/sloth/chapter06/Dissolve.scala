@@ -38,7 +38,7 @@ object Dissolve {
   var cloudTexture = 0		// The cloud texture texture object
 
   // Load a TGA as a 2D Texture. Completely initialize the state
-  def LoadTGATexture(szFileName : String, minFilter : Int, magFilter : Int, wrapMode : Int) {
+  def LoadTGATexture(szFileName : String, minFilter : Int, magFilter : Int, wrapMode : Int): Boolean = {
 		// Read the texture bits
 		val (pBits, nWidth, nHeight, nComponents, eFormat) = gltReadTGABits(szFileName)
 
@@ -172,6 +172,5 @@ object Dissolve {
 		SetupRC();
 		glutMainLoop();
 		ShutdownRC();
-		return 0;
   }
 }

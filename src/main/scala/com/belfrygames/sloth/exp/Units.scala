@@ -3,6 +3,7 @@ package com.belfrygames.sloth.exp
 import com.belfrygames.sloth.exp.Church._
 import scala.math.Numeric._
 import scala.math.Fractional
+import scala.reflect.ClassTag
 
 object Units {
   case class MKS[M<:CInt, K<:CInt, S<:CInt, T : Fractional](value : T) {
@@ -36,25 +37,25 @@ object Units {
   implicit def toScalar(x : Float) = new Scalar(x)
   implicit def toScalar(x : Double) = new Scalar(x)
 
-  implicit def toScalarT[T : Fractional : ClassManifest](x : Double) : Scalar[T] = {
-	val m = implicitly[ClassManifest[T]]
-	if (Float.getClass == m.erasure)
+  implicit def toScalarT[T : Fractional : ClassTag](x : Double) : Scalar[T] = {
+	val m = implicitly[ClassTag[T]]
+	if (Float.getClass == m.runtimeClass)
 	  new Scalar(x.toFloat.asInstanceOf[T])
 	else
 	  new Scalar(x.asInstanceOf[T])
   }
 
-  implicit def toScalarT[T : Fractional : ClassManifest](x : Float) : Scalar[T] = {
-	val m = implicitly[ClassManifest[T]]
-	if (Float.getClass == m.erasure)
+  implicit def toScalarT[T : Fractional : ClassTag](x : Float) : Scalar[T] = {
+	val m = implicitly[ClassTag[T]]
+	if (Float.getClass == m.runtimeClass)
 	  new Scalar(x.asInstanceOf[T])
 	else
 	  new Scalar(x.toDouble.asInstanceOf[T])
   }
 
-  def circleArea[T : Fractional : ClassManifest](r : Length[T]) : Area[T] = r * r * java.lang.Math.PI
-  def sphereSurfaceArea[T : Fractional : ClassManifest](r : Length[T]) : Area[T] = r * r * (4. * java.lang.Math.PI)
-  def sphereVolume[T : Fractional : ClassManifest](r : Length[T]) : Volume[T] = r * r * r * ((4./3.) * java.lang.Math.PI)
+  def circleArea[T : Fractional : ClassTag](r : Length[T]) : Area[T] = r * r * java.lang.Math.PI
+  def sphereSurfaceArea[T : Fractional : ClassTag](r : Length[T]) : Area[T] = r * r * (4.0 * java.lang.Math.PI)
+  def sphereVolume[T : Fractional : ClassTag](r : Length[T]) : Volume[T] = r * r * r * ((4.0/3.0) * java.lang.Math.PI)
 
   val x = new Length(5.0f)
   val y = new Length(6.0f)

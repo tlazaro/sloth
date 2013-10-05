@@ -149,6 +149,5 @@ object ToonShader {
 	SetupRC();
 	glutMainLoop();
 	ShutdownRC();
-	return 0;
   }
 }

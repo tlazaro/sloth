@@ -14,6 +14,8 @@ import org.lwjgl.opengl.GL20._
 import org.lwjgl.opengl.GL32._
 
 object ProvokingVertex {
+  import GLBatch._
+
   val triangleBatch = new GLBatch
   val shaderManager = GLShaderManager
 
@@ -119,7 +121,5 @@ object ProvokingVertex {
 	glutMainLoop();
 
 	ShutdownRC();
-
-	return 0;
   }
 }

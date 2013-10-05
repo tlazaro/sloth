@@ -55,7 +55,7 @@ object FlatShader {
 
   // Called to draw scene
   lazy val rotTimer = new CStopWatch
-  val vColor = M3DVector(0.1f, 0.1f, 1.f, 1.0f);
+  val vColor = M3DVector(0.1f, 0.1f, 1.0f, 1.0f);
   def RenderScene() {
 
 	// Clear the window and the depth buffer
@@ -113,6 +113,5 @@ object FlatShader {
 	SetupRC();
 	glutMainLoop();
 	ShutdownRC();
-	return 0;
   }
 }

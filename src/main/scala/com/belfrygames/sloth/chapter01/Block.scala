@@ -593,6 +593,5 @@ object Block {
 
 	glutMainLoop();
 	glDeleteTextures(textures);
-	return 0;
   }
 }

@@ -16,6 +16,8 @@ import org.lwjgl.opengl.GL30._
 
 
 class GLBatch extends GLBatchBase {
+  import GLBatch._
+
   protected var primitiveType = 0		// What am I drawing....
 
   protected var uiVertexArray : Int = _
@@ -34,7 +36,7 @@ class GLBatch extends GLBatchBase {
   protected var pNormals : M3DVector3fArray = null // Array of normals
   protected var pColors : M3DVector4fArray = null // Array of colors
   protected var pTexCoords : Array[M3DVector2fArray] = null // Array of texture coordinates
-  
+
   override def finalize() {
 		// Vertex buffer objects
 		if(uiVertexArray != 0)
@@ -61,7 +63,7 @@ class GLBatch extends GLBatchBase {
 
 		if(nNumTextureUnits != 0) {
 			uiTextureCoordArray = new Array(nNumTextureUnits)
-	  
+
 			// An array of pointers to texture coordinate arrays
 			pTexCoords = new Array[M3DVector2fArray](nNumTextureUnits)
 			for(i <- 0 until nNumTextureUnits) {
@@ -137,7 +139,7 @@ class GLBatch extends GLBatchBase {
 		glBindVertexArray(0)
   }
 
-  
+
   def CopyVertexData3f(vVerts : FloatBuffer) {
 		// First time, create the buffer object, allocate the space
 		if(uiVertexArray == 0) {
@@ -169,7 +171,7 @@ class GLBatch extends GLBatchBase {
 			pNormals = null
 		}
   }
-  
+
   def CopyColorData4f(vColors : FloatBuffer) {
 		// First time, create the buffer object, allocate the space
 		if(uiColorArray == 0) {
@@ -285,10 +287,10 @@ class GLBatch extends GLBatchBase {
 		pNormals(nVertsBuilding)(1) = y;
 		pNormals(nVertsBuilding)(2) = z;
   }
-  
+
   def Normal3fv(vNormal : M3DVector3f) {
 		setupNormal3f()
-	
+
 		// Ignore if we go past the end, keeps things from blowing up
 		if(nVertsBuilding >= nNumVerts)
 			return;
@@ -363,7 +365,7 @@ class GLBatch extends GLBatchBase {
 		pTexCoords(texture)(nVertsBuilding)(0) = s;
 		pTexCoords(texture)(nVertsBuilding)(1) = t;
   }
-  
+
   def MultiTexCoord2fv(texture : Int, vTexCoord : M3DVector2f) {
 		setupMultiTexCoord2f(texture)
 

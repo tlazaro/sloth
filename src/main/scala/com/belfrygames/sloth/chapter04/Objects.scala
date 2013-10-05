@@ -194,6 +194,5 @@ object Objects {
 	SetupRC();
 
 	glutMainLoop();
-	return 0;
   }
 }

@@ -38,7 +38,7 @@ object PixBuffs {
 	val shaderManager = GLShaderManager			// Shader Manager
 	val modelViewMatrix = new GLMatrixStack		// Modelview Matrix
 	val projectionMatrix = new GLMatrixStack		// Projection Matrix
-	val orthoMatrix = new M3DMatrix44f     
+	val orthoMatrix = new M3DMatrix44f
 	val viewFrustum = new GLFrustum			// View Frustum
 	val transformPipeline = new GLGeometryTransform		// Geometry Transform Pipeline
 	val cameraFrame = new GLFrame			// Camera frame
@@ -50,7 +50,7 @@ object PixBuffs {
 	val textures = new IntArray(1)
 	val blurTextures = new IntArray(6)
 	val pixBuffObjs = new IntArray(1)
-	
+
 	var curBlurTarget = 0
 	var bUsePBOPath = false
 	var speedFactor = 0.0f
@@ -71,7 +71,7 @@ object PixBuffs {
 	var iFrames = 0;           // Frame count
 	lazy val frameTimer = new CStopWatch     // Render time
 	def UpdateFrameCount() {
- 
+
     // Reset the stopwatch on first time
     if(iFrames == 0) {
 			frameTimer.Reset();
@@ -156,7 +156,7 @@ object PixBuffs {
 		floorBatch.Normal3f(0.0f, 1.0f, 0.0f);
 		floorBatch.Vertex3f(-20.0f, -0.41f, -20.0f);
 		floorBatch.End();
-		
+
 		glGenTextures(textures);
 		glBindTexture(GL_TEXTURE_2D, textures(0));
 		LoadBMPTexture("Marble.bmp", GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR, GL_REPEAT);
@@ -211,7 +211,7 @@ object PixBuffs {
 			glActiveTexture(GL_TEXTURE0 + i);
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
-	
+
 		// Now delete detached textures
 		glDeleteTextures(textures);
 		glDeleteTextures(blurTextures);
@@ -253,13 +253,13 @@ object PixBuffs {
 	///////////////////////////////////////////////////////////////////////////////
 	// Update the camera based on user input, toggle display modes
 	lazy val cameraTimer = new CStopWatch
-	def ProccessKeys(key : Int, x : Int, y : Int) { 
+	def ProccessKeys(key : Int, x : Int, y : Int) {
 		val fTime = cameraTimer.GetElapsedSeconds();
 		val linear = fTime * 12.0f;
-		cameraTimer.Reset(); 
+		cameraTimer.Reset();
 
 		// Alternate between PBOs and local memory when 'P' is pressed
-		if(key == 'P' || key == 'p') 
+		if(key == 'P' || key == 'p')
 			bUsePBOPath = !bUsePBOPath
 
 		// Speed up movement
@@ -296,11 +296,11 @@ object PixBuffs {
 	}
 
 	///////////////////////////////////////////////////////////////////////////////
-	// Draw the scene 
+	// Draw the scene
 	def DrawWorld(yRot : Float, xPos : Float) {
 		val mCamera = new M3DMatrix44f
 		modelViewMatrix.GetMatrix(mCamera);
-	
+
 		// Need light position relative to the Camera
 		val vLightTransformed = new M3DVector4f
 		m3dTransformVector4(vLightTransformed, vLightPos, mCamera);
@@ -310,10 +310,10 @@ object PixBuffs {
 		modelViewMatrix.Translate(0.0f, 0.2f, -2.5f);
 		modelViewMatrix.Translate(xPos, 0.0f, 0.0f);
 		modelViewMatrix.Rotate(yRot, 0.0f, 1.0f, 0.0f);
-	
-		shaderManager.UseStockShader(GLT_SHADER_POINT_LIGHT_DIFF, 
-																 modelViewMatrix.GetMatrix(), 
-																 transformPipeline.GetProjectionMatrix(), 
+
+		shaderManager.UseStockShader(GLT_SHADER_POINT_LIGHT_DIFF,
+																 modelViewMatrix.GetMatrix(),
+																 transformPipeline.GetProjectionMatrix(),
 																 vLightTransformed, vGreen, 0);
 		torusBatch.Draw();
 		modelViewMatrix.PopMatrix();
@@ -343,7 +343,7 @@ object PixBuffs {
 			xPos = totalTime - seconds -halfTotalTime*0.5f;
 
 		// First draw world to screen
-		modelViewMatrix.PushMatrix();	
+		modelViewMatrix.PushMatrix();
 		val mCamera = new M3DMatrix44f
 		cameraFrame.GetCameraMatrix(mCamera);
 		modelViewMatrix.MultMatrix(mCamera);
@@ -356,7 +356,7 @@ object PixBuffs {
 		floorBatch.Draw();
 		DrawWorld(0.0f, xPos);
 		modelViewMatrix.PopMatrix();
-	
+
 		if(bUsePBOPath) {
 			// First bind the PBO as the pack buffer, then read the pixels directly to the PBO
 			glBindBuffer(GL_PIXEL_PACK_BUFFER, pixBuffObjs(0));
@@ -365,15 +365,15 @@ object PixBuffs {
 
 			// Next bind the PBO as the unpack buffer, then push the pixels straight into the texture
 			glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pixBuffObjs(0));
-        
-			// Setup texture unit for new blur, this gets incremented every frame 
-			glActiveTexture(GL_TEXTURE0 + GetBlurTarget0()); 
+
+			// Setup texture unit for new blur, this gets incremented every frame
+			glActiveTexture(GL_TEXTURE0 + GetBlurTarget0());
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, screenWidth, screenHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 			glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 		} else {
 			// Grab the screen pixels and copy into local memory
 			glReadPixels(0, 0, screenWidth, screenHeight, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
-		
+
 			// Push pixels from client memory into texture
 			// Setup texture unit for new blur, this gets imcremented every frame
 			glActiveTexture(GL_TEXTURE0 + GetBlurTarget0());
@@ -381,24 +381,24 @@ object PixBuffs {
 		}
 
 		// Draw full screen quad with blur shader and all blur textures
-		projectionMatrix.PushMatrix(); 
+		projectionMatrix.PushMatrix();
 		projectionMatrix.LoadIdentity();
 		projectionMatrix.LoadMatrix(orthoMatrix);
-		modelViewMatrix.PushMatrix();	
+		modelViewMatrix.PushMatrix();
 		modelViewMatrix.LoadIdentity();
-		glDisable(GL_DEPTH_TEST); 
+		glDisable(GL_DEPTH_TEST);
 		SetupBlurProg();
 		screenQuad.Draw();
-		glEnable(GL_DEPTH_TEST); 
-		modelViewMatrix.PopMatrix(); 
+		glEnable(GL_DEPTH_TEST);
+		modelViewMatrix.PopMatrix();
 		projectionMatrix.PopMatrix();
 
 		// Move to the next blur texture for the next frame
 		AdvanceBlurTaget();
-    
+
     // Do the buffer Swap
     glutSwapBuffers();
-        
+
     // Do it again
     glutPostRedisplay();
 
@@ -409,7 +409,7 @@ object PixBuffs {
 	def main(args: Array[String]): Unit = {
     screenWidth  = 800;
     screenHeight = 600;
-    bFullScreen = false; 
+    bFullScreen = false;
     bAnimated   = true;
     bUsePBOPath = false;
     blurProg    = 0;
@@ -418,16 +418,15 @@ object PixBuffs {
     glutInit(args);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(screenWidth,screenHeight);
-  
+
     glutCreateWindow("Pix Buffs");
- 
+
     glutReshapeFunc(ChangeSize);
     glutDisplayFunc(RenderScene);
     glutKeyboardFunc(ProccessKeys);
 
     SetupRC();
-    glutMainLoop();    
+    glutMainLoop();
     ShutdownRC();
-    return 0;
 	}
 }

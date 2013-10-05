@@ -42,7 +42,7 @@ object LitTexture {
   var texture = 0
 
   // Load a TGA as a 2D Texture. Completely initialize the state
-  def LoadTGATexture(szFileName : String, minFilter : Int, magFilter : Int, wrapMode : Int)
+  def LoadTGATexture(szFileName : String, minFilter : Int, magFilter : Int, wrapMode : Int): Boolean =
   {
 	// Read the texture bits
 	val (pBits, nWidth, nHeight, nComponents, eFormat) = gltReadTGABits(szFileName)
@@ -173,6 +173,5 @@ object LitTexture {
 	SetupRC();
 	glutMainLoop();
 	ShutdownRC();
-	return 0;
   }
 }

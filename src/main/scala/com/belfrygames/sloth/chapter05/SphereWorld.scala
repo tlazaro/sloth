@@ -289,6 +289,5 @@ object SphereWorld {
     SetupRC();
     glutMainLoop();
     ShutdownRC();
-    return 0;
   }
 }

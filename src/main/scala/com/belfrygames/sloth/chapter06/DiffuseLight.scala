@@ -123,6 +123,5 @@ object DiffuseLight {
 	SetupRC();
 	glutMainLoop();
 	ShutdownRC();
-	return 0;
   }
 }

@@ -62,7 +62,7 @@ object Anisotropic {
 		  }
 		case 7 => glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1.0f);
 	  }
-	  
+
 	  iLoop += 1
 	}
 
@@ -291,7 +291,5 @@ object Anisotropic {
     SetupRC();
     glutMainLoop();
     ShutdownRC();
-
-    return 0;
   }
 }

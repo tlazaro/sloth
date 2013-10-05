@@ -68,7 +68,7 @@ object SphereWorld {
   val vFloorColor = M3DVector(0.0f, 1.0f, 0.0f, 1.0f);
   val vTorusColor = M3DVector(1.0f, 0.0f, 0.0f, 1.0f);
   lazy val rotTimer = new CStopWatch // Made lazy so that it gets initialized in RenderScene when needed and not on class creation
-  
+
   def RenderScene() {
     // Time Based animation
 	var yRot = rotTimer.GetElapsedSeconds() * 60.0f;
@@ -121,6 +121,5 @@ object SphereWorld {
 
     SetupRC();
     glutMainLoop();
-    return 0;
   }
 }

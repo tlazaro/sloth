@@ -14,6 +14,7 @@ import org.lwjgl.opengl.GL11._
 // Move a Block based on arrow key movements,
 // Blend it with background blocks
 object Blending {
+  import GLBatch._
 
   val squareBatch = new GLBatch
   val greenBatch = new GLBatch

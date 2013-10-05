@@ -95,7 +95,7 @@ object SphereWorld4 {
 
   val vLightPos = M3DVector(0.0f, 10.0f, 5.0f, 1.0f)
   val vLightEyePos = new M3DVector4f
-  
+
   // Called to draw scene
   def RenderScene() {
     // Time Based animation
@@ -211,6 +211,5 @@ object SphereWorld4 {
 
     SetupRC();
     glutMainLoop();
-    return 0;
   }
 }

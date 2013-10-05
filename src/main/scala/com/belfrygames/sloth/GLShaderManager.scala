@@ -253,7 +253,7 @@ object GLShaderManager {
     glCompileShader(hFragmentShader);
 
     // Check for errors
-    testVal = glGetShader(hVertexShader, GL_COMPILE_STATUS);
+    testVal = glGetShaderi(hVertexShader, GL_COMPILE_STATUS);
     if(testVal == GL_FALSE)
 		{
 			glDeleteShader(hVertexShader);
@@ -261,7 +261,7 @@ object GLShaderManager {
 			return 0;
 		}
 
-    testVal = glGetShader(hFragmentShader, GL_COMPILE_STATUS);
+    testVal = glGetShaderi(hFragmentShader, GL_COMPILE_STATUS);
     if(testVal == GL_FALSE)
 		{
 			glDeleteShader(hVertexShader);
@@ -294,7 +294,7 @@ object GLShaderManager {
     glDeleteShader(hFragmentShader);
 
     // Make sure link worked too
-    testVal = glGetProgram(shaderEntry.uiShaderID, GL_LINK_STATUS)
+    testVal = glGetProgrami(shaderEntry.uiShaderID, GL_LINK_STATUS)
     if(testVal == GL_FALSE)
 		{
 			glDeleteProgram(shaderEntry.uiShaderID);

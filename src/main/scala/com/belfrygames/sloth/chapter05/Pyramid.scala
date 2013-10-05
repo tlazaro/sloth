@@ -265,7 +265,5 @@ object Pyramid {
 	glutMainLoop();
 
     ShutdownRC();
-
-	return 0;
   }
 }

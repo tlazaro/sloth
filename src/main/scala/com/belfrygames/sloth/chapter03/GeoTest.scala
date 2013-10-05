@@ -159,6 +159,5 @@ object GeoTest {
 	SetupRC();
 
 	glutMainLoop();
-	return 0;
   }
 }

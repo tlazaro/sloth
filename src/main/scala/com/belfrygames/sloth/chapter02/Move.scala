@@ -13,6 +13,8 @@ import com.belfrygames.sloth.glut._
 import org.lwjgl.opengl.GL11._
 
 object Move {
+  import GLBatch._
+
   val squareBatch = new GLBatch
   val shaderManager = GLShaderManager
 

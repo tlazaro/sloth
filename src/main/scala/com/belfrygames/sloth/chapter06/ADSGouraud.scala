@@ -131,6 +131,5 @@ object ADSGouraud {
 	SetupRC();
 	glutMainLoop();
 	ShutdownRC();
-	return 0;
   }
 }
