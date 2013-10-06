@@ -8,7 +8,7 @@ package com.belfrygames.sloth
  * GLEW has been tested on a variety of operating systems, including Windows,
  * Linux, Mac OS X, FreeBSD, Irix, and Solaris.
  *
- * 
+ *
  * GLEW is a complete and absolute pain to figure out and implement.
  * If anyone feels like going for it you are most than welcome.
  */

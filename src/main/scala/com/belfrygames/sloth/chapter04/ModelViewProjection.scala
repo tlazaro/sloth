@@ -20,14 +20,14 @@ object ModelViewProjection {
   val torusBatch = new GLTriangleBatch
 
   // Set up the viewport and the projection matrix
-  def ChangeSize(w : Int, _h : Int) {
-	// Prevent a divide by zero
-	val h = if(_h == 0) 1 else _h
+  def ChangeSize(w: Int, _h: Int) {
+    // Prevent a divide by zero
+    val h = if (_h == 0) 1 else _h
 
-	// Set Viewport to window dimensions
+    // Set Viewport to window dimensions
     glViewport(0, 0, w, h);
 
-    viewFrustum.SetPerspective(35.0f, w.toFloat/ h.toFloat, 1.0f, 1000.0f);
+    viewFrustum.SetPerspective(35.0f, w.toFloat / h.toFloat, 1.0f, 1000.0f);
   }
 
 
@@ -39,12 +39,13 @@ object ModelViewProjection {
   val mModelViewProjection = new M3DMatrix44f
 
   val vBlack = M3DVector(0.0f, 0.0f, 0.0f, 1.0f)
+
   def RenderScene() {
     // Set up time based animation
     var yRot = rotTimer.GetElapsedSeconds() * 60.0f;
 
-	// Clear the window and the depth buffer
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // Clear the window and the depth buffer
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Matrix Variables
 
@@ -59,7 +60,7 @@ object ModelViewProjection {
 
     // Add the modelview matrix to the projection matrix,
     // the final matrix is the ModelViewProjection matrix.
-    m3dMatrixMultiply44(mModelViewProjection, viewFrustum.GetProjectionMatrix(),mModelview);
+    m3dMatrixMultiply44(mModelViewProjection, viewFrustum.GetProjectionMatrix(), mModelview);
 
     // Pass this completed matrix to the shader, and render the torus
     shaderManager.UseStockShader(GLT_SHADER_FLAT, mModelViewProjection, vBlack);
@@ -74,8 +75,8 @@ object ModelViewProjection {
   // This function does any needed initialization on the rendering
   // context.
   def SetupRC() {
-	// Black background
-	glClearColor(0.8f, 0.8f, 0.8f, 1.0f );
+    // Black background
+    glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 
     glEnable(GL_DEPTH_TEST);
 
@@ -92,23 +93,23 @@ object ModelViewProjection {
   ///////////////////////////////////////////////////////////////////////////////
   // Main entry point for GLUT based programs
   def main(args: Array[String]): Unit = {
-	if (args.size > 0) gltSetWorkingDirectory(args(0))
+    if (args.size > 0) gltSetWorkingDirectory(args(0))
 
     glutInit(args);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STENCIL);
-	glutInitWindowSize(800, 600);
-	glutCreateWindow("ModelViewProjection Example");
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STENCIL);
+    glutInitWindowSize(800, 600);
+    glutCreateWindow("ModelViewProjection Example");
     glutReshapeFunc(ChangeSize);
     glutDisplayFunc(RenderScene);
 
-//	GLenum err = glewInit();
-//	if (GLEW_OK != err) {
-//	  fprintf(stderr, "GLEW Error: %s\n", glewGetErrorString(err));
-//	  return 1;
-//	}
+    //	GLenum err = glewInit();
+    //	if (GLEW_OK != err) {
+    //	  fprintf(stderr, "GLEW Error: %s\n", glewGetErrorString(err));
+    //	  return 1;
+    //	}
 
-	SetupRC();
+    SetupRC();
 
-	glutMainLoop();
+    glutMainLoop();
   }
 }

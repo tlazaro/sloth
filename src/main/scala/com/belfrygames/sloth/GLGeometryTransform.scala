@@ -6,35 +6,40 @@ class GLGeometryTransform {
   val _mModelViewProjection = new M3DMatrix44f
   val _mNormalMatrix = new M3DMatrix33f
 
-  var _mModelView : GLMatrixStack = _
-  var _mProjection : GLMatrixStack = _
+  var _mModelView: GLMatrixStack = _
+  var _mProjection: GLMatrixStack = _
 
-  @inline def SetModelViewMatrixStack(mModelView : GLMatrixStack) { _mModelView = mModelView; }
-
-  @inline def SetProjectionMatrixStack(mProjection : GLMatrixStack) { _mProjection = mProjection; }
-
-  @inline def SetMatrixStacks(mModelView : GLMatrixStack, mProjection : GLMatrixStack) {
-		_mModelView = mModelView;
-		_mProjection = mProjection;
+  @inline def SetModelViewMatrixStack(mModelView: GLMatrixStack) {
+    _mModelView = mModelView;
   }
 
-  def GetModelViewProjectionMatrix() : M3DMatrix44f = {
-		m3dMatrixMultiply44(_mModelViewProjection, _mProjection.GetMatrix(), _mModelView.GetMatrix());
-		return _mModelViewProjection;
+  @inline def SetProjectionMatrixStack(mProjection: GLMatrixStack) {
+    _mProjection = mProjection;
   }
 
-  @inline def GetModelViewMatrix() : M3DMatrix44f = _mModelView.GetMatrix()
-  @inline def GetProjectionMatrix() : M3DMatrix44f = _mProjection.GetMatrix()
+  @inline def SetMatrixStacks(mModelView: GLMatrixStack, mProjection: GLMatrixStack) {
+    _mModelView = mModelView;
+    _mProjection = mProjection;
+  }
 
-  def GetNormalMatrix(bNormalize : Boolean = false) : M3DMatrix33f = {
-		m3dExtractRotationMatrix33(_mNormalMatrix, GetModelViewMatrix());
+  def GetModelViewProjectionMatrix(): M3DMatrix44f = {
+    m3dMatrixMultiply44(_mModelViewProjection, _mProjection.GetMatrix(), _mModelView.GetMatrix());
+    return _mModelViewProjection;
+  }
 
-		if(bNormalize) {
-			m3dNormalizeVector3(_mNormalMatrix, 0);
-			m3dNormalizeVector3(_mNormalMatrix, 3);
-			m3dNormalizeVector3(_mNormalMatrix, 6);
-		}
+  @inline def GetModelViewMatrix(): M3DMatrix44f = _mModelView.GetMatrix()
 
-		return _mNormalMatrix;
+  @inline def GetProjectionMatrix(): M3DMatrix44f = _mProjection.GetMatrix()
+
+  def GetNormalMatrix(bNormalize: Boolean = false): M3DMatrix33f = {
+    m3dExtractRotationMatrix33(_mNormalMatrix, GetModelViewMatrix());
+
+    if (bNormalize) {
+      m3dNormalizeVector3(_mNormalMatrix, 0);
+      m3dNormalizeVector3(_mNormalMatrix, 3);
+      m3dNormalizeVector3(_mNormalMatrix, 6);
+    }
+
+    return _mNormalMatrix;
   }
 }

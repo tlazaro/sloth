@@ -12,5 +12,5 @@ class CStopWatch {
   def Reset() = m_LastCount = System.nanoTime
 
   // Get elapsed time in seconds
-  def GetElapsedSeconds() : Float = (System.nanoTime - m_LastCount) / 1000000000.0f
+  def GetElapsedSeconds(): Float = (System.nanoTime - m_LastCount) / 1000000000.0f
 }

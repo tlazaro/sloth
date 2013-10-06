@@ -15,10 +15,10 @@ object Buffers {
    * @param size The size, in bytes
    * @return a ByteBuffer
    */
-  def createByteBuffer(size : Int, direct : Boolean = true) : ByteBuffer = if (direct) {
-		ByteBuffer.allocateDirect(size).order(ByteOrder.nativeOrder());
+  def createByteBuffer(size: Int, direct: Boolean = true): ByteBuffer = if (direct) {
+    ByteBuffer.allocateDirect(size).order(ByteOrder.nativeOrder());
   } else {
-		ByteBuffer.allocate(size).order(ByteOrder.nativeOrder());
+    ByteBuffer.allocate(size).order(ByteOrder.nativeOrder());
   }
 
   /**
@@ -27,8 +27,8 @@ object Buffers {
    * @param size The size, in shorts
    * @return a ShortBuffer
    */
-  def createShortBuffer(size : Int, direct : Boolean = true) : ShortBuffer = {
-		return createByteBuffer(size << 1, direct).asShortBuffer();
+  def createShortBuffer(size: Int, direct: Boolean = true): ShortBuffer = {
+    return createByteBuffer(size << 1, direct).asShortBuffer();
   }
 
   /**
@@ -37,8 +37,8 @@ object Buffers {
    * @param size The size, in chars
    * @return an CharBuffer
    */
-  def createCharBuffer(size : Int, direct : Boolean = true) : CharBuffer = {
-		return createByteBuffer(size << 1, direct).asCharBuffer();
+  def createCharBuffer(size: Int, direct: Boolean = true): CharBuffer = {
+    return createByteBuffer(size << 1, direct).asCharBuffer();
   }
 
   /**
@@ -47,8 +47,8 @@ object Buffers {
    * @param size The size, in ints
    * @return an IntBuffer
    */
-  def createIntBuffer(size : Int, direct : Boolean = true) : IntBuffer = {
-		return createByteBuffer(size << 2, direct).asIntBuffer();
+  def createIntBuffer(size: Int, direct: Boolean = true): IntBuffer = {
+    return createByteBuffer(size << 2, direct).asIntBuffer();
   }
 
   /**
@@ -57,8 +57,8 @@ object Buffers {
    * @param size The size, in longs
    * @return an LongBuffer
    */
-  def createLongBuffer(size : Int, direct : Boolean = true) : LongBuffer = {
-		return createByteBuffer(size << 3, direct).asLongBuffer();
+  def createLongBuffer(size: Int, direct: Boolean = true): LongBuffer = {
+    return createByteBuffer(size << 3, direct).asLongBuffer();
   }
 
   /**
@@ -67,8 +67,8 @@ object Buffers {
    * @param size The size, in floats
    * @return a FloatBuffer
    */
-  def createFloatBuffer(size : Int, direct : Boolean = true) : FloatBuffer = {
-		return createByteBuffer(size << 2, direct).asFloatBuffer();
+  def createFloatBuffer(size: Int, direct: Boolean = true): FloatBuffer = {
+    return createByteBuffer(size << 2, direct).asFloatBuffer();
   }
 
   /**
@@ -77,7 +77,7 @@ object Buffers {
    * @param size The size, in floats
    * @return a FloatBuffer
    */
-  def createDoubleBuffer(size : Int, direct : Boolean = true) : DoubleBuffer = {
-		return createByteBuffer(size << 3, direct).asDoubleBuffer();
+  def createDoubleBuffer(size: Int, direct: Boolean = true): DoubleBuffer = {
+    return createByteBuffer(size << 3, direct).asDoubleBuffer();
   }
 }

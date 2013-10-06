@@ -1,6 +1,7 @@
 package com.belfrygames.sloth.exp
 
 object Booleans {
+
   import Utils._
 
   sealed trait Bool {

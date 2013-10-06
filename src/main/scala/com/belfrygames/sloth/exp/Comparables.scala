@@ -1,6 +1,7 @@
 package com.belfrygames.sloth.exp
 
 object Comparables {
+
   import Booleans._
 
   trait Comparable {

@@ -18,6 +18,6 @@ import com.belfrygames.sloth.Math3D.M3DVector3fArray
  * are of type Int which are the same bytes length as Float.
  */
 object BufferPool {
-//  var vector3fPool = new M3DVector3fArray(30)
-//  val floatPool = Buffers.createFloatBuffer(3*4*100)
+  //  var vector3fPool = new M3DVector3fArray(30)
+  //  val floatPool = Buffers.createFloatBuffer(3*4*100)
 }

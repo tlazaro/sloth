@@ -39,15 +39,15 @@ object Objects {
   // This is the first opportunity to do any OpenGL related tasks.
   def SetupRC() {
     // Black background
-    glClearColor(0.7f, 0.7f, 0.7f, 1.0f );
+    glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 
-	shaderManager.InitializeStockShaders();
+    shaderManager.InitializeStockShaders();
 
-	glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
 
-	transformPipeline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
+    transformPipeline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
 
-	cameraFrame.MoveForward(-15.0f);
+    cameraFrame.MoveForward(-15.0f);
 
 
     // Sphere
@@ -68,7 +68,7 @@ object Objects {
 
 
   /////////////////////////////////////////////////////////////////////////
-  def DrawWireFramedBatch(pBatch : GLTriangleBatch) {
+  def DrawWireFramedBatch(pBatch: GLTriangleBatch) {
     shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetModelViewProjectionMatrix(), vGreen);
     pBatch.Draw();
 
@@ -91,72 +91,72 @@ object Objects {
     glDisable(GL_LINE_SMOOTH);
   }
 
-///////////////////////////////////////////////////////////////////////////////
-// Called to draw scene
+  ///////////////////////////////////////////////////////////////////////////////
+  // Called to draw scene
   def RenderScene() {
-	// Clear the window with current clearing color
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    // Clear the window with current clearing color
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	modelViewMatrix.PushMatrix();
-	val mCamera = new M3DMatrix44f
-	cameraFrame.GetCameraMatrix(mCamera);
-	modelViewMatrix.MultMatrix(mCamera);
+    modelViewMatrix.PushMatrix();
+    val mCamera = new M3DMatrix44f
+    cameraFrame.GetCameraMatrix(mCamera);
+    modelViewMatrix.MultMatrix(mCamera);
 
-	val mObjectFrame = new M3DMatrix44f
-	objectFrame.GetMatrix(mObjectFrame);
-	modelViewMatrix.MultMatrix(mObjectFrame);
+    val mObjectFrame = new M3DMatrix44f
+    objectFrame.GetMatrix(mObjectFrame);
+    modelViewMatrix.MultMatrix(mObjectFrame);
 
-	shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetModelViewProjectionMatrix(), vBlack);
+    shaderManager.UseStockShader(GLT_SHADER_FLAT, transformPipeline.GetModelViewProjectionMatrix(), vBlack);
 
-	nStep match {
-	  case 0 => DrawWireFramedBatch(sphereBatch);
-	  case 1 => DrawWireFramedBatch(torusBatch);
-	  case 2 => DrawWireFramedBatch(cylinderBatch);
-	  case 3 => DrawWireFramedBatch(coneBatch);
-	  case 4 => DrawWireFramedBatch(diskBatch);
-	}
+    nStep match {
+      case 0 => DrawWireFramedBatch(sphereBatch);
+      case 1 => DrawWireFramedBatch(torusBatch);
+      case 2 => DrawWireFramedBatch(cylinderBatch);
+      case 3 => DrawWireFramedBatch(coneBatch);
+      case 4 => DrawWireFramedBatch(diskBatch);
+    }
 
-	modelViewMatrix.PopMatrix();
+    modelViewMatrix.PopMatrix();
 
-	// Flush drawing commands
-	glutSwapBuffers();
+    // Flush drawing commands
+    glutSwapBuffers();
   }
 
   // Respond to arrow keys by moving the camera frame of reference
-  def SpecialKeys(key : Int, x : Int, y : Int) {
-	if(key == GLUT_KEY_UP)
-	  objectFrame.RotateWorld(m3dDegToRad(-5.0f), 1.0f, 0.0f, 0.0f);
+  def SpecialKeys(key: Int, x: Int, y: Int) {
+    if (key == GLUT_KEY_UP)
+      objectFrame.RotateWorld(m3dDegToRad(-5.0f), 1.0f, 0.0f, 0.0f);
 
-	if(key == GLUT_KEY_DOWN)
-	  objectFrame.RotateWorld(m3dDegToRad(5.0f), 1.0f, 0.0f, 0.0f);
+    if (key == GLUT_KEY_DOWN)
+      objectFrame.RotateWorld(m3dDegToRad(5.0f), 1.0f, 0.0f, 0.0f);
 
-	if(key == GLUT_KEY_LEFT)
-	  objectFrame.RotateWorld(m3dDegToRad(-5.0f), 0.0f, 1.0f, 0.0f);
+    if (key == GLUT_KEY_LEFT)
+      objectFrame.RotateWorld(m3dDegToRad(-5.0f), 0.0f, 1.0f, 0.0f);
 
-	if(key == GLUT_KEY_RIGHT)
-	  objectFrame.RotateWorld(m3dDegToRad(5.0f), 0.0f, 1.0f, 0.0f);
+    if (key == GLUT_KEY_RIGHT)
+      objectFrame.RotateWorld(m3dDegToRad(5.0f), 0.0f, 1.0f, 0.0f);
 
-	glutPostRedisplay();
+    glutPostRedisplay();
   }
 
   ///////////////////////////////////////////////////////////////////////////////
   // A normal ASCII key has been pressed.
   // In this case, advance the scene when the space bar is pressed
-  def KeyPressFunc(key : Int, x : Int, y : Int) {
-	if(key == 32) {
-	  nStep += 1;
+  def KeyPressFunc(key: Int, x: Int, y: Int) {
+    if (key == 32) {
+      nStep += 1;
 
-	  if(nStep > 4)
-		nStep = 0;
-	}
+      if (nStep > 4)
+        nStep = 0;
+    }
 
     nStep match {
-	  case 0 => glutSetWindowTitle("Sphere");
-	  case 1 => glutSetWindowTitle("Torus");
-	  case 2 => glutSetWindowTitle("Cylinder");
-	  case 3 => glutSetWindowTitle("Cone");
-	  case 4 => glutSetWindowTitle("Disk");
-	}
+      case 0 => glutSetWindowTitle("Sphere");
+      case 1 => glutSetWindowTitle("Torus");
+      case 2 => glutSetWindowTitle("Cylinder");
+      case 3 => glutSetWindowTitle("Cone");
+      case 4 => glutSetWindowTitle("Disk");
+    }
 
     glutPostRedisplay();
   }
@@ -164,35 +164,35 @@ object Objects {
   ///////////////////////////////////////////////////////////////////////////////
   // Window has changed size, or has just been created. In either case, we need
   // to use the window dimensions to set the viewport and the projection matrix.
-  def ChangeSize(w : Int, h : Int)   {
-	glViewport(0, 0, w, h);
-	viewFrustum.SetPerspective(35.0f, w.toFloat / h.toFloat, 1.0f, 500.0f);
-	projectionMatrix.LoadMatrix(viewFrustum.GetProjectionMatrix());
-	modelViewMatrix.LoadIdentity();
+  def ChangeSize(w: Int, h: Int) {
+    glViewport(0, 0, w, h);
+    viewFrustum.SetPerspective(35.0f, w.toFloat / h.toFloat, 1.0f, 500.0f);
+    projectionMatrix.LoadMatrix(viewFrustum.GetProjectionMatrix());
+    modelViewMatrix.LoadIdentity();
   }
 
   ///////////////////////////////////////////////////////////////////////////////
   // Main entry point for GLUT based programs
- def main(args: Array[String]): Unit = {
-	if (args.size > 0) gltSetWorkingDirectory(args(0))
+  def main(args: Array[String]): Unit = {
+    if (args.size > 0) gltSetWorkingDirectory(args(0))
 
-	glutInit(args);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STENCIL);
-	glutInitWindowSize(800, 600);
-	glutCreateWindow("Sphere");
+    glutInit(args);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STENCIL);
+    glutInitWindowSize(800, 600);
+    glutCreateWindow("Sphere");
     glutReshapeFunc(ChangeSize);
     glutKeyboardFunc(KeyPressFunc);
     glutSpecialFunc(SpecialKeys);
     glutDisplayFunc(RenderScene);
 
-//	GLenum err = glewInit();
-//	if (GLEW_OK != err) {
-//	  fprintf(stderr, "GLEW Error: %s\n", glewGetErrorString(err));
-//	  return 1;
-//	}
+    //	GLenum err = glewInit();
+    //	if (GLEW_OK != err) {
+    //	  fprintf(stderr, "GLEW Error: %s\n", glewGetErrorString(err));
+    //	  return 1;
+    //	}
 
-	SetupRC();
+    SetupRC();
 
-	glutMainLoop();
+    glutMainLoop();
   }
 }

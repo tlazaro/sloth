@@ -158,7 +158,7 @@ object Church {
   def main(args: Array[String]): Unit = {
     println(depth(new _0))
     println(depth(new _3))
-//    println(depth(new _2#Neg))
+    //    println(depth(new _2#Neg))
 
     val vector = new Vector[Float, _2]
     //	vector.update[_1#Neg](1.0f) // Fails at compile time!

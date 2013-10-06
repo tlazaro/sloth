@@ -13,7 +13,7 @@ object Perspective {
   val viewFrame = new GLFrame
   val viewFrustum = new GLFrustum
   val tubeBatch = new GLBatch
-  val innerBatch  = new GLBatch
+  val innerBatch = new GLBatch
   val modelViewMatix = new GLMatrixStack
   val projectionMatrix = new GLMatrixStack
   val transformPipeline = new GLGeometryTransform
@@ -22,11 +22,12 @@ object Perspective {
   // Called to draw scene
   val vRed = M3DVector(1.0f, 0.0f, 0.0f, 1.0f)
   val vGray = M3DVector(0.75f, 0.75f, 0.75f, 1.0f)
-  def RenderScene() {
-	// Clear the window and the depth buffer
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-//    glEnable(GL_CULL_FACE);
+  def RenderScene() {
+    // Clear the window and the depth buffer
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    //    glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
 
 
@@ -48,10 +49,10 @@ object Perspective {
   // This function does any needed initialization on the rendering
   // context.
   def SetupRC() {
-	// Black background
-	glClearColor(0.0f, 0.0f, 0.75f, 1.0f );
+    // Black background
+    glClearColor(0.0f, 0.0f, 0.75f, 1.0f);
 
-//    glEnable(GL_CULL_FACE);
+    //    glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
 
     shaderManager.InitializeStockShaders();
@@ -77,7 +78,7 @@ object Perspective {
 
     tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
-    tubeBatch.Vertex3f(-35.0f,50.0f,fZ);
+    tubeBatch.Vertex3f(-35.0f, 50.0f, fZ);
 
     // Right Panel
     tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
@@ -94,7 +95,7 @@ object Perspective {
 
     tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
-    tubeBatch.Vertex3f(50.0f,-50.0f,fZ);
+    tubeBatch.Vertex3f(50.0f, -50.0f, fZ);
 
     // Top Panel
     tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
@@ -111,7 +112,7 @@ object Perspective {
 
     tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
-    tubeBatch.Vertex3f(35.0f, 50.0f,fZ);
+    tubeBatch.Vertex3f(35.0f, 50.0f, fZ);
 
     // Bottom Panel
     tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
@@ -128,7 +129,7 @@ object Perspective {
 
     tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
-    tubeBatch.Vertex3f(35.0f, -35.0f,fZ);
+    tubeBatch.Vertex3f(35.0f, -35.0f, fZ);
 
     // Top length section ////////////////////////////
     // Normal points up Y axis
@@ -146,7 +147,7 @@ object Perspective {
 
     tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(0.0f, 1.0f, 0.0f);
-    tubeBatch.Vertex3f(-50.0f,50.0f,bZ);
+    tubeBatch.Vertex3f(-50.0f, 50.0f, bZ);
 
     // Bottom section
     tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
@@ -210,298 +211,297 @@ object Perspective {
     tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
     tubeBatch.Vertex3f(-50.0f, -50.0f, fZ);
 
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
     tubeBatch.Vertex3f(-35.0f, -50.0f, fZ);
 
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
-    tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
-    tubeBatch.Vertex3f(-35.0f,50.0f,fZ);
-
-    // Right Panel
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
-    tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
-    tubeBatch.Vertex3f(50.0f, 50.0f, fZ);
-
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
-    tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
-    tubeBatch.Vertex3f(35.0f, 50.0f, fZ);
-
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
-    tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
-    tubeBatch.Vertex3f(35.0f, -50.0f, fZ);
-
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
-    tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
-    tubeBatch.Vertex3f(50.0f,-50.0f,fZ);
-
-    // Top Panel
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
     tubeBatch.Vertex3f(-35.0f, 50.0f, fZ);
 
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    // Right Panel
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
-    tubeBatch.Vertex3f(-35.0f, 35.0f, fZ);
+    tubeBatch.Vertex3f(50.0f, 50.0f, fZ);
 
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
-    tubeBatch.Vertex3f(35.0f, 35.0f, fZ);
+    tubeBatch.Vertex3f(35.0f, 50.0f, fZ);
 
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
-    tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
-    tubeBatch.Vertex3f(35.0f, 50.0f,fZ);
-
-    // Bottom Panel
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
-    tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
-    tubeBatch.Vertex3f(-35.0f, -35.0f, fZ);
-
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
-    tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
-    tubeBatch.Vertex3f(-35.0f, -50.0f, fZ);
-
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
     tubeBatch.Vertex3f(35.0f, -50.0f, fZ);
 
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
-    tubeBatch.Vertex3f(35.0f, -35.0f,fZ);
+    tubeBatch.Vertex3f(50.0f, -50.0f, fZ);
+
+    // Top Panel
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
+    tubeBatch.Vertex3f(-35.0f, 50.0f, fZ);
+
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
+    tubeBatch.Vertex3f(-35.0f, 35.0f, fZ);
+
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
+    tubeBatch.Vertex3f(35.0f, 35.0f, fZ);
+
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
+    tubeBatch.Vertex3f(35.0f, 50.0f, fZ);
+
+    // Bottom Panel
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
+    tubeBatch.Vertex3f(-35.0f, -35.0f, fZ);
+
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
+    tubeBatch.Vertex3f(-35.0f, -50.0f, fZ);
+
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
+    tubeBatch.Vertex3f(35.0f, -50.0f, fZ);
+
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Normal3f(0.0f, 0.0f, 1.0f);
+    tubeBatch.Vertex3f(35.0f, -35.0f, fZ);
 
     // Top length section ////////////////////////////
     // Normal points up Y axis
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(0.0f, 1.0f, 0.0f);
     tubeBatch.Vertex3f(-50.0f, 50.0f, fZ);
 
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(0.0f, 1.0f, 0.0f);
     tubeBatch.Vertex3f(50.0f, 50.0f, fZ);
 
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(0.0f, 1.0f, 0.0f);
     tubeBatch.Vertex3f(50.0f, 50.0f, bZ);
 
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(0.0f, 1.0f, 0.0f);
-    tubeBatch.Vertex3f(-50.0f,50.0f,bZ);
+    tubeBatch.Vertex3f(-50.0f, 50.0f, bZ);
 
     // Bottom section
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(0.0f, -1.0f, 0.0f);
     tubeBatch.Vertex3f(-50.0f, -50.0f, fZ);
 
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(0.0f, -1.0f, 0.0f);
     tubeBatch.Vertex3f(-50.0f, -50.0f, bZ);
 
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(0.0f, -1.0f, 0.0f);
     tubeBatch.Vertex3f(50.0f, -50.0f, bZ);
 
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(0.0f, -1.0f, 0.0f);
     tubeBatch.Vertex3f(50.0f, -50.0f, fZ);
 
     // Left section
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(1.0f, 0.0f, 0.0f);
     tubeBatch.Vertex3f(50.0f, 50.0f, fZ);
 
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(1.0f, 0.0f, 0.0f);
     tubeBatch.Vertex3f(50.0f, -50.0f, fZ);
 
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(1.0f, 0.0f, 0.0f);
     tubeBatch.Vertex3f(50.0f, -50.0f, bZ);
 
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(1.0f, 0.0f, 0.0f);
     tubeBatch.Vertex3f(50.0f, 50.0f, bZ);
 
     // Right Section
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(-1.0f, 0.0f, 0.0f);
     tubeBatch.Vertex3f(-50.0f, 50.0f, fZ);
 
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(-1.0f, 0.0f, 0.0f);
     tubeBatch.Vertex3f(-50.0f, 50.0f, bZ);
 
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(-1.0f, 0.0f, 0.0f);
     tubeBatch.Vertex3f(-50.0f, -50.0f, bZ);
 
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
     tubeBatch.Normal3f(-1.0f, 0.0f, 0.0f);
     tubeBatch.Vertex3f(-50.0f, -50.0f, fZ);
 
 
 
-	// Left Panel
-	tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
-	tubeBatch.Vertex3f(-35.0f,50.0f,bZ);
+    // Left Panel
+    tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Vertex3f(-35.0f, 50.0f, bZ);
 
-	tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
-	tubeBatch.Vertex3f(-35.0f, -50.0f, bZ);
+    tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Vertex3f(-35.0f, -50.0f, bZ);
 
-	tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
-	tubeBatch.Vertex3f(-50.0f, -50.0f, bZ);
+    tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Vertex3f(-50.0f, -50.0f, bZ);
 
-	tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
-	tubeBatch.Vertex3f(-50.0f, 50.0f, bZ);
+    tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Vertex3f(-50.0f, 50.0f, bZ);
 
-	// Right Panel
-	tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    // Right Panel
+    tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
 
-	tubeBatch.Vertex3f(50.0f,-50.0f,bZ);
+    tubeBatch.Vertex3f(50.0f, -50.0f, bZ);
 
-	tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
 
-	tubeBatch.Vertex3f(35.0f, -50.0f, bZ);
+    tubeBatch.Vertex3f(35.0f, -50.0f, bZ);
 
-	tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
 
-	tubeBatch.Vertex3f(35.0f, 50.0f, bZ);
+    tubeBatch.Vertex3f(35.0f, 50.0f, bZ);
 
-	tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
 
-	tubeBatch.Vertex3f(50.0f, 50.0f, bZ);
+    tubeBatch.Vertex3f(50.0f, 50.0f, bZ);
 
-	// Top Panel
-	tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
-	tubeBatch.Vertex3f(35.0f, 50.0f, bZ);
-	tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
-	tubeBatch.Vertex3f(35.0f, 35.0f, bZ);
-	tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
-	tubeBatch.Vertex3f(-35.0f, 35.0f, bZ);
-
-
-	tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
-	tubeBatch.Vertex3f(-35.0f, 50.0f, bZ);
-
-	// Bottom Panel
-	tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
-	tubeBatch.Vertex3f(35.0f, -35.0f,bZ);
-	tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
-	tubeBatch.Vertex3f(35.0f, -50.0f, bZ);
-	tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
-	tubeBatch.Vertex3f(-35.0f, -50.0f, bZ);
+    // Top Panel
+    tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Vertex3f(35.0f, 50.0f, bZ);
+    tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Vertex3f(35.0f, 35.0f, bZ);
+    tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Vertex3f(-35.0f, 35.0f, bZ);
 
 
-	tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
-	tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
-	tubeBatch.Vertex3f(-35.0f, -35.0f, bZ);
+    tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Vertex3f(-35.0f, 50.0f, bZ);
 
-	tubeBatch.End();
+    // Bottom Panel
+    tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Vertex3f(35.0f, -35.0f, bZ);
+    tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Vertex3f(35.0f, -50.0f, bZ);
+    tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Vertex3f(-35.0f, -50.0f, bZ);
 
 
-	innerBatch.Begin(GL_QUADS, 40);
+    tubeBatch.Normal3f(0.0f, 0.0f, -1.0f);
+    tubeBatch.Color4f(1.0f, 0.0f, 0.0f, 1.0f);
+    tubeBatch.Vertex3f(-35.0f, -35.0f, bZ);
+
+    tubeBatch.End();
+
+
+    innerBatch.Begin(GL_QUADS, 40);
 
 
 
-	// Insides /////////////////////////////
-	// Normal points up Y axis
-	innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
-	innerBatch.Normal3f(0.0f, 1.0f, 0.0f);
-	innerBatch.Vertex3f(-35.0f, 35.0f, fZ);
-	innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
-	innerBatch.Normal3f(0.0f, 1.0f, 0.0f);
-	innerBatch.Vertex3f(35.0f, 35.0f, fZ);
-	innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
-	innerBatch.Normal3f(0.0f, 1.0f, 0.0f);
-	innerBatch.Vertex3f(35.0f, 35.0f, bZ);
-	innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
-	innerBatch.Normal3f(0.0f, 1.0f, 0.0f);
-	innerBatch.Vertex3f(-35.0f,35.0f,bZ);
+    // Insides /////////////////////////////
+    // Normal points up Y axis
+    innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
+    innerBatch.Normal3f(0.0f, 1.0f, 0.0f);
+    innerBatch.Vertex3f(-35.0f, 35.0f, fZ);
+    innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
+    innerBatch.Normal3f(0.0f, 1.0f, 0.0f);
+    innerBatch.Vertex3f(35.0f, 35.0f, fZ);
+    innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
+    innerBatch.Normal3f(0.0f, 1.0f, 0.0f);
+    innerBatch.Vertex3f(35.0f, 35.0f, bZ);
+    innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
+    innerBatch.Normal3f(0.0f, 1.0f, 0.0f);
+    innerBatch.Vertex3f(-35.0f, 35.0f, bZ);
 
-	// Bottom section
-	innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
-	innerBatch.Normal3f(0.0f, 1.0f, 0.0f);
-	innerBatch.Vertex3f(-35.0f, -35.0f, fZ);
-	innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
-	innerBatch.Normal3f(0.0f, 1.0f, 0.0f);
-	innerBatch.Vertex3f(-35.0f, -35.0f, bZ);
-	innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
-	innerBatch.Normal3f(0.0f, 1.0f, 0.0f);
-	innerBatch.Vertex3f(35.0f, -35.0f, bZ);
-	innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
-	innerBatch.Normal3f(0.0f, 1.0f, 0.0f);
-	innerBatch.Vertex3f(35.0f, -35.0f, fZ);
+    // Bottom section
+    innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
+    innerBatch.Normal3f(0.0f, 1.0f, 0.0f);
+    innerBatch.Vertex3f(-35.0f, -35.0f, fZ);
+    innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
+    innerBatch.Normal3f(0.0f, 1.0f, 0.0f);
+    innerBatch.Vertex3f(-35.0f, -35.0f, bZ);
+    innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
+    innerBatch.Normal3f(0.0f, 1.0f, 0.0f);
+    innerBatch.Vertex3f(35.0f, -35.0f, bZ);
+    innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
+    innerBatch.Normal3f(0.0f, 1.0f, 0.0f);
+    innerBatch.Vertex3f(35.0f, -35.0f, fZ);
 
-	// Left section
-	innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
-	innerBatch.Normal3f(1.0f, 0.0f, 0.0f);
-	innerBatch.Vertex3f(-35.0f, 35.0f, fZ);
-	innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
-	innerBatch.Normal3f(1.0f, 0.0f, 0.0f);
-	innerBatch.Vertex3f(-35.0f, 35.0f, bZ);
-	innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
-	innerBatch.Normal3f(1.0f, 0.0f, 0.0f);
-	innerBatch.Vertex3f(-35.0f, -35.0f, bZ);
-	innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
-	innerBatch.Normal3f(1.0f, 0.0f, 0.0f);
-	innerBatch.Vertex3f(-35.0f, -35.0f, fZ);
+    // Left section
+    innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
+    innerBatch.Normal3f(1.0f, 0.0f, 0.0f);
+    innerBatch.Vertex3f(-35.0f, 35.0f, fZ);
+    innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
+    innerBatch.Normal3f(1.0f, 0.0f, 0.0f);
+    innerBatch.Vertex3f(-35.0f, 35.0f, bZ);
+    innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
+    innerBatch.Normal3f(1.0f, 0.0f, 0.0f);
+    innerBatch.Vertex3f(-35.0f, -35.0f, bZ);
+    innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
+    innerBatch.Normal3f(1.0f, 0.0f, 0.0f);
+    innerBatch.Vertex3f(-35.0f, -35.0f, fZ);
 
-	// Right Section
-	innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
-	innerBatch.Normal3f(-1.0f, 0.0f, 0.0f);
-	innerBatch.Vertex3f(35.0f, 35.0f, fZ);
-	innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
-	innerBatch.Normal3f(-1.0f, 0.0f, 0.0f);
-	innerBatch.Vertex3f(35.0f, -35.0f, fZ);
-	innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
-	innerBatch.Normal3f(-1.0f, 0.0f, 0.0f);
-	innerBatch.Vertex3f(35.0f, -35.0f, bZ);
-	innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
-	innerBatch.Normal3f(-1.0f, 0.0f, 0.0f);
-	innerBatch.Vertex3f(35.0f, 35.0f, bZ);
+    // Right Section
+    innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
+    innerBatch.Normal3f(-1.0f, 0.0f, 0.0f);
+    innerBatch.Vertex3f(35.0f, 35.0f, fZ);
+    innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
+    innerBatch.Normal3f(-1.0f, 0.0f, 0.0f);
+    innerBatch.Vertex3f(35.0f, -35.0f, fZ);
+    innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
+    innerBatch.Normal3f(-1.0f, 0.0f, 0.0f);
+    innerBatch.Vertex3f(35.0f, -35.0f, bZ);
+    innerBatch.Color4f(0.75f, 0.75f, 0.75f, 1.0f);
+    innerBatch.Normal3f(-1.0f, 0.0f, 0.0f);
+    innerBatch.Vertex3f(35.0f, 35.0f, bZ);
 
-	innerBatch.End();
+    innerBatch.End();
 
   }
 
-  def SpecialKeys(key : Int, x : Int, y : Int)
-  {
-	if(key == GLUT_KEY_UP)
-	  viewFrame.RotateWorld(m3dDegToRad(-5.0).toFloat, 1.0f, 0.0f, 0.0f);
+  def SpecialKeys(key: Int, x: Int, y: Int) {
+    if (key == GLUT_KEY_UP)
+      viewFrame.RotateWorld(m3dDegToRad(-5.0).toFloat, 1.0f, 0.0f, 0.0f);
 
-	if(key == GLUT_KEY_DOWN)
-	  viewFrame.RotateWorld(m3dDegToRad(5.0).toFloat, 1.0f, 0.0f, 0.0f);
+    if (key == GLUT_KEY_DOWN)
+      viewFrame.RotateWorld(m3dDegToRad(5.0).toFloat, 1.0f, 0.0f, 0.0f);
 
-	if(key == GLUT_KEY_LEFT)
-	  viewFrame.RotateWorld(m3dDegToRad(-5.0).toFloat, 0.0f, 1.0f, 0.0f);
+    if (key == GLUT_KEY_LEFT)
+      viewFrame.RotateWorld(m3dDegToRad(-5.0).toFloat, 0.0f, 1.0f, 0.0f);
 
-	if(key == GLUT_KEY_RIGHT)
-	  viewFrame.RotateWorld(m3dDegToRad(5.0).toFloat, 0.0f, 1.0f, 0.0f);
+    if (key == GLUT_KEY_RIGHT)
+      viewFrame.RotateWorld(m3dDegToRad(5.0).toFloat, 0.0f, 1.0f, 0.0f);
 
-	// Refresh the Window
-	glutPostRedisplay();
+    // Refresh the Window
+    glutPostRedisplay();
   }
 
 
-  def ChangeSize(w : Int, _h : Int) {
-	// Prevent a divide by zero
-	val h = if (_h == 0) 1 else _h
+  def ChangeSize(w: Int, _h: Int) {
+    // Prevent a divide by zero
+    val h = if (_h == 0) 1 else _h
 
-	// Set Viewport to window dimensions
+    // Set Viewport to window dimensions
     glViewport(0, 0, w, h);
 
     viewFrustum.SetPerspective(35.0f, w.toFloat / h.toFloat, 1.0f, 1000.0f);
@@ -513,25 +513,25 @@ object Perspective {
   ///////////////////////////////////////////////////////////////////////////////
   // Main entry point for GLUT based programs
   def main(args: Array[String]): Unit = {
-	if (args.size > 0) gltSetWorkingDirectory(args(0))
+    if (args.size > 0) gltSetWorkingDirectory(args(0))
 
     glutInit(args);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STENCIL);
-	glutInitWindowSize(800, 600);
-	glutCreateWindow("Perspective Projection Example");
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STENCIL);
+    glutInitWindowSize(800, 600);
+    glutCreateWindow("Perspective Projection Example");
     glutReshapeFunc(ChangeSize);
     glutSpecialFunc(SpecialKeys);
     glutDisplayFunc(RenderScene);
 
 
-//	GLenum err = glewInit();
-//	if (GLEW_OK != err) {
-//	  fprintf(stderr, "GLEW Error: %s\n", glewGetErrorString(err));
-//	  return 1;
-//    }
+    //	GLenum err = glewInit();
+    //	if (GLEW_OK != err) {
+    //	  fprintf(stderr, "GLEW Error: %s\n", glewGetErrorString(err));
+    //	  return 1;
+    //    }
 
-	SetupRC();
+    SetupRC();
 
-	glutMainLoop();
+    glutMainLoop();
   }
 }

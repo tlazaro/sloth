@@ -11,124 +11,135 @@ import com.belfrygames.sloth.GLShaderManager._
 import org.lwjgl.opengl.GL11._
 
 object Bounce {
+
   import GLBatch._
 
   // Bounce.cpp
-// Bounce a Block around the screen
+  // Bounce a Block around the screen
 
-  val	squareBatch = new GLBatch
-  val	shaderManager = GLShaderManager
+  val squareBatch = new GLBatch
+  val shaderManager = GLShaderManager
 
 
   var blockSize = 0.1f;
-  val vVerts = Array( -blockSize - 0.5f, -blockSize, 0.0f,
-					 blockSize - 0.5f, -blockSize, 0.0f,
-					 blockSize - 0.5f,  blockSize, 0.0f,
-					 -blockSize - 0.5f,  blockSize, 0.0f)
+  val vVerts = Array(-blockSize - 0.5f, -blockSize, 0.0f,
+    blockSize - 0.5f, -blockSize, 0.0f,
+    blockSize - 0.5f, blockSize, 0.0f,
+    -blockSize - 0.5f, blockSize, 0.0f)
 
-///////////////////////////////////////////////////////////////////////////////
-// This function does any needed initialization on the rendering context.
-// This is the first opportunity to do any OpenGL related tasks.
+  ///////////////////////////////////////////////////////////////////////////////
+  // This function does any needed initialization on the rendering context.
+  // This is the first opportunity to do any OpenGL related tasks.
   def SetupRC() {
-	// Black background
-	glClearColor(0.0f, 0.0f, 1.0f, 1.0f );
+    // Black background
+    glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
 
-	shaderManager.InitializeStockShaders();
+    shaderManager.InitializeStockShaders();
 
-	// Load up a triangle
-	squareBatch.Begin(GL_TRIANGLE_FAN, 4);
-	squareBatch.CopyVertexData3f(vVerts);
-	squareBatch.End();
+    // Load up a triangle
+    squareBatch.Begin(GL_TRIANGLE_FAN, 4);
+    squareBatch.CopyVertexData3f(vVerts);
+    squareBatch.End();
   }
 
-// Respond to arrow keys by moving the camera frame of reference
+  // Respond to arrow keys by moving the camera frame of reference
   var xDir = 1.0f;
   var yDir = 1.0f;
+
   def BounceFunction() {
-	val stepSize = 0.005f;
+    val stepSize = 0.005f;
 
-	var blockX = vVerts(0);   // Upper left X
-	var blockY = vVerts(7);  // Upper left Y
+    var blockX = vVerts(0);
+    // Upper left X
+    var blockY = vVerts(7); // Upper left Y
 
-	blockY += stepSize * yDir;
-	blockX += stepSize * xDir;
+    blockY += stepSize * yDir;
+    blockX += stepSize * xDir;
 
-	// Collision detection
-	if(blockX < -1.0f) { blockX = -1.0f; xDir *= -1.0f; }
-	if(blockX > (1.0f - blockSize * 2)) { blockX = 1.0f - blockSize * 2; xDir *= -1.0f; }
-	if(blockY < -1.0f + blockSize * 2)  { blockY = -1.0f + blockSize * 2; yDir *= -1.0f; }
-	if(blockY > 1.0f) { blockY = 1.0f; yDir *= -1.0f; }
+    // Collision detection
+    if (blockX < -1.0f) {
+      blockX = -1.0f;
+      xDir *= -1.0f;
+    }
+    if (blockX > (1.0f - blockSize * 2)) {
+      blockX = 1.0f - blockSize * 2;
+      xDir *= -1.0f;
+    }
+    if (blockY < -1.0f + blockSize * 2) {
+      blockY = -1.0f + blockSize * 2;
+      yDir *= -1.0f;
+    }
+    if (blockY > 1.0f) {
+      blockY = 1.0f;
+      yDir *= -1.0f;
+    }
 
-	// Recalculate vertex positions
-	vVerts(0) = blockX;
-	vVerts(1) = blockY - blockSize*2;
+    // Recalculate vertex positions
+    vVerts(0) = blockX;
+    vVerts(1) = blockY - blockSize * 2;
 
-	vVerts(3) = blockX + blockSize*2;
-	vVerts(4) = blockY - blockSize*2;
+    vVerts(3) = blockX + blockSize * 2;
+    vVerts(4) = blockY - blockSize * 2;
 
-	vVerts(6) = blockX + blockSize*2;
-	vVerts(7) = blockY;
+    vVerts(6) = blockX + blockSize * 2;
+    vVerts(7) = blockY;
 
-	vVerts(9) = blockX;
-	vVerts(10) = blockY;
+    vVerts(9) = blockX;
+    vVerts(10) = blockY;
 
-	squareBatch.CopyVertexData3f(vVerts);
+    squareBatch.CopyVertexData3f(vVerts);
   }
 
 
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-// Called to draw scene
+  ///////////////////////////////////////////////////////////////////////////////
+  // Called to draw scene
   def RenderScene() {
-	// Clear the window with current clearing color
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    // Clear the window with current clearing color
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	val vRed = M3DVector(1.0f, 0.0f, 0.0f, 1.0f);
-	shaderManager.UseStockShader(GLT_SHADER_IDENTITY, vRed);
-	squareBatch.Draw();
+    val vRed = M3DVector(1.0f, 0.0f, 0.0f, 1.0f);
+    shaderManager.UseStockShader(GLT_SHADER_IDENTITY, vRed);
+    squareBatch.Draw();
 
-	// Flush drawing commands
-	glutSwapBuffers();
+    // Flush drawing commands
+    glutSwapBuffers();
 
-	BounceFunction();
-	glutPostRedisplay(); // Redraw
+    BounceFunction();
+    glutPostRedisplay(); // Redraw
   }
 
 
-
-///////////////////////////////////////////////////////////////////////////////
-// Window has changed size, or has just been created. In either case, we need
-// to use the window dimensions to set the viewport and the projection matrix.
-  def ChangeSize(w : Int, h : Int) {
-	glViewport(0, 0, w, h);
+  ///////////////////////////////////////////////////////////////////////////////
+  // Window has changed size, or has just been created. In either case, we need
+  // to use the window dimensions to set the viewport and the projection matrix.
+  def ChangeSize(w: Int, h: Int) {
+    glViewport(0, 0, w, h);
   }
 
-///////////////////////////////////////////////////////////////////////////////
-// Main entry point for GLUT based programs
-  def main(argv : Array[String]) : Unit = {
-	if (argv.size > 0)
-	  gltSetWorkingDirectory(argv(0))
+  ///////////////////////////////////////////////////////////////////////////////
+  // Main entry point for GLUT based programs
+  def main(argv: Array[String]): Unit = {
+    if (argv.size > 0)
+      gltSetWorkingDirectory(argv(0))
 
-	glutInit(argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-	glutInitWindowSize(800, 600);
-	glutCreateWindow("Bouncing Block");
+    glutInit(argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+    glutInitWindowSize(800, 600);
+    glutCreateWindow("Bouncing Block");
 
-//	GLenum err = glewInit();
-//	if (GLEW_OK != err)
-//	{
-//	  // Problem: glewInit failed, something is seriously wrong.
-//	  fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
-//	  return 1;
-//	}
+    //	GLenum err = glewInit();
+    //	if (GLEW_OK != err)
+    //	{
+    //	  // Problem: glewInit failed, something is seriously wrong.
+    //	  fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+    //	  return 1;
+    //	}
 
-	glutReshapeFunc(ChangeSize);
-	glutDisplayFunc(RenderScene);
+    glutReshapeFunc(ChangeSize);
+    glutDisplayFunc(RenderScene);
 
-	SetupRC();
+    SetupRC();
 
-	glutMainLoop();
+    glutMainLoop();
   }
 }
