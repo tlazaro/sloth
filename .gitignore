@@ -1,6 +1,8 @@
 .idea
 .idea_modules
 /target/
+/project/target/
+/project/project/target/
 /lib/lzma.jar
 /lib/lwjgl_util_applet.jar
 /lib/lwjgl-debug.jar
