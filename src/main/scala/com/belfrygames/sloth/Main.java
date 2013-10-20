@@ -46,6 +46,7 @@ public class Main {
         examples.add(new Example("4", "SphereWorld2", "Rotating wire frame torus and sphere with camera", "Move with arrow keys", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter04.SphereWorld2"));
         examples.add(new Example("4", "SphereWorld3", "Rotating wire frame torus and sphere and spheres with camera", "Move with arrow keys", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter04.SphereWorld3"));
         examples.add(new Example("4", "SphereWorld4", "Rotating torus and sphere and spheres with camera and point light", "Move with arrow keys", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter04.SphereWorld4"));
+        examples.add(new Example("4", "UnsafeSphereWorld4", "EXPERIMENTAL: Rotating torus and sphere and spheres with camera and point light", "Move with arrow keys", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter04.UnsafeSphereWorld4"));
 
         examples.add(new Example("5", "Pyramid", "Basic Texturing Example", "Move with arrow keys.", ExampleStatus.PERFECT, "com.belfrygames.sloth.chapter05.Pyramid"));
         examples.add(new Example("5", "Tunnel", "Texture Filtering Example", "F1 to F6 to change filtering modes. Move with arrow keys.", ExampleStatus.ALMOST_PERFECT, "com.belfrygames.sloth.chapter05.Tunnel"));

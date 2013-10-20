@@ -14,13 +14,7 @@ import org.lwjgl.opengl.GL30._
 
 object SphereWorld {
   val NUM_SPHERES = 50
-  val spheres: Array[GLFrame] = {
-    val res = new Array[GLFrame](NUM_SPHERES)
-    for (i <- 0 until res.length) {
-      res(i) = new GLFrame
-    }
-    res
-  }
+  val spheres = Array.fill[GLFrame](NUM_SPHERES)(new GLFrame)
 
   val shaderManager = GLShaderManager
   val modelViewMatrix = new GLMatrixStack
@@ -134,7 +128,7 @@ object SphereWorld {
     // Make sure OpenGL entry points are set
     //	glewInit();
 
-    // Initialze Shader Manager
+    // Initialize Shader Manager
     shaderManager.InitializeStockShaders();
 
     glEnable(GL_DEPTH_TEST);
@@ -249,7 +243,7 @@ object SphereWorld {
   // Respond to arrow keys by moving the camera frame of reference
   def SpecialKeys(key: Int, x: Int, y: Int) {
     val linear = 0.1f;
-    val angular = m3dDegToRad(5.0f).toFloat
+    val angular = m3dDegToRad(5.0f)
 
     if (key == GLUT_KEY_UP)
       cameraFrame.MoveForward(linear);

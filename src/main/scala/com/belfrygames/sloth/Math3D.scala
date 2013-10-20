@@ -869,7 +869,7 @@ object Math3D {
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
-  // Get lenght of vector
+  // Get length of vector
   // Only for three component vectors.
   @inline def m3dGetVectorLength3(u: M3DVector3f): Float = sqrt(m3dGetVectorLengthSquared3(u)).toFloat
 
