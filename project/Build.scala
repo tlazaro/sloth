@@ -19,7 +19,8 @@ object ApplicationBuild extends Build {
 
       libraryDependencies ++= Seq(
         "org.specs2" %% "specs2" % "2.2.3" % "test",
-        "com.github.axel22" %% "scalameter" % "0.3" % "test"
+        "com.github.axel22" %% "scalameter" % "0.3" % "test",
+        "org.scalacheck" %% "scalacheck" % "1.11.2" % "test"
       ),
 
       testFrameworks += new TestFramework("org.scalameter.ScalaMeterFramework"),

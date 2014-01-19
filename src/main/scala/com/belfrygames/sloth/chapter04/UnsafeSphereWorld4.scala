@@ -191,7 +191,7 @@ object UnsafeSphereWorld4 {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(800, 600);
 
-    glutCreateWindow("OpenGL SphereWorld");
+    glutCreateWindow("OpenGL Unsafe SphereWorld");
 
     glutSpecialFunc(SpecialKeys);
     glutReshapeFunc(ChangeSize);
