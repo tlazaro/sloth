@@ -10,6 +10,12 @@ object Booleans {
     type Not <: Bool
     type If[IfTrue, IfFalse]
     type If2[T, IfTrue <: T, IfFalse <: T] <: T
+
+    type Eq[B <: Bool] <: Bool
+    type LT[B <: Bool] <: Bool
+    type LTE[B <: Bool] <: Bool
+    type GT[B <: Bool] <: Bool
+    type GTE[B <: Bool] <: Bool
   }
 
   final class True extends Bool {
@@ -18,6 +24,12 @@ object Booleans {
     type Not = False
     type If[IfTrue, IfFalse] = IfTrue
     type If2[T, IfTrue <: T, IfFalse <: T] = IfTrue
+
+    type Eq[B <: Bool] = B
+    type LT[B <: Bool] = False
+    type LTE[B <: Bool] = B
+    type GT[B <: Bool] = B#Not
+    type GTE[B <: Bool] = True
   }
 
   val True = new True
@@ -28,6 +40,12 @@ object Booleans {
     type Not = True
     type If[IfTrue, IfFalse] = IfFalse
     type If2[T, IfTrue <: T, IfFalse <: T] = IfFalse
+
+    type Eq[B <: Bool] = B#Not
+    type LT[B <: Bool] = B
+    type LTE[B <: Bool] = True
+    type GT[B <: Bool] = False
+    type GTE[B <: Bool] = B#Not
   }
 
   val False = new False
